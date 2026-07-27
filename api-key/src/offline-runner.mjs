@@ -9,6 +9,7 @@ const modules = [
   "src/secret-scan.mjs",
   "src/rotation-state.mjs",
   "src/live-runner.mjs",
+  "src/post-run-audit.mjs",
   "src/offline-runner.mjs",
   "tests/offline.test.mjs"
 ];

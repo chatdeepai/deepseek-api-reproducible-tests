@@ -54,20 +54,22 @@ function enqueueNetwork(task) {
 function classifyStatus(status) {
   if (status >= 200 && status <= 299) return "success";
   if (status === 400) return "invalid_request";
-  if (status === 401 || status === 403) return "auth_rejected";
+  if (status === 401) return "auth_rejected";
   if (status === 402) return "insufficient_balance";
+  if (status === 403) return "forbidden";
   if (status === 408) return "request_timeout";
+  if (status === 422) return "invalid_parameters";
   if (status === 429) return "rate_limited";
   if (status >= 500 && status <= 599) return "provider_error";
   return "unexpected_status";
 }
 
-function outcomeForExpected(statusClass, expected) {
+function outcomeForExpected(status, expected) {
   if (expected === "authorized") {
-    return statusClass === "success";
+    return status === 200;
   }
   if (expected === "auth_rejected") {
-    return statusClass === "auth_rejected";
+    return status === 401;
   }
   return false;
 }
@@ -91,7 +93,7 @@ function buildPublicBase({ caseId, path, method, expected, status, elapsedMs }) 
     status,
     statusClass,
     httpOk: status >= 200 && status <= 299,
-    expectationMet: outcomeForExpected(statusClass, expected),
+    expectationMet: outcomeForExpected(status, expected),
     elapsedMs
   };
 }
@@ -110,9 +112,116 @@ function transportResult({ caseId, path, method, expected, elapsedMs }) {
   };
 }
 
-function safeNumber(value) {
-  return Number.isFinite(value) && value >= 0 ? Number(value) : null;
+function safeInteger(value) {
+  return Number.isInteger(value) && value >= 0 ? Number(value) : null;
 }
+
+function expectationWithSchema(base, responseSchemaValid) {
+  if (base.expected !== "authorized") {
+    return base.expectationMet;
+  }
+  return base.expectationMet && responseSchemaValid === true;
+}
+
+function validateModelListPayload(payload) {
+  const data = Array.isArray(payload?.data) ? payload.data : [];
+  const objectIsList = payload?.object === "list";
+  const dataIsNonEmpty = data.length > 0;
+  const everyModelHasId = dataIsNonEmpty && data.every(
+    (item) => typeof item?.id === "string" && item.id.length > 0
+  );
+  const everyModelObjectIsModel = dataIsNonEmpty && data.every(
+    (item) => item?.object === "model"
+  );
+  const everyModelHasOwner = dataIsNonEmpty && data.every(
+    (item) => typeof item?.owned_by === "string" && item.owned_by.length > 0
+  );
+  const responseSchemaValid =
+    objectIsList &&
+    dataIsNonEmpty &&
+    everyModelHasId &&
+    everyModelObjectIsModel &&
+    everyModelHasOwner;
+
+  return {
+    responseSchemaValid,
+    objectIsList,
+    dataIsNonEmpty,
+    everyModelHasId,
+    everyModelObjectIsModel,
+    everyModelHasOwner,
+    modelCount: responseSchemaValid ? data.length : null,
+    modelIds: responseSchemaValid ? data.map((item) => item.id) : []
+  };
+}
+
+function validateBalancePayload(payload) {
+  const availabilityFieldPresent = typeof payload?.is_available === "boolean";
+  const balanceInfoArrayPresent = Array.isArray(payload?.balance_infos);
+  const responseSchemaValid = availabilityFieldPresent && balanceInfoArrayPresent;
+
+  return {
+    responseSchemaValid,
+    availabilityFieldPresent,
+    available: availabilityFieldPresent ? payload.is_available : null,
+    balanceInfoArrayPresent,
+    balanceInfoCount: balanceInfoArrayPresent ? payload.balance_infos.length : null
+  };
+}
+
+function validateCompletionPayload(payload) {
+  const choice = Array.isArray(payload?.choices) ? payload.choices[0] : null;
+  const text = typeof choice?.message?.content === "string" ? choice.message.content : "";
+  const normalized = text.trim();
+  const usage = payload?.usage && typeof payload.usage === "object" ? payload.usage : {};
+  const promptTokens = safeInteger(usage.prompt_tokens);
+  const completionTokens = safeInteger(usage.completion_tokens);
+  const totalTokens = safeInteger(usage.total_tokens);
+  const usageReconciles =
+    promptTokens !== null &&
+    completionTokens !== null &&
+    totalTokens !== null &&
+    promptTokens + completionTokens === totalTokens;
+  const model = typeof payload?.model === "string" ? payload.model : null;
+  const finishReason = typeof choice?.finish_reason === "string" ? choice.finish_reason : null;
+  const responseObjectIsChatCompletion = payload?.object === "chat.completion";
+  const choicePresent = choice !== null;
+  const contentNonEmpty = normalized.length > 0;
+  const exactSyntheticReferenceMatch = normalized === "AUTHENTICATED_OK";
+  const returnedModelMatches = model === LIVE_MODEL;
+  const finishReasonIsStop = finishReason === "stop";
+  const responseSchemaValid =
+    responseObjectIsChatCompletion &&
+    choicePresent &&
+    contentNonEmpty &&
+    exactSyntheticReferenceMatch &&
+    returnedModelMatches &&
+    finishReasonIsStop &&
+    usageReconciles;
+
+  return {
+    responseSchemaValid,
+    responseObjectIsChatCompletion,
+    choicePresent,
+    model,
+    returnedModelMatches,
+    contentNonEmpty,
+    contentLength: text.length,
+    exactSyntheticReferenceMatch,
+    finishReason,
+    finishReasonIsStop,
+    promptTokens,
+    completionTokens,
+    totalTokens,
+    usageReconciles
+  };
+}
+
+export const liveResponseValidators = Object.freeze({
+  modelList: validateModelListPayload,
+  balance: validateBalancePayload,
+  completion: validateCompletionPayload
+});
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -174,6 +283,36 @@ export function createLiveSession({
           elapsedMs
         });
 
+        if (parseMode === "models") {
+          let parsed = null;
+          try {
+            parsed = await response.json();
+          } catch {
+            parsed = null;
+          }
+          const validation = validateModelListPayload(parsed);
+          const successfulResponse = response.status === 200;
+          parsed = null;
+          return sanitizeForPublic({
+            ...base,
+            expectationMet: expectationWithSchema(base, validation.responseSchemaValid),
+            responseSchemaValid: successfulResponse
+              ? validation.responseSchemaValid
+              : null,
+            objectIsList: successfulResponse ? validation.objectIsList : null,
+            dataIsNonEmpty: successfulResponse ? validation.dataIsNonEmpty : null,
+            everyModelHasId: successfulResponse ? validation.everyModelHasId : null,
+            everyModelObjectIsModel: successfulResponse
+              ? validation.everyModelObjectIsModel
+              : null,
+            everyModelHasOwner: successfulResponse
+              ? validation.everyModelHasOwner
+              : null,
+            modelCount: successfulResponse ? validation.modelCount : null,
+            modelIds: successfulResponse ? validation.modelIds : []
+          });
+        }
+
         if (parseMode === "balance") {
           let parsed = null;
           try {
@@ -181,13 +320,23 @@ export function createLiveSession({
           } catch {
             parsed = null;
           }
-          const availabilityFieldPresent = typeof parsed?.is_available === "boolean";
-          const available = availabilityFieldPresent ? parsed.is_available : null;
+          const validation = validateBalancePayload(parsed);
+          const successfulResponse = response.status === 200;
           parsed = null;
           return sanitizeForPublic({
             ...base,
-            availabilityFieldPresent,
-            available
+            expectationMet: expectationWithSchema(base, validation.responseSchemaValid),
+            responseSchemaValid: successfulResponse
+              ? validation.responseSchemaValid
+              : null,
+            availabilityFieldPresent: successfulResponse
+              ? validation.availabilityFieldPresent
+              : null,
+            available: successfulResponse ? validation.available : null,
+            balanceInfoArrayPresent: successfulResponse
+              ? validation.balanceInfoArrayPresent
+              : null,
+            balanceInfoCount: successfulResponse ? validation.balanceInfoCount : null
           });
         }
 
@@ -198,21 +347,36 @@ export function createLiveSession({
           } catch {
             parsed = null;
           }
-          const choice = Array.isArray(parsed?.choices) ? parsed.choices[0] : null;
-          const text = typeof choice?.message?.content === "string" ? choice.message.content : "";
-          const normalized = text.trim();
-          const usage = parsed?.usage && typeof parsed.usage === "object" ? parsed.usage : {};
+          const validation = validateCompletionPayload(parsed);
+          const successfulResponse = response.status === 200;
           const completionResult = {
             ...base,
+            expectationMet: expectationWithSchema(base, validation.responseSchemaValid),
             paidCallIssued: true,
-            model: LIVE_MODEL,
-            contentNonEmpty: normalized.length > 0,
-            contentLength: text.length,
-            exactSyntheticReferenceMatch: normalized === "AUTHENTICATED_OK",
-            finishReason: typeof choice?.finish_reason === "string" ? choice.finish_reason : null,
-            promptTokens: safeNumber(usage.prompt_tokens),
-            completionTokens: safeNumber(usage.completion_tokens),
-            totalTokens: safeNumber(usage.total_tokens)
+            responseSchemaValid: successfulResponse
+              ? validation.responseSchemaValid
+              : null,
+            responseObjectIsChatCompletion: successfulResponse
+              ? validation.responseObjectIsChatCompletion
+              : null,
+            choicePresent: successfulResponse ? validation.choicePresent : null,
+            model: successfulResponse ? validation.model : null,
+            returnedModelMatches: successfulResponse
+              ? validation.returnedModelMatches
+              : null,
+            contentNonEmpty: successfulResponse ? validation.contentNonEmpty : null,
+            contentLength: successfulResponse ? validation.contentLength : null,
+            exactSyntheticReferenceMatch: successfulResponse
+              ? validation.exactSyntheticReferenceMatch
+              : null,
+            finishReason: successfulResponse ? validation.finishReason : null,
+            finishReasonIsStop: successfulResponse
+              ? validation.finishReasonIsStop
+              : null,
+            promptTokens: successfulResponse ? validation.promptTokens : null,
+            completionTokens: successfulResponse ? validation.completionTokens : null,
+            totalTokens: successfulResponse ? validation.totalTokens : null,
+            usageReconciles: successfulResponse ? validation.usageReconciles : null
           };
           parsed = null;
           return sanitizeForPublic(completionResult);
@@ -240,7 +404,8 @@ export function createLiveSession({
       path: ENDPOINTS.models,
       method: "GET",
       expected,
-      authorization
+      authorization,
+      parseMode: "models"
     });
   }
 
@@ -281,7 +446,8 @@ export function createLiveSession({
         await request({
           ...testCase,
           path: ENDPOINTS.models,
-          method: "GET"
+          method: "GET",
+          parseMode: "models"
         })
       );
     }
@@ -340,6 +506,7 @@ export function createLiveSession({
         ],
         max_tokens: 16,
         temperature: 0,
+        thinking: { type: "disabled" },
         stream: false
       },
       parseMode: "completion"
@@ -360,11 +527,11 @@ export function createLiveSession({
       suite: "rotation_overlap",
       requestsIssued: 2,
       genericRetries: 0,
-      oldKeyAuthorized: oldObservation.statusClass === "success",
-      newKeyAuthorized: newObservation.statusClass === "success",
+      oldKeyAuthorized: oldObservation.expectationMet,
+      newKeyAuthorized: newObservation.expectationMet,
       overlapContinuityVerified:
-        oldObservation.statusClass === "success" &&
-        newObservation.statusClass === "success",
+        oldObservation.expectationMet &&
+        newObservation.expectationMet,
       observations: [oldObservation, newObservation]
     });
   }
@@ -398,10 +565,13 @@ export function createLiveSession({
       });
       observations.push(observation);
 
-      if (observation.statusClass === "auth_rejected") {
+      if (observation.status === 401) {
         break;
       }
       if (observation.statusClass === "transport_error") {
+        break;
+      }
+      if (observation.status !== 200) {
         break;
       }
       if (poll < maxPolls && pollIntervalMs > 0) {
@@ -416,7 +586,7 @@ export function createLiveSession({
       pollsIssued: observations.length,
       maximumPolls: maxPolls,
       genericRetries: 0,
-      revokedObserved: observations.some((item) => item.statusClass === "auth_rejected"),
+      revokedObserved: observations.some((item) => item.status === 401),
       observations
     });
   }
@@ -447,9 +617,9 @@ export function createLiveSession({
       revocationPollsIssued: revoked.pollsIssued,
       activeKeyChecksIssued: 1,
       revokedKeyRejected: revoked.revokedObserved,
-      activeKeyAuthorized: active.statusClass === "success",
+      activeKeyAuthorized: active.expectationMet,
       rotationContinuityVerified:
-        revoked.revokedObserved && active.statusClass === "success",
+        revoked.revokedObserved && active.expectationMet,
       revoked,
       active
     });
@@ -488,6 +658,9 @@ export const liveSafetyContract = Object.freeze({
   genericRetries: 0,
   maximumPaidCompletionsPerProcess: 1,
   paidCompletionMaxTokens: 16,
+  paidCompletionThinking: "disabled",
+  authorizedStatus: 200,
+  authenticationRejectionStatus: 401,
   maximumRevocationPolls: MAX_REVOCATION_POLLS,
   maximumPollIntervalMs: MAX_POLL_INTERVAL_MS
 });

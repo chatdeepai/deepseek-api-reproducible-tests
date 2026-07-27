@@ -7,7 +7,7 @@ const PHASES = Object.freeze({
   COMPLETE: "complete"
 });
 
-const MAX_REVOCATION_POLLS = 3;
+const MAX_REVOCATION_POLLS = 6;
 
 function freezeState(state) {
   return Object.freeze({
@@ -83,7 +83,7 @@ export function transitionRotation(state, event) {
 
       revocationPolls += 1;
       evidence.lastRevokedKeyStatus = event.status;
-      evidence.revokedKeyRejected = event.status === 401 || event.status === 403;
+      evidence.revokedKeyRejected = event.status === 401;
       phase = evidence.revokedKeyRejected
         ? PHASES.REVOKED_VERIFIED
         : PHASES.REVOCATION_PENDING;

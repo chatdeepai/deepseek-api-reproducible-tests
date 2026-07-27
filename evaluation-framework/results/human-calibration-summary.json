@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "calibration_id": "synthetic-human-review-v1",
+  "sample_size": 12,
+  "observed_agreement": 0.5,
+  "expected_agreement": 0.333333,
+  "cohen_kappa": 0.25,
+  "reviewer_a_expert_agreement": 0.75,
+  "reviewer_b_expert_agreement": 0.583333,
+  "disagreement_count": 6,
+  "opposing_pass_fail_count": 2,
+  "human_review_queue_count": 7,
+  "small_sample": true,
+  "reviewer_identity_stored": false,
+  "review_text_stored": false
+}

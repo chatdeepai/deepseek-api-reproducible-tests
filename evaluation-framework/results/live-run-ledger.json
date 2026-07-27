@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "artifact_id": "deepseek-evaluation-live-run-ledger-v1",
+  "status": "complete",
+  "plan_digest_hex": "135c8d1b4682d88824d0cf4f9f9ad2e084480cdad08c9d9abd3155658033d1ed",
+  "provider_request_cap": 12,
+  "provider_requests_reserved": 12,
+  "provider_requests_attempted": 12,
+  "provider_requests_completed": 12,
+  "automatic_retries": 0,
+  "concurrency": 1,
+  "release_decision": "human_review_required",
+  "original_release_decision": "candidate_passes_example_gate",
+  "post_run_audit_status": "completed_with_evidence_gap"
+}

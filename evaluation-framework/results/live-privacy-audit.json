@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "artifact_id": "deepseek-evaluation-privacy-audit-v1",
+  "profile": "published_result",
+  "passed": true,
+  "artifact_count": 1,
+  "audited_node_count": 575,
+  "issue_count": 0,
+  "issue_code_counts": {},
+  "synthetic_fixture_inputs_public": true,
+  "raw_provider_requests_published": false,
+  "raw_provider_outputs_published": false,
+  "provider_reasoning_published": false,
+  "provider_identifiers_published": false,
+  "credentials_published": false,
+  "headers_published": false,
+  "account_data_published": false,
+  "raw_errors_published": false,
+  "local_paths_published": false
+}

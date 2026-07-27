@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "artifact_id": "deepseek-evaluation-live-plan-hash-v1",
+  "algorithm": "SHA-256",
+  "canonicalization": "recursive-key-sort-json-v1",
+  "plan_status": "not_run",
+  "planned_provider_requests": 12,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "digest_hex": "135c8d1b4682d88824d0cf4f9f9ad2e084480cdad08c9d9abd3155658033d1ed",
+  "provider_requests_made": 0
+}

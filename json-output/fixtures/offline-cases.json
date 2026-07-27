@@ -1,0 +1,101 @@
+{
+  "non_streaming": [
+    {
+      "id": "valid_core",
+      "schema": "core_ticket",
+      "content": "{\"ticket_id\":\"T-204\",\"issue\":\"account_access\",\"reset_attempts\":3,\"order_id\":null,\"urgent\":true}",
+      "expect": {
+        "content_present": true,
+        "parse_valid": true,
+        "schema_valid": true,
+        "reference_facts_valid": true
+      }
+    },
+    {
+      "id": "valid_json_wrong_schema",
+      "schema": "core_ticket",
+      "content": "{\"ticket_id\":\"T-204\",\"issue\":\"unknown\",\"reset_attempts\":\"three\",\"order_id\":null,\"urgent\":\"yes\",\"extra\":1}",
+      "expect": {
+        "content_present": true,
+        "parse_valid": true,
+        "schema_valid": false,
+        "reference_facts_valid": false
+      }
+    },
+    {
+      "id": "invalid_json",
+      "schema": "core_ticket",
+      "content": "{ticket_id:\"T-204\"}",
+      "expect": {
+        "content_present": true,
+        "parse_valid": false,
+        "schema_valid": false,
+        "reference_facts_valid": false
+      }
+    },
+    {
+      "id": "truncated_json",
+      "schema": "core_ticket",
+      "content": "{\"ticket_id\":\"T-204\",",
+      "expect": {
+        "content_present": true,
+        "parse_valid": false,
+        "schema_valid": false,
+        "reference_facts_valid": false
+      }
+    },
+    {
+      "id": "empty_content",
+      "schema": "core_ticket",
+      "content": "",
+      "expect": {
+        "content_present": false,
+        "parse_valid": false,
+        "schema_valid": false,
+        "reference_facts_valid": false
+      }
+    },
+    {
+      "id": "whitespace_only",
+      "schema": "core_ticket",
+      "content": "  \n\t  ",
+      "expect": {
+        "content_present": false,
+        "parse_valid": false,
+        "schema_valid": false,
+        "reference_facts_valid": false
+      }
+    },
+    {
+      "id": "valid_escaping",
+      "schema": "escaping_ticket",
+      "content": "{\"ticket_id\":\"T-205\",\"path\":\"C:\\\\Temp\\\\logs\",\"note\":\"First line.\\nSecond line with \\\"quoted text\\\".\"}",
+      "expect": {
+        "content_present": true,
+        "parse_valid": true,
+        "schema_valid": true,
+        "reference_facts_valid": true
+      }
+    },
+    {
+      "id": "valid_nullable",
+      "schema": "nullable_ticket",
+      "content": "{\"ticket_id\":\"T-207\",\"issue\":\"account_access\",\"reset_attempts\":null,\"order_id\":null,\"urgent\":false}",
+      "expect": {
+        "content_present": true,
+        "parse_valid": true,
+        "schema_valid": true,
+        "reference_facts_valid": true
+      }
+    }
+  ],
+  "sse_chunks": [
+    ": keep",
+    "-alive\n\n",
+    "data: {\"model\":\"deepseek-v4-pro\",\"choices\":[{\"delta\":{\"reasoning_content\":\"private reasoning\"},\"finish_reason\":null}],\"usage\":null}\n\n",
+    "data: {\"model\":\"deepseek-v4-pro\",\"choices\":[{\"delta\":{\"content\":\"{\\\"ticket_id\\\":\\\"T-204\\\",\"},\"finish_reason\":null}],\"usage\":null}\n\n: keep-alive\n",
+    "\ndata: {\"model\":\"deepseek-v4-pro\",\"choices\":[{\"delta\":{\"content\":\"\\\"issue\\\":\\\"account_access\\\",\\\"reset_attempts\\\":3,\\\"order_id\\\":null,\\\"urgent\\\":true}\"},\"finish_reason\":\"stop\"}],\"usage\":null}\n\n",
+    "data: {\"model\":\"deepseek-v4-pro\",\"choices\":[],\"usage\":{\"prompt_tokens\":40,\"completion_tokens\":25,\"total_tokens\":65,\"completion_tokens_details\":{\"reasoning_tokens\":4}}}\n\n",
+    "data: [DONE]\n\n"
+  ]
+}

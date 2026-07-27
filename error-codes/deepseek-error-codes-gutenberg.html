@@ -1,0 +1,377 @@
+<!-- wp:paragraph -->
+<p><strong>DeepSeek API error codes</strong> are easiest to fix when you separate the HTTP status from the response body and from any failure raised by your own client. DeepSeek officially documents seven API statuses: <strong>400, 401, 402, 422, 429, 500, and 503</strong>. Our bounded live test also received 404, 405, and 415 for a wrong route, wrong method, and wrong media type. Those three are real observations, but they are not additions to DeepSeek’s official seven-code quick reference.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide distinguishes every claim with one of three evidence labels: <strong>Officially documented</strong>, <strong>Observed July 27, 2026 UTC</strong>, or <strong>Locally simulated</strong>. That distinction matters. We did not drain an account to manufacture a 402, flood the service to force a 429, or attempt to cause a server failure. The live matrix used 18 sequential requests across 15 safe scenarios, no automatic retries, a temporary credential, synthetic input, and a tiny successful control.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek. Credentials, balances, private account data, provider request identifiers, and hidden reasoning were excluded from every public artifact and image.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">DeepSeek API error codes at a glance</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>HTTP status</th><th>Official meaning</th><th>First action</th><th>Automatic retry?</th><th>Evidence in this study</th></tr></thead><tbody><tr><td><strong>400</strong></td><td>Invalid Format</td><td>Correct the JSON, field types, model, or documented value range</td><td>No</td><td>Observed live</td></tr><tr><td><strong>401</strong></td><td>Authentication Fails</td><td>Replace or correctly load the API key</td><td>No</td><td>Observed live</td></tr><tr><td><strong>402</strong></td><td>Insufficient Balance</td><td>Check account funding and billing state</td><td>No</td><td>Not forced</td></tr><tr><td><strong>422</strong></td><td>Invalid Parameters</td><td>Validate parameter names, values, and combinations</td><td>No</td><td>Not observed in the bounded matrix</td></tr><tr><td><strong>429</strong></td><td>Rate Limit Reached</td><td>Reduce concurrency and queue work</td><td>Yes, bounded</td><td>Not forced</td></tr><tr><td><strong>500</strong></td><td>Server Error</td><td>Retry briefly; check service status if persistent</td><td>Yes, bounded</td><td>Not forced</td></tr><tr><td><strong>503</strong></td><td>Server Overloaded</td><td>Back off, shed load, and check service status</td><td>Yes, bounded</td><td>Not forced</td></tr></tbody></table><figcaption class="wp-element-caption"><strong>Officially documented:</strong> meanings follow DeepSeek’s current Error Codes page. Retry guidance is an application policy, not a promise that a retry will succeed.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>If you are setting up a client for the first time, confirm the endpoint and request structure in our <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a>, then verify secret handling with the <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a>. Fixing configuration before adding retries prevents a fast loop of identical failures.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How we tested the current API</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Observed July 27, 2026 UTC:</strong> the control request called <code>POST https://api.deepseek.com/chat/completions</code> with <code>deepseek-v4-flash</code>, thinking disabled, non-streaming output, and an eight-token maximum. It returned HTTP 200, the requested model, a <code>stop</code> finish reason, and the synthetic answer <code>OK.</code> That control established that the temporary credential, endpoint, model, and network path were working before malformed cases were sent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The 18 requests were sequential. Automatic retries were disabled so one row could not hide an earlier response. Four requests repeated the missing-body case; all four returned 400 with the same content type, body length, and body hash. We stored status, latency, content type, safe public fields, body size, and hashes of synthetic evidence. Public artifacts exclude authorization headers, the temporary key, balance data, account identifiers, provider request IDs, private prompts, and hidden reasoning.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7584,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/03/04-status-boundary.png" alt="DeepSeek 400 versus 422 boundary comparing official definitions with dated live API observations" class="wp-image-7584"/><figcaption class="wp-element-caption">Evidence boundary: provider documentation, dated API observations, and local fault injection answer different questions.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Safety limits and non-results</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>We did not reduce or expose account balance to force HTTP 402.</li><li>We did not exceed documented concurrency limits or generate a traffic burst to force HTTP 429.</li><li>We did not attempt to destabilize DeepSeek to cause HTTP 500 or 503.</li><li>We did not observe HTTP 422 in this bounded matrix, so this article does not claim that 422 is absent from the service.</li><li>We did not interpret a client timeout, DNS failure, or local serialization exception as a DeepSeek HTTP response.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The full provider definitions remain the authority: see DeepSeek’s <a href="https://api-docs.deepseek.com/quick_start/error_codes/">Error Codes</a>, <a href="https://api-docs.deepseek.com/quick_start/rate_limit/">Rate Limit &amp; Isolation</a>, and <a href="https://api-docs.deepseek.com/api/create-chat-completion/">Create Chat Completion</a> references.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Live result matrix: what the API actually returned</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Scenario</th><th>Status</th><th>Latency</th><th>Response shape</th></tr></thead><tbody><tr><td>Known-good control</td><td>200</td><td>1,050 ms</td><td>JSON completion</td></tr><tr><td>Authorization omitted</td><td>401</td><td>300 ms</td><td>No JSON error object detected</td></tr><tr><td>Synthetic invalid credential</td><td>401</td><td>298 ms</td><td>JSON error object</td></tr><tr><td>Truncated JSON</td><td>400</td><td>282 ms</td><td><code>application/octet-stream</code></td></tr><tr><td>Empty JSON object</td><td>400</td><td>342 ms</td><td>JSON error object</td></tr><tr><td><code>messages</code> sent as an object</td><td>400</td><td>264 ms</td><td>JSON error object</td></tr><tr><td>Unknown model ID</td><td>400</td><td>266 ms</td><td>Error metadata in non-JSON media type</td></tr><tr><td><code>temperature: 3</code></td><td>400</td><td>263 ms</td><td>Error metadata in non-JSON media type</td></tr><tr><td><code>user_id</code> length 513</td><td>400</td><td>284 ms</td><td>Error metadata in non-JSON media type</td></tr><tr><td>Unsupported <code>developer</code> role</td><td>400</td><td>265 ms</td><td>JSON error object</td></tr><tr><td>Singular <code>/chat/completion</code> path</td><td>404</td><td>266 ms</td><td>Empty body</td></tr><tr><td>GET on Chat Completions</td><td>405</td><td>274 ms</td><td>Empty body</td></tr><tr><td><code>Content-Type: text/plain</code></td><td>415</td><td>277 ms</td><td>Plain text</td></tr></tbody></table><figcaption class="wp-element-caption"><strong>Observed July 27, 2026 UTC:</strong> selected rows from the 18-request run. Latency is descriptive for this run, not a performance benchmark.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7582,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/03/02-live-matrix.png" alt="Live DeepSeek API test matrix with successful control and observed 400, 401, 404, 405, and 415 responses" class="wp-image-7582"/><figcaption class="wp-element-caption">The live matrix reproduced authentication, request-shape, route, method, and media-type failures without forcing billing, load, or server incidents.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>One compatibility result deserves caution. A synthetic <code>user_id</code> containing a space was accepted once with HTTP 200, even though the current Rate Limit &amp; Isolation documentation specifies a restricted character pattern and a maximum length of 512. A 513-character value returned 400. Treat the accepted space as a dated observation—not permission to ignore the documented contract. Clients should continue generating <code>user_id</code> values that match <code>[a-zA-Z0-9\-_]+</code> and stay within 512 characters.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">400 Invalid Format: fix the request before retrying</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> DeepSeek describes 400 as an invalid request-body format. <strong>Observed July 27, 2026 UTC:</strong> 400 covered more than broken JSON in our run. We received it for a missing body, an empty object, the wrong <code>messages</code> type, an unknown model, a temperature above the allowed range, an oversized <code>user_id</code>, and an unsupported message role.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The practical lesson is to debug the whole request contract, not only JSON syntax. Confirm the plural <code>/chat/completions</code> route, a POST method, <code>Content-Type: application/json</code>, a current model ID, a non-empty <code>messages</code> array, documented message roles, and valid numeric ranges. When using structured output, validate the extra constraints in our <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a>. When thinking is enabled, follow the field rules in the <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode tests</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>curl https://api.deepseek.com/chat/completions \
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek-v4-flash",
+    "messages": [{"role": "user", "content": "Reply with OK."}],
+    "thinking": {"type": "disabled"},
+    "max_tokens": 8
+  }'</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not automatically retry an unchanged 400. It usually produces the same rejection, adds noise, and can conceal a bad deployment. Log a sanitized request schema or a local validation result, correct the input, and submit a new request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">401 Authentication Fails: inspect key loading, not the model</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> 401 means authentication failed because the API key is incorrect. <strong>Observed July 27, 2026 UTC:</strong> omitting the Authorization header returned 401 without a detected JSON error object, while a clearly synthetic invalid bearer returned 401 with a JSON error object. That object used the string <code>invalid_request_error</code> in its <code>error.code</code> field.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The numeric HTTP status and the JSON <code>error.code</code> are different fields; do not route retry logic from the string alone. Check that the environment variable exists in the running process, the header begins with <code>Bearer </code>, whitespace has not been copied into the secret, and the key belongs to the intended environment. Rotate a credential if it may have been exposed. Never print the full header or key during diagnosis.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">402 Insufficient Balance: repair account state</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> DeepSeek assigns 402 to insufficient account balance. <strong>Observed July 27, 2026 UTC:</strong> not forced. Manufacturing this response would have required changing or depleting account funding, so it was outside the test boundary.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A 402 is not a transient model failure. Verify billing and account state through an authorized account view, confirm the key belongs to the expected account, and add funds or resolve the billing restriction. Do not log the balance in a public trace or screenshot. A queue may hold non-urgent jobs until an operator resolves the issue, but blindly retrying the same request will not create credit. For current input and output rates, use the site’s <a href="https://chat-deep.ai/pricing/">DeepSeek pricing reference</a> and verify figures against DeepSeek’s official pricing page.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">422 Invalid Parameters: documented, but not reproduced here</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> DeepSeek labels 422 as Invalid Parameters. <strong>Observed July 27, 2026 UTC:</strong> no live request in our bounded matrix returned 422. Invalid model, temperature, message shape, role, and oversized <code>user_id</code> examples returned 400 instead.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This does not prove DeepSeek never returns 422. Validation order, endpoints, model capabilities, and hosted service versions can change which layer rejects a request. Treat both 400 and 422 as non-retryable input failures unless you have corrected the request. Preserve the numeric status in telemetry so future observations can be compared without rewriting history.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">429 Rate Limit Reached: control concurrency</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> DeepSeek uses 429 when the account-level concurrency limit is exceeded. Its current Rate Limit &amp; Isolation page documents separate limits for Pro and Flash requests and describes a request keep-alive mechanism while work waits for inference capacity. <strong>Observed July 27, 2026 UTC:</strong> 429 was not forced; the test intentionally avoided bursts and high concurrency.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Respond by limiting concurrent in-flight requests, adding a queue, and applying bounded backoff. Do not assume a requests-per-minute formula when the current documentation describes account-level concurrency. If a response contains <code>Retry-After</code>, honor it within your safety cap; none of the responses observed in our bounded matrix contained that header. Our detailed <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API Rate Limits guide</a> covers queue sizing and isolation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">500 Server Error and 503 Server Overloaded</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Officially documented:</strong> 500 is a DeepSeek server error, while 503 means the server is overloaded. <strong>Observed July 27, 2026 UTC:</strong> neither status was forced. Triggering provider incidents is neither safe nor a reproducible application test.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Both are reasonable candidates for a small number of delayed retries. Use exponential backoff with jitter, cap total attempts and elapsed time, and stop if the caller cancels. If errors continue, check the official <a href="https://status.deepseek.com/">DeepSeek Status page</a> and degrade gracefully. For example, accept work into a durable queue, display a temporary-service message, or route only if you have an approved fallback. Do not convert an extended provider outage into an unbounded retry storm.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Observed 404, 405, and 415: useful HTTP clues outside the seven-code page</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Observed July 27, 2026 UTC:</strong> a POST to the singular path <code>/chat/completion</code> returned 404; GET on <code>/chat/completions</code> returned 405; and a JSON-looking body sent as <code>text/plain</code> returned 415. These statuses are standard transport and routing clues, but DeepSeek’s current Error Codes quick reference does not list them among its seven entries.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>404:</strong> verify the base URL and plural endpoint path.</li><li><strong>405:</strong> use the method required by the endpoint—POST for Chat Completions.</li><li><strong>415:</strong> send a JSON body with <code>Content-Type: application/json</code>.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>These are request corrections, not retry candidates. SDK users should also check whether a custom base URL appends an extra path segment. Compare setup patterns in the <a href="https://chat-deep.ai/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a>, the <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>, or the <a href="https://chat-deep.ai/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Do not assume every error body is JSON</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Observed July 27, 2026 UTC:</strong> response bodies varied. Some 400 and 401 cases produced a JSON <code>error</code> object; other failures used <code>application/octet-stream</code>, plain text, or an empty body. A client that calls <code>response.json()</code> unconditionally may replace the useful HTTP status with its own JSON-decoding exception.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7583,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/03/03-error-shapes.png" alt="Comparison of JSON error objects, non-JSON error bodies, and empty DeepSeek API error responses" class="wp-image-7583"/><figcaption class="wp-element-caption">Preserve the HTTP status first, then parse the body defensively according to content and size.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>def safe_error_metadata(response):
+    metadata = {
+        "http_status": response.status_code,
+        "content_type": response.headers.get("content-type"),
+        "body_bytes": len(response.content),
+    }
+    try:
+        payload = response.json()
+    except ValueError:
+        metadata["response_shape"] = "non_json_or_empty"
+        return metadata
+
+    error = payload.get("error") if isinstance(payload, dict) else None
+    if isinstance(error, dict):
+        metadata["error_type"] = error.get("type")
+        metadata["error_code"] = error.get("code")
+        # Sanitize provider messages before logging; they can contain key fragments.
+        metadata["has_message"] = bool(error.get("message"))
+    else:
+        metadata["response_shape"] = "json_without_error_object"
+    return metadata</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Cap how many body bytes you inspect, and avoid writing raw provider messages directly into public logs. In our invalid-credential response, the provider message included a masked key suffix. Masked is better than exposed, but credential-shaped fragments still do not belong in analytics, screenshots, or search-indexed debug pages.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">A production retry policy that does not duplicate every failure</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Locally simulated:</strong> our deterministic fault-injection lab classified 400, 401, 402, and 422 as stop-and-fix conditions. It classified 429, 500, 503, and a network timeout as retryable with a two-retry schedule of 500 ms and 1,000 ms. The lab sent no request to DeepSeek and did not sleep; it tested policy output only.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7585,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/03/05-retry-lab.png" alt="Local DeepSeek retry laboratory showing no retry for 400, 401, 402, and 422 and bounded backoff for 429, 500, and 503" class="wp-image-7585"/><figcaption class="wp-element-caption">Local fault injection verifies the decision logic without forcing provider errors or generating load.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import os
+import random
+import time
+import requests
+
+URL = "https://api.deepseek.com/chat/completions"
+RETRYABLE = {429, 500, 503}
+
+def retry_delay(response, attempt):
+    value = response.headers.get("Retry-After")
+    if value:
+        try:
+            return min(float(value), 30.0)
+        except ValueError:
+            pass
+    ceiling = min(0.5 * (2 ** attempt), 8.0)
+    return random.uniform(0, ceiling)
+
+def create_completion(payload, attempts=3):
+    headers = {
+        "Authorization": f"Bearer {os.environ['DEEPSEEK_API_KEY']}",
+        "Content-Type": "application/json",
+    }
+    for attempt in range(attempts):
+        try:
+            response = requests.post(URL, headers=headers, json=payload, timeout=(10, 90))
+        except (requests.Timeout, requests.ConnectionError) as exc:
+            # The provider outcome is unknown. Retry only when the caller has
+            # an application-level duplicate-work guard.
+            if attempt == attempts - 1:
+                raise RuntimeError(
+                    f"DeepSeek transport failed: {type(exc).__name__}"
+                ) from exc
+            ceiling = min(0.5 * (2 ** attempt), 8.0)
+            time.sleep(random.uniform(0, ceiling))
+            continue
+
+        if response.ok:
+            return response.json()
+
+        metadata = safe_error_metadata(response)
+        if response.status_code not in RETRYABLE or attempt == attempts - 1:
+            raise RuntimeError(f"DeepSeek request failed: {metadata}")
+
+        time.sleep(retry_delay(response, attempt))
+
+    raise RuntimeError("unreachable")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>A transport timeout is ambiguous: the provider may have received and completed work even though the client never received the response. Before retrying expensive or externally visible tasks, use your own operation ID, cache, or duplicate-work guard. Context reuse can also change cost behavior, so record cache metrics separately using our <a href="https://chat-deep.ai/docs/deepseek-context-caching/">DeepSeek Context Caching tests</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Safe logging: enough evidence to diagnose, not enough to leak</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A useful error event records time, environment, endpoint name, HTTP method, status, latency, retry attempt, model, response content type, body byte count, and a locally generated correlation ID. It can also record whether a structured error object existed and sanitized values for <code>error.type</code> and <code>error.code</code>. It should not store the Authorization header, full API key, account balance, complete prompts, raw hidden reasoning, or provider identifiers that your privacy policy does not permit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7586,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/03/06-safe-logging.png" alt="Safe DeepSeek API error logging checklist separating useful diagnostics from secrets and private content" class="wp-image-7586"/><figcaption class="wp-element-caption">Safe telemetry preserves status and request-shape evidence while excluding credentials, balances, private prompts, and hidden reasoning.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Build dashboards around the numeric status first. Split 400 and 422 by validation stage, 401 by deployment or secret version without revealing it, 429 by queue depth and in-flight concurrency, and 500/503 by provider incident window. Our <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek Observability guide</a> shows how to connect errors with latency, token usage, and service-level alerts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Reproduce the tests and inspect the evidence</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The redacted live summary, CSV results, methodology, local retry fixtures, and dependency-free Node.js harness are available in the public <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/error-codes">DeepSeek API Error Codes test repository</a>. Live execution is opt-in, sequential, currently plans 14 provider requests, refuses any plan above 18, and requires your own temporary key. The offline simulation needs no credential and sends no traffic to DeepSeek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Before rerunning the matrix, compare the harness with DeepSeek’s current <a href="https://api-docs.deepseek.com/quick_start/error_codes/">Error Codes</a>, <a href="https://api-docs.deepseek.com/api/create-chat-completion/">Chat Completions</a>, and <a href="https://api-docs.deepseek.com/quick_start/rate_limit/">Rate Limit &amp; Isolation</a> references. A future service version may classify the same invalid fixture differently, which is why each result records its UTC date and request shape.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">A five-minute diagnosis sequence</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li><strong>Capture the numeric HTTP status.</strong> Do this before parsing the body.</li><li><strong>Confirm a known-good control.</strong> Use a tiny synthetic prompt, a current model from the <a href="https://chat-deep.ai/models/">DeepSeek Models page</a>, and a small output cap.</li><li><strong>Classify ownership.</strong> Fix 400/401/402/422 in the request, credential, or account. Queue and retry 429/500/503 within bounds.</li><li><strong>Validate transport details.</strong> Check the exact route, POST method, JSON content type, timeout, proxy, and base URL.</li><li><strong>Compare documentation and dated evidence.</strong> Provider behavior can evolve. Preserve the date, endpoint, model, and request shape with each test.</li><li><strong>Escalate with sanitized facts.</strong> Include status, time window, safe correlation data, and reproducible request structure—never the key or private prompt.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Frequently asked questions</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why did DeepSeek return 400 when the documentation also lists 422?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In our July 27, 2026 UTC run, malformed JSON, invalid model and temperature values, wrong message shapes, an oversized <code>user_id</code>, and an unsupported role all returned 400. DeepSeek still officially documents 422 for invalid parameters. The bounded result does not establish a universal boundary; validation mapping can depend on the endpoint, request, and current service version.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I retry a DeepSeek 401 error?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. Correct the missing, invalid, expired, or incorrectly loaded credential first. Repeating the same Authorization header will normally repeat the failure and can create noisy security telemetry.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does DeepSeek always return a JSON error object?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. Our live tests received JSON error objects, non-JSON media types, plain text, and empty bodies. Preserve status and content type, then attempt JSON parsing defensively.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does every 429 include a Retry-After header?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Do not assume it does. We did not force a 429, and none of the observed responses in our bounded matrix included <code>Retry-After</code>. Production code should honor a valid header when present and use capped backoff when it is absent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Are 404, 405, and 415 official DeepSeek API error codes?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>They were real HTTP responses in our dated test, but they are not listed on DeepSeek’s seven-code Error Codes quick-reference page. We report them as observations for route, method, and content-type diagnosis.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can a timed-out request still consume tokens or complete?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes, that is possible because a client timeout only proves the client stopped waiting. It does not prove the provider never began work. Keep retries bounded and use an application-level duplicate-work guard for expensive or externally visible operations.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Final checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Treat HTTP status, JSON <code>error.code</code>, and local exceptions as separate signals.</li><li>Fix 400, 401, 402, and 422 before sending another request.</li><li>Queue and back off for 429; use only bounded retries for 500 and 503.</li><li>Handle JSON, non-JSON, and empty error bodies.</li><li>Follow documented parameter rules even when one dated compatibility probe is permissive.</li><li>Never publish API keys, authorization headers, balances, private prompts, or hidden reasoning.</li><li>Check DeepSeek’s official documentation and change log before treating a dated result as permanent behavior.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The durable pattern is simple: preserve the numeric status, validate the request contract, retry only transient classes, and keep evidence labels honest. This turns “the DeepSeek API failed” into a specific, testable diagnosis without creating load, leaking account data, or overstating what a single benchmark observed.</p>
+<!-- /wp:paragraph -->

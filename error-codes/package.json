@@ -1,0 +1,18 @@
+{
+  "name": "deepseek-api-error-codes-live-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded DeepSeek API error-code harness with separate live provider observations and offline retry-policy simulations.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check run-error-codes.mjs",
+    "validate": "node run-error-codes.mjs --validate-plan",
+    "test": "npm run check && npm run validate",
+    "plan": "node run-error-codes.mjs --plan",
+    "simulate": "node run-error-codes.mjs --simulate",
+    "live": "node run-error-codes.mjs --execute"
+  }
+}

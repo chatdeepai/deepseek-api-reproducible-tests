@@ -1,0 +1,360 @@
+{
+  "study": "DeepSeek API error-code behavior",
+  "tested_at_utc": {
+    "first_request": "2026-07-27T07:50:34.922Z",
+    "last_request": "2026-07-27T07:52:31.539Z"
+  },
+  "endpoint_origin": "https://api.deepseek.com",
+  "control_model": "deepseek-v4-flash",
+  "control_settings": {
+    "thinking": "disabled",
+    "max_tokens": 8,
+    "stream": false
+  },
+  "request_count": 18,
+  "distinct_scenarios": 15,
+  "safety_limits": {
+    "requests_were_sequential": true,
+    "automatic_retries": false,
+    "deliberately_forced_402": false,
+    "deliberately_forced_429": false,
+    "deliberately_forced_500_or_503": false,
+    "credentials_or_balance_persisted": false
+  },
+  "official_statuses": [
+    {
+      "http_status": 400,
+      "official_label": "Invalid Format",
+      "live_result": "observed"
+    },
+    {
+      "http_status": 401,
+      "official_label": "Authentication Fails",
+      "live_result": "observed"
+    },
+    {
+      "http_status": 402,
+      "official_label": "Insufficient Balance",
+      "live_result": "not forced"
+    },
+    {
+      "http_status": 422,
+      "official_label": "Invalid Parameters",
+      "live_result": "not observed in the bounded matrix"
+    },
+    {
+      "http_status": 429,
+      "official_label": "Rate Limit Reached",
+      "live_result": "not forced"
+    },
+    {
+      "http_status": 500,
+      "official_label": "Server Error",
+      "live_result": "not forced"
+    },
+    {
+      "http_status": 503,
+      "official_label": "Server Overloaded",
+      "live_result": "not forced"
+    }
+  ],
+  "observations": [
+    {
+      "test_id": "known_good_control",
+      "tested_at": "2026-07-27T07:50:34.922Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "valid JSON; current Flash model; thinking disabled; max_tokens 8",
+      "http_status": 200,
+      "latency_ms": 1050,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "returned_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "sanitized_result": "OK.",
+      "body_bytes": 467,
+      "body_sha256": "e36e62e6af13f9275eff0cefebf4476135ade55799c904603fa57f69e997a804"
+    },
+    {
+      "test_id": "missing_authorization",
+      "tested_at": "2026-07-27T07:50:51.379Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "missing",
+      "request_shape": "valid control body; Authorization omitted",
+      "http_status": 401,
+      "latency_ms": 300,
+      "response_content_type": null,
+      "retry_after_present": false,
+      "json_error_object_present": false,
+      "body_bytes": 31,
+      "body_sha256": "271d3544c88440f71780463437fb3aedf4cbd7493dd1216e14690a77d576a819"
+    },
+    {
+      "test_id": "invalid_authorization",
+      "tested_at": "2026-07-27T07:50:51.677Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "obviously-synthetic-invalid-key",
+      "request_shape": "valid control body; synthetic invalid bearer",
+      "http_status": 401,
+      "latency_ms": 298,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "error": {
+        "type": "authentication_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Authentication Fails, Your api key: ****0000 is invalid"
+      },
+      "body_bytes": 153,
+      "body_sha256": "a02c08c4ba715602463f8c69256be0c6ee35ababa187834cb55e410cd5d4449d"
+    },
+    {
+      "test_id": "malformed_json",
+      "tested_at": "2026-07-27T07:50:51.960Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "truncated raw JSON",
+      "http_status": 400,
+      "latency_ms": 282,
+      "response_content_type": "application/octet-stream",
+      "retry_after_present": false,
+      "json_error_object_present": false,
+      "body_bytes": 93,
+      "body_sha256": "6ed1ae3fa182c279d71cb7c0ddfa470de9aa06bb73baa4fdfcbacb30f65add7d"
+    },
+    {
+      "test_id": "empty_object",
+      "tested_at": "2026-07-27T07:50:52.302Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "JSON object with no fields",
+      "http_status": 400,
+      "latency_ms": 342,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Failed to deserialize the JSON body into the target type: missing field `messages` at line 1 column 2"
+      },
+      "body_bytes": 200,
+      "body_sha256": "118db8a2420fa3d9b3764583cc86ab2c82a51e43aed044f1c30ca1433d7a913c"
+    },
+    {
+      "test_id": "messages_object_not_array",
+      "tested_at": "2026-07-27T07:50:52.566Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "messages sent as an object instead of an array",
+      "http_status": 400,
+      "latency_ms": 264,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Failed to deserialize the JSON body into the target type: messages: invalid type: map, expected a sequence at line 1 column 40"
+      },
+      "body_bytes": 225,
+      "body_sha256": "70a35da391e145b7c8ccd78301b0d98a2dd23600cdf31fd8ffc871d83305ced1"
+    },
+    {
+      "test_id": "invalid_model_id",
+      "tested_at": "2026-07-27T07:50:52.832Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "synthetic nonexistent model ID",
+      "http_status": 400,
+      "latency_ms": 266,
+      "response_content_type": "application/octet-stream",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "The supported API model names are deepseek-v4-pro or deepseek-v4-flash, but you passed deepseek-model-does-not-exist."
+      },
+      "body_bytes": 216,
+      "body_sha256": "a80bd6585f5c637973f79dae15088397be8f8ef6c096ad7ce1565381be18a15b"
+    },
+    {
+      "test_id": "temperature_above_max",
+      "tested_at": "2026-07-27T07:50:53.095Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "temperature 3; documented maximum 2",
+      "http_status": 400,
+      "latency_ms": 263,
+      "response_content_type": "application/octet-stream",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Invalid temperature value, the valid range of temperature is [0, 2]"
+      },
+      "body_bytes": 166,
+      "body_sha256": "1c35ff8b0f57057540eb3ad6ea5ca8d11187541ead1b7de27a48011222e5e9cc"
+    },
+    {
+      "test_id": "invalid_user_id_characters",
+      "tested_at": "2026-07-27T07:50:53.793Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "synthetic user_id containing a space",
+      "http_status": 200,
+      "latency_ms": 697,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "returned_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "sanitized_result": "OK.",
+      "interpretation": "A dated compatibility observation, not permission to ignore the documented regex.",
+      "body_bytes": 467,
+      "body_sha256": "eb007cbaab9277dccea5f936d868478a6ac61f169498916d52af674a7db6f9c6"
+    },
+    {
+      "test_id": "user_id_too_long",
+      "tested_at": "2026-07-27T07:50:54.077Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "synthetic user_id of 513 characters; documented maximum 512",
+      "http_status": 400,
+      "latency_ms": 284,
+      "response_content_type": "application/octet-stream",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Invalid 'user_id': string too long. Expected a string with maximum length 512, but got a string with length 513 instead"
+      },
+      "body_bytes": 218,
+      "body_sha256": "57e3a2cc7deb2750784cfac87650266e512c654f96bafb93662551d22e2ef5eb"
+    },
+    {
+      "test_id": "unsupported_developer_role",
+      "tested_at": "2026-07-27T07:50:54.342Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "developer message role; official reference lists system, user, assistant and tool",
+      "http_status": 400,
+      "latency_ms": 265,
+      "response_content_type": "application/json",
+      "retry_after_present": false,
+      "error": {
+        "type": "invalid_request_error",
+        "code": "invalid_request_error",
+        "param": null,
+        "message": "Failed to deserialize the JSON body into the target type: unsupported role `developer`; use an officially documented role"
+      },
+      "body_bytes": 296,
+      "body_sha256": "d0f42c17eafa57cc5694bfacb37ccdd835f3c79973f6a27ac5e10d97f604a658"
+    },
+    {
+      "test_id": "wrong_path",
+      "tested_at": "2026-07-27T07:50:54.608Z",
+      "method": "POST",
+      "path": "/chat/completion",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "valid control body sent to singular route",
+      "http_status": 404,
+      "latency_ms": 266,
+      "response_content_type": null,
+      "retry_after_present": false,
+      "body_bytes": 0,
+      "body_sha256": null,
+      "interpretation": "Observed router response; not one of the seven statuses on DeepSeek's error-code page."
+    },
+    {
+      "test_id": "wrong_method",
+      "tested_at": "2026-07-27T07:50:54.882Z",
+      "method": "GET",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "GET used on a POST endpoint",
+      "http_status": 405,
+      "latency_ms": 274,
+      "response_content_type": null,
+      "retry_after_present": false,
+      "body_bytes": 0,
+      "body_sha256": null,
+      "interpretation": "Observed router response; not one of the seven statuses on DeepSeek's error-code page."
+    },
+    {
+      "test_id": "wrong_content_type",
+      "tested_at": "2026-07-27T07:50:55.160Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "JSON text sent with Content-Type text/plain",
+      "http_status": 415,
+      "latency_ms": 277,
+      "response_content_type": "text/plain; charset=utf-8",
+      "retry_after_present": false,
+      "body_bytes": 54,
+      "body_sha256": "c5231a4ceee2e9de4247ee2832a1a4df1dba7e59e95c8f9a22bbde143f2da98e",
+      "interpretation": "Observed media-type response; not one of the seven statuses on DeepSeek's error-code page."
+    },
+    {
+      "test_id": "missing_request_body_confirmation",
+      "tested_at": [
+        "2026-07-27T07:52:30.695Z",
+        "2026-07-27T07:52:30.996Z",
+        "2026-07-27T07:52:31.267Z",
+        "2026-07-27T07:52:31.539Z"
+      ],
+      "method": "POST",
+      "path": "/chat/completions",
+      "auth_mode": "live-temporary-key",
+      "request_shape": "no request body",
+      "repeat_count": 4,
+      "http_statuses": [
+        400,
+        400,
+        400,
+        400
+      ],
+      "latency_ms": [
+        334,
+        301,
+        271,
+        272
+      ],
+      "response_content_type": "application/octet-stream",
+      "retry_after_present": false,
+      "body_bytes": 86,
+      "identical_body_sha256": "40f974c6451f70f8f51610adf2a547f1d1c5e915670d442ff14e7b7d8a3e97de"
+    }
+  ],
+  "key_findings": [
+    "The bounded run observed 400 and 401 among DeepSeek's seven documented statuses.",
+    "The server also returned 404, 405 and 415 for route, method and media-type failures; these are real HTTP results but are not listed on DeepSeek's seven-code quick-reference page.",
+    "Invalid model, temperature, message shape and oversized user_id examples returned 400, not 422, in this run.",
+    "No live response in this bounded matrix returned 422, so the article does not claim a universal 400-versus-422 boundary.",
+    "A user_id containing a space was accepted once even though the current documentation requires a restricted regex. Production clients should continue to follow the documented contract.",
+    "The 401 JSON error.code string was invalid_request_error, demonstrating that the JSON field is not the same thing as the numeric HTTP status.",
+    "No observed response included Retry-After. Production code should honor the header when present, but must not assume DeepSeek always sends it."
+  ],
+  "redaction": {
+    "api_key": "never persisted",
+    "authorization_headers": "never persisted",
+    "account_identifiers": "never persisted",
+    "balance": "never persisted",
+    "request_ids": "not published",
+    "prompts": "synthetic only"
+  }
+}

@@ -1,0 +1,10 @@
+.env
+.venv/
+.python-deps/
+__pycache__/
+*.pyc
+results/*.json
+!results/.gitkeep
+!results/live-summary.json
+!results/live-case-summary.csv
+!results/postrun-audit-summary.json

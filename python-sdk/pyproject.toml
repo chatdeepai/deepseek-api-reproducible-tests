@@ -1,0 +1,16 @@
+[project]
+name = "deepseek-python-sdk-reproducibility-harness"
+version = "1.0.0"
+description = "A bounded Python-specific production-behavior harness for the OpenAI Python SDK with DeepSeek Chat Completions."
+requires-python = ">=3.10"
+dependencies = [
+  "openai==2.48.0",
+]
+
+[tool.harness]
+provider_request_cap = 14
+planned_provider_requests = 14
+concurrency = 1
+automatic_retries = 0
+default_timeout_seconds = 30
+

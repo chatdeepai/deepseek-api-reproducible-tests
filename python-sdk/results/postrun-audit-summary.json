@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "source_plan_cases": 14,
+  "result_cases": 14,
+  "requests_issued": 14,
+  "requests_skipped": 0,
+  "provider_request_cap": 14,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "http_status_counts": {
+    "200": 12,
+    "400": 2
+  },
+  "csv_columns": 17,
+  "csv_rows": 14,
+  "scan": {
+    "text_files_scanned": 26,
+    "secret_findings": 0,
+    "arabic_characters": 0,
+    "mojibake_matches": 0
+  }
+}

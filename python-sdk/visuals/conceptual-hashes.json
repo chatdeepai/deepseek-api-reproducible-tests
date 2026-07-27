@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.1.0",
+  "evidence_status": "mixed_conceptual_and_sanitized_live_results",
+  "test_date_utc": "2026-07-27",
+  "source_summaries": [
+    {
+      "file": "live-summary.json",
+      "sha256": "cd18264fea6e7a67b69865861b92930ffd30a32d915a6978383d6d6c8e5efe98"
+    },
+    {
+      "file": "postrun-audit-summary.json",
+      "sha256": "7e469bb877640f0580eccdb84f17a2bd5773042e10618f2bd8d108e05c87f597"
+    }
+  ],
+  "images": [
+    {
+      "file": "01-python-sdk-production-architecture.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "2359edff12e84a41472fde37709eebe6a42de9e93120ea9dd48d5b2441f0c2a4"
+    },
+    {
+      "file": "02-python-sync-vs-async-client-choice.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "e2839f4df5107a33db652a6c9ff840d61e2677bd70761e170842968b0c9ea1de"
+    },
+    {
+      "file": "03-python-configuration-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "06f5f0fc171d6fc6381ccac6427296d328e462fc515c8ab6549c7e7615412fec"
+    },
+    {
+      "file": "04-python-streaming-state-machine.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "1060b8ba63a8f61c517f7d36912c9ea06286f98c6f37584ae6f84e24362940dd"
+    },
+    {
+      "file": "05-python-thinking-extra-body-serialization.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "7345e6087fee01690f29438ddc39844fb8c15f401d09762f6dabaca5553c94be"
+    },
+    {
+      "file": "06-python-json-tool-validation-pipeline.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "6d18e6ec853ea4441b9400a62586382fcc7e3e118b8d1678c5685eee39cf279d"
+    },
+    {
+      "file": "07-python-typed-error-retry-tree.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "c5642363bc28bdef7bd9db5e81a805336df16af6eba7c72c61b486e173ece1ab"
+    },
+    {
+      "file": "08-python-sdk-methodology-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_live_summary_and_postrun_audit",
+      "sha256": "05cfb947ecf20b2dc6145588cdd456958c23756265628fcd902e27df324682e3"
+    }
+  ]
+}

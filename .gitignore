@@ -35,6 +35,12 @@ openai-sdk-to-deepseek/results/*
 !openai-sdk-to-deepseek/results/combined-live-findings.json
 !openai-sdk-to-deepseek/results/live-case-summary.csv
 !openai-sdk-to-deepseek/results/postrun-audit-summary.json
+!python-sdk/results/
+python-sdk/results/*
+!python-sdk/results/.gitkeep
+!python-sdk/results/live-summary.json
+!python-sdk/results/live-case-summary.csv
+!python-sdk/results/postrun-audit-summary.json
 screenshots/
 private/
 secrets/

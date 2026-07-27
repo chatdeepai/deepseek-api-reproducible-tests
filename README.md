@@ -61,6 +61,13 @@ This public evidence repository contains bounded, reproducible live tests used b
   - automatic retries disabled, concurrency one, and eight deterministic offline contract checks;
   - sanitized JSON and CSV summaries with no prompts, outputs, reasoning, request IDs, tool-call IDs, credentials, balances, or account data;
   - eight editable English-only evidence visuals and a publication-ready Gutenberg source.
+- [DeepSeek Python SDK](./python-sdk/)
+  - 14 bounded serial requests through OpenAI Python 2.48.0, split between six synchronous and eight asynchronous cases;
+  - standard and streamed Chat Completions with explicit thinking disabled and enabled;
+  - JSON Output, one validated asynchronous tool round trip, and sync/async typed invalid-model errors;
+  - deterministic localhost timeout and retry controls with no provider traffic;
+  - sanitized JSON and CSV summaries with no prompts, outputs, reasoning, request IDs, tool-call IDs, credentials, balances, or account data;
+  - English-only reproducibility documentation and editable evidence visuals.
 
 ## Evidence policy
 

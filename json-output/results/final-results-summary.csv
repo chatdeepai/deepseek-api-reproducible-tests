@@ -1,0 +1,23 @@
+row_type,segment,test_id,group,http_status,finish_reason,content_present,parse_valid,schema_valid,reference_facts_valid,stream,reasoning_present,bounded_control_response_accepted,stop_required,notes
+models_inventory,1,models_inventory,inventory,200,,,,,false,false,false,false,"One inventory request; returned deepseek-v4-flash and deepseek-v4-pro"
+completion,1,A1,core_matrix,200,stop,true,true,true,true,false,false,false,false,
+completion,1,A2,core_matrix,200,stop,true,true,true,true,false,false,false,false,
+completion,1,A3,core_matrix,200,stop,true,true,true,true,false,true,false,false,
+completion,1,A4,core_matrix,200,stop,true,true,true,true,false,true,false,false,
+completion,1,A5,core_matrix,200,stop,true,true,true,true,false,false,false,false,
+completion,1,A6,core_matrix,200,stop,true,true,true,true,false,false,false,false,
+completion,1,A7,core_matrix,200,stop,true,true,true,true,false,true,false,false,
+completion,1,A8,core_matrix,200,stop,true,true,true,true,false,true,false,false,
+completion,1,B1,prompt_ablation,200,stop,true,true,true,false,false,false,false,false,"Valid schema; reference facts differed"
+completion,1,B2,prompt_ablation,400,,false,false,false,false,false,false,true,false,"Expected bounded control response"
+completion,2,B3,prompt_ablation,400,,false,false,false,false,false,false,true,false,"Expected bounded control response"
+completion,3,C1,edge_cases,200,length,true,false,false,false,false,false,false,false,"Truncated output"
+completion,3,C2,edge_cases,200,stop,true,true,true,true,false,false,false,false,
+completion,3,C3,edge_cases,200,stop,true,true,true,true,false,false,false,false,
+completion,3,C4,edge_cases,200,stop,true,true,true,true,false,false,false,false,
+completion,3,C5,edge_cases,200,stop,true,true,true,true,false,false,false,false,
+completion,3,D1,streaming,200,stop,true,true,true,true,true,false,false,false,"34 data events; 0 invalid; 1 usage; DONE seen"
+completion,3,D2,streaming,200,stop,true,true,true,true,true,true,false,false,"214 data events; 0 invalid; 1 usage; DONE seen"
+completion,3,E1,prompt_only_control,200,stop,true,true,true,true,false,false,false,false,
+completion,3,E2,prompt_only_control,200,stop,true,true,true,true,false,false,false,false,
+aggregate,,all,all,,"",18,17,17,16,2,5,2,0,"20 completions: 18 HTTP 200 and 2 expected HTTP 400"

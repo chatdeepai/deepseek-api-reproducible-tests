@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_type": "independent_final_audit_summary",
+  "source_file": "latest-json-output-live.json",
+  "source_run_id": "3368672f40d0",
+  "source_started_at_utc": "2026-07-27T09:44:48.338Z",
+  "source_completed_at_utc": "2026-07-27T09:48:42.812Z",
+  "verdict": "pass_with_expected_control_observations",
+  "execution": {
+    "execution_segments": 3,
+    "inventory_provider_calls": 1,
+    "completion_provider_calls": 20,
+    "total_provider_calls": 21,
+    "unique_completion_test_ids": 20,
+    "duplicate_completion_test_ids": [],
+    "completion_order": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A7",
+      "A8",
+      "B1",
+      "B2",
+      "B3",
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "D1",
+      "D2",
+      "E1",
+      "E2"
+    ],
+    "observed_peak_live_concurrency": 1,
+    "automatic_live_retries": 0,
+    "sequential_execution_verified": true,
+    "segments": [
+      {
+        "segment": 1,
+        "run_id": "dbb1de718c32",
+        "new_inventory_calls": 1,
+        "new_completion_ids": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8",
+          "B1",
+          "B2"
+        ],
+        "ended_at_expected_control": "B2"
+      },
+      {
+        "segment": 2,
+        "run_id": "7ee01a44bd85",
+        "resume_source_run_id": "dbb1de718c32",
+        "new_inventory_calls": 0,
+        "new_completion_ids": [
+          "B3"
+        ],
+        "ended_at_expected_control": "B3"
+      },
+      {
+        "segment": 3,
+        "run_id": "3368672f40d0",
+        "resume_source_run_id": "7ee01a44bd85",
+        "new_inventory_calls": 0,
+        "new_completion_ids": [
+          "C1",
+          "C2",
+          "C3",
+          "C4",
+          "C5",
+          "D1",
+          "D2",
+          "E1",
+          "E2"
+        ],
+        "ended_at_expected_control": null
+      }
+    ]
+  },
+  "inventory": {
+    "http_status": 200,
+    "returned_public_model_ids": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro"
+    ],
+    "stop_required": false
+  },
+  "completion_totals": {
+    "observations": 20,
+    "http_200": 18,
+    "http_400": 2,
+    "content_present": 18,
+    "parse_valid": 17,
+    "schema_valid": 17,
+    "reference_facts_valid": 16,
+    "finish_reason_stop": 17,
+    "finish_reason_length": 1,
+    "finish_reason_null": 2,
+    "reasoning_present": 5,
+    "streaming_observations": 2,
+    "bounded_control_responses_accepted": 2,
+    "final_stop_required": 0
+  },
+  "group_totals": [
+    {
+      "group": "core_matrix",
+      "observations": 8,
+      "http_200": 8,
+      "http_400": 0,
+      "parse_valid": 8,
+      "schema_valid": 8,
+      "reference_facts_valid": 8
+    },
+    {
+      "group": "prompt_ablation",
+      "observations": 3,
+      "http_200": 1,
+      "http_400": 2,
+      "parse_valid": 1,
+      "schema_valid": 1,
+      "reference_facts_valid": 0
+    },
+    {
+      "group": "edge_cases",
+      "observations": 5,
+      "http_200": 5,
+      "http_400": 0,
+      "parse_valid": 4,
+      "schema_valid": 4,
+      "reference_facts_valid": 4
+    },
+    {
+      "group": "streaming",
+      "observations": 2,
+      "http_200": 2,
+      "http_400": 0,
+      "parse_valid": 2,
+      "schema_valid": 2,
+      "reference_facts_valid": 2
+    },
+    {
+      "group": "prompt_only_control",
+      "observations": 2,
+      "http_200": 2,
+      "http_400": 0,
+      "parse_valid": 2,
+      "schema_valid": 2,
+      "reference_facts_valid": 2
+    }
+  ],
+  "expected_control_observations": [
+    {
+      "test_id": "B2",
+      "http_status": 400,
+      "bounded_control_response_accepted": true,
+      "stop_required": false
+    },
+    {
+      "test_id": "B3",
+      "http_status": 400,
+      "bounded_control_response_accepted": true,
+      "stop_required": false
+    }
+  ],
+  "notable_observations": [
+    {
+      "test_id": "B1",
+      "http_status": 200,
+      "parse_valid": true,
+      "schema_valid": true,
+      "reference_facts_valid": false
+    },
+    {
+      "test_id": "C1",
+      "http_status": 200,
+      "finish_reason": "length",
+      "content_present": true,
+      "parse_valid": false,
+      "schema_valid": false,
+      "reference_facts_valid": false
+    }
+  ],
+  "streaming": [
+    {
+      "test_id": "D1",
+      "http_status": 200,
+      "sse_data_event_count": 34,
+      "sse_invalid_data_event_count": 0,
+      "sse_usage_event_count": 1,
+      "sse_done_seen": true,
+      "sse_trailing_buffer_empty": true,
+      "parse_valid": true,
+      "schema_valid": true,
+      "reference_facts_valid": true,
+      "reasoning_present": false,
+      "reasoning_length": 0
+    },
+    {
+      "test_id": "D2",
+      "http_status": 200,
+      "sse_data_event_count": 214,
+      "sse_invalid_data_event_count": 0,
+      "sse_usage_event_count": 1,
+      "sse_done_seen": true,
+      "sse_trailing_buffer_empty": true,
+      "parse_valid": true,
+      "schema_valid": true,
+      "reference_facts_valid": true,
+      "reasoning_present": true,
+      "reasoning_length": 666
+    }
+  ],
+  "security_and_privacy": {
+    "api_key_present": false,
+    "authorization_header_present": false,
+    "balance_present": false,
+    "raw_prompt_present": false,
+    "raw_content_present": false,
+    "raw_reasoning_present": false,
+    "provider_request_or_completion_id_present": false,
+    "system_fingerprint_present": false,
+    "reasoning_retained_as_length_and_sha256_only": true,
+    "response_bodies_retained_as_length_and_sha256_only": true
+  },
+  "audit_limitation": "Raw completion text is intentionally not persisted. The audit independently verifies request accounting, source control flow, redaction, and logical consistency of recorded parse/schema/reference fields, but cannot re-run JSON.parse against omitted provider text."
+}

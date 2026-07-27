@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek cache hit rate by measured prompt length</title>
+  <desc id="desc">A live test matrix showing zero cache hits at 92 and 132 prompt tokens and increasing hit rates from 212 to 5172 prompt tokens.</desc>
+  <rect width="1600" height="900" fill="#f8fafc"/>
+  <text x="96" y="100" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="49" font-weight="800" fill="#0f172a">Observed prefix-length matrix</text>
+  <text x="96" y="151" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#475569">Warm request with a changed short suffix · live DeepSeek API · July 27, 2026 UTC</text>
+  <line x1="164" y1="695" x2="1500" y2="695" stroke="#94a3b8" stroke-width="2"/>
+  <line x1="164" y1="220" x2="164" y2="695" stroke="#94a3b8" stroke-width="2"/>
+  <g font-family="Inter,Segoe UI,Arial,sans-serif" font-size="19" fill="#475569">
+    <text x="104" y="701">0%</text>
+    <text x="92" y="586">25%</text>
+    <text x="92" y="468">50%</text>
+    <text x="92" y="349">75%</text>
+    <text x="80" y="231">100%</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-dasharray="6 8">
+    <line x1="164" y1="576" x2="1500" y2="576"/>
+    <line x1="164" y1="458" x2="1500" y2="458"/>
+    <line x1="164" y1="339" x2="1500" y2="339"/>
+    <line x1="164" y1="220" x2="1500" y2="220"/>
+  </g>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <rect x="220" y="695" width="110" height="0" fill="#fb7185"/><text x="242" y="665" font-size="22" font-weight="800" fill="#be123c">0%</text><text x="236" y="738" font-size="20" fill="#334155">92</text>
+    <rect x="380" y="695" width="110" height="0" fill="#fb7185"/><text x="402" y="665" font-size="22" font-weight="800" fill="#be123c">0%</text><text x="392" y="738" font-size="20" fill="#334155">132</text>
+    <rect x="540" y="408" width="110" height="287" rx="12" fill="#38bdf8"/><text x="553" y="386" font-size="22" font-weight="800" fill="#0369a1">60.38%</text><text x="554" y="738" font-size="20" fill="#334155">212</text>
+    <rect x="700" y="368" width="110" height="327" rx="12" fill="#22d3ee"/><text x="713" y="346" font-size="22" font-weight="800" fill="#0e7490">68.82%</text><text x="714" y="738" font-size="20" fill="#334155">372</text>
+    <rect x="860" y="256" width="110" height="439" rx="12" fill="#2dd4bf"/><text x="873" y="236" font-size="22" font-weight="800" fill="#0f766e">92.49%</text><text x="874" y="738" font-size="20" fill="#334155">692</text>
+    <rect x="1020" y="239" width="110" height="456" rx="12" fill="#34d399"/><text x="1032" y="219" font-size="22" font-weight="800" fill="#047857">96.10%</text><text x="1023" y="738" font-size="20" fill="#334155">1,332</text>
+    <rect x="1180" y="229" width="110" height="466" rx="12" fill="#22c55e"/><text x="1192" y="209" font-size="22" font-weight="800" fill="#15803d">98.01%</text><text x="1183" y="738" font-size="20" fill="#334155">2,612</text>
+    <rect x="1340" y="225" width="110" height="470" rx="12" fill="#16a34a"/><text x="1352" y="205" font-size="22" font-weight="800" fill="#166534">98.99%</text><text x="1343" y="738" font-size="20" fill="#334155">5,172</text>
+  </g>
+  <text x="594" y="790" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23" font-weight="700" fill="#334155">Prompt tokens in the warm request</text>
+  <rect x="96" y="820" width="1404" height="48" rx="14" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="120" y="852" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21" fill="#9a3412">Observed non-zero hits were multiples of 128. This does not establish an official V4 minimum or storage-unit size.</text>
+</svg>

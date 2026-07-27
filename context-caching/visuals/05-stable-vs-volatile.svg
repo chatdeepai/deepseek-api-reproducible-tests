@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Stable versus volatile DeepSeek prompt prefix test</title>
+  <desc id="desc">A comparison showing 99.79 percent aggregate cache hit rate for four warm stable-prefix calls and zero percent for five calls whose first line changed.</desc>
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <text x="92" y="102" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="49" font-weight="800" fill="#0f172a">Prompt layout changed the result</text>
+  <text x="92" y="151" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#475569">Live DeepSeek V4 Flash test · similar prompt size · different first-line stability</text>
+
+  <g>
+    <rect x="92" y="216" width="680" height="492" rx="30" fill="#ecfdf5" stroke="#34d399" stroke-width="3"/>
+    <text x="138" y="277" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="29" font-weight="800" fill="#065f46">STABLE PREFIX FIRST</text>
+    <text x="138" y="348" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="82" font-weight="900" fill="#047857">99.79%</text>
+    <text x="138" y="391" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" fill="#047857">aggregate hit rate across four warm calls</text>
+    <rect x="138" y="441" width="588" height="46" rx="23" fill="#d1fae5"/>
+    <rect x="138" y="441" width="587" height="46" rx="23" fill="#10b981"/>
+    <text x="138" y="555" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#064e3b">23,552 hit tokens</text>
+    <text x="138" y="598" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#064e3b">50 miss tokens</text>
+    <text x="138" y="641" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#064e3b">$0.00323132 observed input savings</text>
+  </g>
+
+  <g>
+    <rect x="828" y="216" width="680" height="492" rx="30" fill="#fff1f2" stroke="#fb7185" stroke-width="3"/>
+    <text x="874" y="277" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="29" font-weight="800" fill="#9f1239">VOLATILE FIRST LINE</text>
+    <text x="874" y="348" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="82" font-weight="900" fill="#be123c">0%</text>
+    <text x="874" y="391" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" fill="#be123c">aggregate hit rate across five calls</text>
+    <rect x="874" y="441" width="588" height="46" rx="23" fill="#fecdd3"/>
+    <rect x="874" y="441" width="588" height="46" rx="23" fill="#fb7185"/>
+    <text x="874" y="555" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#881337">0 hit tokens</text>
+    <text x="874" y="598" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#881337">29,573 miss tokens</text>
+    <text x="874" y="641" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" fill="#881337">$0.00414022 calculated input cost</text>
+  </g>
+
+  <rect x="92" y="758" width="1416" height="86" rx="20" fill="#eff6ff" stroke="#93c5fd"/>
+  <text x="126" y="811" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" fill="#1e3a8a">Put stable instructions, schemas, examples, and reference text first. Move timestamps, IDs, and the current question to the end.</text>
+</svg>

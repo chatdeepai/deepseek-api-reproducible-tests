@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek user_id cache isolation live test</title>
+  <desc id="desc">A five-call flow showing cache misses and hits for two synthetic user IDs using the same prompt.</desc>
+  <rect width="1600" height="900" fill="#071426"/>
+  <text x="92" y="102" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="49" font-weight="800" fill="#f8fafc">Live control: <tspan fill="#7dd3fc">user_id</tspan> cache isolation</text>
+  <text x="92" y="150" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#94a3b8">Same synthetic 5,901-token prompt · two pseudonymous users · all calls HTTP 200</text>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <line x1="230" y1="460" x2="1370" y2="460" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+    <g>
+      <circle cx="230" cy="460" r="68" fill="#be123c" stroke="#fecdd3" stroke-width="4"/>
+      <text x="230" y="451" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">A COLD</text>
+      <text x="230" y="482" text-anchor="middle" font-size="20" fill="#fff">0 hit</text>
+      <text x="230" y="567" text-anchor="middle" font-size="22" font-weight="700" fill="#fecdd3">5,901 miss</text>
+    </g>
+    <g>
+      <circle cx="515" cy="460" r="68" fill="#047857" stroke="#a7f3d0" stroke-width="4"/>
+      <text x="515" y="451" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">A WARM</text>
+      <text x="515" y="482" text-anchor="middle" font-size="20" fill="#fff">5,888 hit</text>
+      <text x="515" y="567" text-anchor="middle" font-size="22" font-weight="700" fill="#a7f3d0">13 miss</text>
+    </g>
+    <g>
+      <circle cx="800" cy="460" r="68" fill="#be123c" stroke="#fecdd3" stroke-width="4"/>
+      <text x="800" y="451" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">B FIRST</text>
+      <text x="800" y="482" text-anchor="middle" font-size="20" fill="#fff">0 hit</text>
+      <text x="800" y="567" text-anchor="middle" font-size="22" font-weight="700" fill="#fecdd3">5,901 miss</text>
+    </g>
+    <g>
+      <circle cx="1085" cy="460" r="68" fill="#047857" stroke="#a7f3d0" stroke-width="4"/>
+      <text x="1085" y="451" text-anchor="middle" font-size="22" font-weight="800" fill="#fff">B WARM</text>
+      <text x="1085" y="482" text-anchor="middle" font-size="20" fill="#fff">5,888 hit</text>
+      <text x="1085" y="567" text-anchor="middle" font-size="22" font-weight="700" fill="#a7f3d0">13 miss</text>
+    </g>
+    <g>
+      <circle cx="1370" cy="460" r="68" fill="#047857" stroke="#a7f3d0" stroke-width="4"/>
+      <text x="1370" y="451" text-anchor="middle" font-size="21" font-weight="800" fill="#fff">A AGAIN</text>
+      <text x="1370" y="482" text-anchor="middle" font-size="20" fill="#fff">5,888 hit</text>
+      <text x="1370" y="567" text-anchor="middle" font-size="22" font-weight="700" fill="#a7f3d0">13 miss</text>
+    </g>
+  </g>
+
+  <rect x="92" y="676" width="1416" height="132" rx="24" fill="#0f2944" stroke="#38bdf8" stroke-width="2"/>
+  <text x="132" y="727" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="26" font-weight="800" fill="#e0f2fe">Observed result</text>
+  <text x="132" y="773" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#cbd5e1">User B did not inherit user A's warm prefix. After B warmed its own cache, both IDs continued to hit independently.</text>
+  <text x="92" y="852" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" fill="#94a3b8">Pseudonymous labels only. No raw user IDs, account identifiers, or personal data are shown.</text>
+</svg>

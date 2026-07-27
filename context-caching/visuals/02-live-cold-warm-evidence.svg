@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Redacted DeepSeek cold and warm cache usage evidence</title>
+  <desc id="desc">A terminal-style comparison of two live DeepSeek API usage objects showing a cold miss and a warm cache hit.</desc>
+  <rect width="1600" height="900" fill="#07111f"/>
+  <text x="92" y="102" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" fill="#f8fafc">Live API evidence: cold call vs warm extension</text>
+  <text x="92" y="150" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#94a3b8">Redacted metadata captured July 27, 2026 UTC · deepseek-v4-flash · HTTP 200</text>
+
+  <g>
+    <rect x="92" y="208" width="680" height="530" rx="28" fill="#111827" stroke="#334155" stroke-width="2"/>
+    <circle cx="132" cy="245" r="8" fill="#fb7185"/><circle cx="158" cy="245" r="8" fill="#fbbf24"/><circle cx="184" cy="245" r="8" fill="#34d399"/>
+    <text x="132" y="306" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="27" font-weight="800" fill="#fb7185">CALL 1 · COLD PREFIX</text>
+    <g font-family="Consolas,Menlo,monospace" font-size="25" fill="#dbeafe">
+      <text x="132" y="369">{</text>
+      <text x="158" y="411">"http_status": <tspan fill="#86efac">200</tspan>,</text>
+      <text x="158" y="453">"prompt_tokens": <tspan fill="#fde68a">6893</tspan>,</text>
+      <text x="158" y="495">"prompt_cache_hit_tokens": <tspan fill="#fb7185">0</tspan>,</text>
+      <text x="158" y="537">"prompt_cache_miss_tokens": <tspan fill="#fb7185">6893</tspan>,</text>
+      <text x="158" y="579">"latency_ms": <tspan fill="#93c5fd">996</tspan>,</text>
+      <text x="158" y="621">"api_key": <tspan fill="#94a3b8">"[REDACTED]"</tspan></text>
+      <text x="132" y="663">}</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="828" y="208" width="680" height="530" rx="28" fill="#111827" stroke="#0f766e" stroke-width="3"/>
+    <circle cx="868" cy="245" r="8" fill="#fb7185"/><circle cx="894" cy="245" r="8" fill="#fbbf24"/><circle cx="920" cy="245" r="8" fill="#34d399"/>
+    <text x="868" y="306" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="27" font-weight="800" fill="#34d399">CALL 2 · WARM EXTENSION</text>
+    <g font-family="Consolas,Menlo,monospace" font-size="25" fill="#dbeafe">
+      <text x="868" y="369">{</text>
+      <text x="894" y="411">"http_status": <tspan fill="#86efac">200</tspan>,</text>
+      <text x="894" y="453">"prompt_tokens": <tspan fill="#fde68a">6906</tspan>,</text>
+      <text x="894" y="495">"prompt_cache_hit_tokens": <tspan fill="#34d399">6784</tspan>,</text>
+      <text x="894" y="537">"prompt_cache_miss_tokens": <tspan fill="#fb7185">122</tspan>,</text>
+      <text x="894" y="579">"hit_rate": <tspan fill="#34d399">"98.23%"</tspan>,</text>
+      <text x="894" y="621">"latency_ms": <tspan fill="#93c5fd">1020</tspan></text>
+      <text x="868" y="663">}</text>
+    </g>
+  </g>
+
+  <rect x="92" y="780" width="1416" height="64" rx="18" fill="#0f766e" opacity=".24"/>
+  <text x="124" y="823" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" fill="#ccfbf1">Observed input cost: $0.00003608 warm vs $0.00096684 if every token were a miss.</text>
+</svg>

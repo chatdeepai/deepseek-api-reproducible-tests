@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "title": "DeepSeek Evaluation Framework preregistered synthetic plan",
+  "status": "not_run",
+  "frozen_at_utc": "2026-07-27",
+  "provider_origin": "https://api.deepseek.com",
+  "endpoint": "/chat/completions",
+  "dataset_id": "deepseek-eval-synthetic-v1",
+  "baseline_model": "deepseek-v4-flash",
+  "candidate_model": "deepseek-v4-pro",
+  "planned_provider_requests": 12,
+  "provider_request_cap": 12,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "timeout_ms": 30000,
+  "evidence_policy": {
+    "publish_synthetic_fixture_inputs": true,
+    "persist_api_key": false,
+    "persist_headers": false,
+    "persist_provider_request_bodies": false,
+    "persist_provider_response_bodies": false,
+    "persist_provider_reasoning": false,
+    "persist_provider_tool_arguments": false,
+    "persist_provider_tool_results": false,
+    "persist_provider_identifiers": false,
+    "persist_account_data": false,
+    "persist_raw_errors": false,
+    "persist_local_paths": false
+  },
+  "cases": [
+    {
+      "sequence": 1,
+      "task_id": "exact-token",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 16
+    },
+    {
+      "sequence": 2,
+      "task_id": "exact-token",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "disabled",
+      "max_tokens": 16
+    },
+    {
+      "sequence": 3,
+      "task_id": "json-contract",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 64
+    },
+    {
+      "sequence": 4,
+      "task_id": "json-contract",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "disabled",
+      "max_tokens": 64
+    },
+    {
+      "sequence": 5,
+      "task_id": "grounded-answer",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 96
+    },
+    {
+      "sequence": 6,
+      "task_id": "grounded-answer",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "disabled",
+      "max_tokens": 96
+    },
+    {
+      "sequence": 7,
+      "task_id": "grounded-abstention",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 48
+    },
+    {
+      "sequence": 8,
+      "task_id": "grounded-abstention",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "disabled",
+      "max_tokens": 48
+    },
+    {
+      "sequence": 9,
+      "task_id": "tool-selection",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 96
+    },
+    {
+      "sequence": 10,
+      "task_id": "tool-selection",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "disabled",
+      "max_tokens": 96
+    },
+    {
+      "sequence": 11,
+      "task_id": "thinking-math",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "max_tokens": 128
+    },
+    {
+      "sequence": 12,
+      "task_id": "thinking-math",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "max_tokens": 128
+    }
+  ]
+}

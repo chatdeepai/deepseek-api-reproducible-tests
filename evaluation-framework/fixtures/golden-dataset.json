@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "dataset_id": "deepseek-eval-synthetic-v1",
+  "language": "English",
+  "synthetic": true,
+  "tasks": [
+    {
+      "id": "exact-token",
+      "kind": "exact",
+      "critical": true,
+      "instruction": "Return exactly EVAL_OK with no other characters.",
+      "expected": {
+        "exact": "EVAL_OK"
+      }
+    },
+    {
+      "id": "json-contract",
+      "kind": "json_schema",
+      "critical": true,
+      "instruction": "Return JSON only with exactly two keys: category must be urgent and count must be the integer 3. Do not add any other keys.",
+      "expected": {
+        "schema": {
+          "type": "object",
+          "required": [
+            "category",
+            "count"
+          ],
+          "properties": {
+            "category": {
+              "type": "string",
+              "enum": [
+                "urgent"
+              ]
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 3
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    {
+      "id": "grounded-answer",
+      "kind": "grounded_qa",
+      "critical": true,
+      "context": "The synthetic Northstar archive states that Project Cedar launched on 14 March 2032 and its designated color is amber. No budget is recorded.",
+      "question": "When did Project Cedar launch, and what is its designated color?",
+      "expected": {
+        "required_facts": [
+          "14 March 2032",
+          "amber"
+        ],
+        "forbidden_facts": [
+          "budget"
+        ],
+        "should_abstain": false
+      }
+    },
+    {
+      "id": "grounded-abstention",
+      "kind": "grounded_qa",
+      "critical": true,
+      "context": "The synthetic Northstar archive states that Project Cedar launched on 14 March 2032 and its designated color is amber. No budget is recorded.",
+      "question": "What budget was assigned to Project Cedar?",
+      "expected": {
+        "required_facts": [],
+        "forbidden_facts": [],
+        "should_abstain": true,
+        "abstention_token": "INSUFFICIENT_CONTEXT"
+      }
+    },
+    {
+      "id": "tool-selection",
+      "kind": "tool",
+      "critical": true,
+      "instruction": "Select the approved synthetic lookup tool for record DEMO_7.",
+      "tools": [
+        {
+          "name": "lookup_synthetic_record",
+          "schema": {
+            "type": "object",
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Z0-9_]{1,16}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "name": "summarize_synthetic_record",
+          "schema": {
+            "type": "object",
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "pattern": "^[A-Z0-9_]{1,16}$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      ],
+      "expected": {
+        "tool_name": "lookup_synthetic_record",
+        "arguments": {
+          "key": "DEMO_7"
+        },
+        "execute": false
+      }
+    },
+    {
+      "id": "thinking-math",
+      "kind": "math",
+      "critical": true,
+      "instruction": "A crate has 17 rows of 19 parts plus 8 spare parts. Return the final total as FINAL: number.",
+      "expected": {
+        "final_answer": "331"
+      }
+    }
+  ]
+}

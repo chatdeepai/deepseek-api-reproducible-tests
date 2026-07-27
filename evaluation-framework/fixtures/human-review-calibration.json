@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "calibration_id": "synthetic-human-review-v1",
+  "labels": [
+    "pass",
+    "fail",
+    "uncertain"
+  ],
+  "items": [
+    {
+      "id": "CAL-01",
+      "reviewer_a": "pass",
+      "reviewer_b": "pass",
+      "expert": "pass"
+    },
+    {
+      "id": "CAL-02",
+      "reviewer_a": "pass",
+      "reviewer_b": "pass",
+      "expert": "pass"
+    },
+    {
+      "id": "CAL-03",
+      "reviewer_a": "fail",
+      "reviewer_b": "fail",
+      "expert": "fail"
+    },
+    {
+      "id": "CAL-04",
+      "reviewer_a": "pass",
+      "reviewer_b": "uncertain",
+      "expert": "pass"
+    },
+    {
+      "id": "CAL-05",
+      "reviewer_a": "fail",
+      "reviewer_b": "uncertain",
+      "expert": "fail"
+    },
+    {
+      "id": "CAL-06",
+      "reviewer_a": "uncertain",
+      "reviewer_b": "uncertain",
+      "expert": "uncertain"
+    },
+    {
+      "id": "CAL-07",
+      "reviewer_a": "pass",
+      "reviewer_b": "fail",
+      "expert": "uncertain"
+    },
+    {
+      "id": "CAL-08",
+      "reviewer_a": "fail",
+      "reviewer_b": "fail",
+      "expert": "fail"
+    },
+    {
+      "id": "CAL-09",
+      "reviewer_a": "pass",
+      "reviewer_b": "pass",
+      "expert": "pass"
+    },
+    {
+      "id": "CAL-10",
+      "reviewer_a": "uncertain",
+      "reviewer_b": "fail",
+      "expert": "fail"
+    },
+    {
+      "id": "CAL-11",
+      "reviewer_a": "pass",
+      "reviewer_b": "uncertain",
+      "expert": "pass"
+    },
+    {
+      "id": "CAL-12",
+      "reviewer_a": "fail",
+      "reviewer_b": "pass",
+      "expert": "uncertain"
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "fixture_id": "synthetic-paired-responses-v1",
+  "synthetic": true,
+  "responses": [
+    {
+      "task_id": "exact-token",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "text": "EVAL_OK",
+      "usage": {
+        "prompt_tokens": 18,
+        "completion_tokens": 3,
+        "total_tokens": 21,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 18,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "exact-token",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "text": "EVAL_OK",
+      "usage": {
+        "prompt_tokens": 18,
+        "completion_tokens": 3,
+        "total_tokens": 21,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 18,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "json-contract",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "text": "{\"category\":\"urgent\",\"count\":\"3\"}",
+      "usage": {
+        "prompt_tokens": 42,
+        "completion_tokens": 12,
+        "total_tokens": 54,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 42,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "json-contract",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "text": "{\"category\":\"urgent\",\"count\":3}",
+      "usage": {
+        "prompt_tokens": 42,
+        "completion_tokens": 11,
+        "total_tokens": 53,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 42,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "grounded-answer",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "text": "Project Cedar launched on 14 March 2032 and its designated color is amber.",
+      "usage": {
+        "prompt_tokens": 92,
+        "completion_tokens": 18,
+        "total_tokens": 110,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 92,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "grounded-answer",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "text": "The launch date was 14 March 2032, and the designated color was amber.",
+      "usage": {
+        "prompt_tokens": 92,
+        "completion_tokens": 17,
+        "total_tokens": 109,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 92,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "grounded-abstention",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "text": "The budget was 5 million synthetic units.",
+      "usage": {
+        "prompt_tokens": 78,
+        "completion_tokens": 10,
+        "total_tokens": 88,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 78,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "grounded-abstention",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "text": "INSUFFICIENT_CONTEXT",
+      "usage": {
+        "prompt_tokens": 78,
+        "completion_tokens": 5,
+        "total_tokens": 83,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 78,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "tool-selection",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "tool_call": {
+        "name": "lookup_synthetic_record",
+        "arguments": "{\"key\":\"DEMO_7\"}"
+      },
+      "usage": {
+        "prompt_tokens": 110,
+        "completion_tokens": 20,
+        "total_tokens": 130,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 110,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "tool-selection",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "tool_call": {
+        "name": "summarize_synthetic_record",
+        "arguments": "{\"key\":\"DEMO_7\"}"
+      },
+      "usage": {
+        "prompt_tokens": 110,
+        "completion_tokens": 20,
+        "total_tokens": 130,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 110,
+        "reasoning_tokens": 0
+      }
+    },
+    {
+      "task_id": "thinking-math",
+      "variant": "baseline",
+      "model": "deepseek-v4-flash",
+      "text": "FINAL: 331",
+      "usage": {
+        "prompt_tokens": 36,
+        "completion_tokens": 20,
+        "total_tokens": 56,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 36,
+        "reasoning_tokens": 12
+      }
+    },
+    {
+      "task_id": "thinking-math",
+      "variant": "candidate",
+      "model": "deepseek-v4-pro",
+      "text": "FINAL: 331",
+      "usage": {
+        "prompt_tokens": 36,
+        "completion_tokens": 26,
+        "total_tokens": 62,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 36,
+        "reasoning_tokens": 18
+      }
+    }
+  ]
+}

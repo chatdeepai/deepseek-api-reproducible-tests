@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0.0",
+  "generator": "render_visuals.py",
+  "status": "complete_privacy_gated",
+  "asset_count": 16,
+  "assets": [
+    {
+      "basename": "01-deepseek-observability-reference-architecture",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "01-deepseek-observability-reference-architecture.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "415d728736fa8d2e1752af72423f476b3d399b4bb31829fd7dcbe7a0f7160f3a"
+      },
+      "svg": {
+        "file": "01-deepseek-observability-reference-architecture.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "9c90fce6221f53a24c1e3a617252f2a219d5c284fd3eebdad54e0f86d98a13a2"
+      }
+    },
+    {
+      "basename": "02-deepseek-signal-ownership-map",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "02-deepseek-signal-ownership-map.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "62768a67b36d3c1db0666251f17f423ba55e7febe69b3f149cb9a23e169ef171"
+      },
+      "svg": {
+        "file": "02-deepseek-signal-ownership-map.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "ffa4eafb77638b9edafd2e99e57ba2befc63a1c144f0a532a7cb83d185e93eaa"
+      }
+    },
+    {
+      "basename": "03-privacy-safe-logging-pipeline",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "03-privacy-safe-logging-pipeline.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "32fec5e1bec7effa2633bda20212f9d7fdf8a2e8c0b5767056fa65f7e7c1ad95"
+      },
+      "svg": {
+        "file": "03-privacy-safe-logging-pipeline.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "b2f1e62169ff3dd03cbdfd74378822c95d1d66300929d0bf7b5aeea37e01c3db"
+      }
+    },
+    {
+      "basename": "04-streaming-timing-state-machine",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "04-streaming-timing-state-machine.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "ba208a113af5c9eaddd0c6bc8f70e8753d0d4f6686b8161e8492e7784a9ad07a"
+      },
+      "svg": {
+        "file": "04-streaming-timing-state-machine.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "83d0554bb28987ee6191dfba244064663194fd9c30a8a0a5645fba42b45fb672"
+      }
+    },
+    {
+      "basename": "05-token-cache-cost-math",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "05-token-cache-cost-math.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "be9ccf4fefa2e972994c2640a05df1113983c93ecef65e2df0777ad6d487a13f"
+      },
+      "svg": {
+        "file": "05-token-cache-cost-math.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "8666aaf34045a78c1b47d04847d655f1cbc3c74c690a3b21e5d3a09ec2e5cab7"
+      }
+    },
+    {
+      "basename": "06-tool-agent-trace-waterfall",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "06-tool-agent-trace-waterfall.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "aa4e0385bc2694bc932a5cba56d09539ecab78e5074a400fa3cb7f8e32b86739"
+      },
+      "svg": {
+        "file": "06-tool-agent-trace-waterfall.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "ed7113302885a18bda58894ea52a1e70f7fc32cf9be83250ce472ab732a6d721"
+      }
+    },
+    {
+      "basename": "07-dashboard-alert-topology",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "png": {
+        "file": "07-dashboard-alert-topology.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "52d35de9db9c674aa67237370b6f5a6d4886c5280f2c3d076320f962abe0c426"
+      },
+      "svg": {
+        "file": "07-dashboard-alert-topology.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "527c96249c46fade0af7aa3524655e7f5b33a19b99190ad825f0dfade8e4b935"
+      }
+    },
+    {
+      "basename": "08-sanitized-live-results-dashboard",
+      "evidence": "sanitized_live_evidence_privacy_gated",
+      "png": {
+        "file": "08-sanitized-live-results-dashboard.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "a9ce32e6b4786c1905b26b83f230443e64d5534ab0199f6b46483603fafbb369"
+      },
+      "svg": {
+        "file": "08-sanitized-live-results-dashboard.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "d9e8704539833bf5e74f00f418b139014fecca9d84ffd56c29dbbfab2dffbbd9"
+      }
+    }
+  ]
+}

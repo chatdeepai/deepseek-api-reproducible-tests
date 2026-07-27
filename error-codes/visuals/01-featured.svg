@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek API error codes live-tested guide</title>
+  <desc id="desc">Featured image showing DeepSeek's seven documented API status codes divided into fix-first and retry-carefully groups, with a clear note that not every status was observed.</desc>
+  <defs>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#eef6ff"/>
+    </linearGradient>
+    <linearGradient id="blueLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#0b1f3a" flood-opacity=".12"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#page)"/>
+  <circle cx="1490" cy="75" r="250" fill="#0ea5e9" opacity=".07"/>
+  <circle cx="120" cy="850" r="260" fill="#2563eb" opacity=".05"/>
+  <rect x="86" y="72" width="12" height="110" rx="6" fill="url(#blueLine)"/>
+  <text x="126" y="100" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="800" letter-spacing="4" fill="#1d4ed8">CHAT-DEEP.AI EVIDENCE GUIDE</text>
+  <text x="126" y="166" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="64" font-weight="850" fill="#0b1f3a">DeepSeek API Error Codes</text>
+  <text x="126" y="215" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="28" font-weight="500" fill="#41536b">What to fix, what to retry, and what the live API actually returned</text>
+
+  <g filter="url(#shadow)">
+    <rect x="86" y="268" width="1428" height="478" rx="32" fill="#ffffff" stroke="#d9e7f7" stroke-width="2"/>
+  </g>
+
+  <rect x="126" y="306" width="640" height="54" rx="16" fill="#fff1f2"/>
+  <circle cx="160" cy="333" r="15" fill="#be123c"/>
+  <path d="M153 333h14M160 326v14" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <text x="189" y="342" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#881337">FIX FIRST — DO NOT RETRY UNCHANGED</text>
+
+  <rect x="834" y="306" width="640" height="54" rx="16" fill="#eff6ff"/>
+  <path d="M869 321a13 13 0 1 1-7 24" fill="none" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round"/>
+  <path d="M856 340l5 7 8-4" fill="none" stroke="#1d4ed8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="899" y="342" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" fill="#1e3a8a">RETRY CAREFULLY — BOUNDED BACKOFF</text>
+
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g transform="translate(126 392)">
+      <rect width="300" height="126" rx="22" fill="#fff7f7" stroke="#fecdd3" stroke-width="2"/>
+      <text x="28" y="54" font-size="42" font-weight="850" fill="#9f1239">400</text>
+      <text x="28" y="91" font-size="22" font-weight="700" fill="#0b1f3a">Invalid Format</text>
+    </g>
+    <g transform="translate(446 392)">
+      <rect width="300" height="126" rx="22" fill="#fff7f7" stroke="#fecdd3" stroke-width="2"/>
+      <text x="28" y="54" font-size="42" font-weight="850" fill="#9f1239">401</text>
+      <text x="28" y="91" font-size="22" font-weight="700" fill="#0b1f3a">Authentication Fails</text>
+    </g>
+    <g transform="translate(126 540)">
+      <rect width="300" height="126" rx="22" fill="#fff7f7" stroke="#fecdd3" stroke-width="2"/>
+      <text x="28" y="54" font-size="42" font-weight="850" fill="#9f1239">402</text>
+      <text x="28" y="91" font-size="22" font-weight="700" fill="#0b1f3a">Insufficient Balance</text>
+    </g>
+    <g transform="translate(446 540)">
+      <rect width="300" height="126" rx="22" fill="#fff7f7" stroke="#fecdd3" stroke-width="2"/>
+      <text x="28" y="54" font-size="42" font-weight="850" fill="#9f1239">422</text>
+      <text x="28" y="91" font-size="22" font-weight="700" fill="#0b1f3a">Invalid Parameters</text>
+    </g>
+
+    <g transform="translate(834 392)">
+      <rect width="196" height="274" rx="22" fill="#f6faff" stroke="#bfdbfe" stroke-width="2"/>
+      <text x="26" y="67" font-size="42" font-weight="850" fill="#1d4ed8">429</text>
+      <text x="26" y="108" font-size="21" font-weight="750" fill="#0b1f3a">Rate Limit</text>
+      <text x="26" y="137" font-size="21" font-weight="750" fill="#0b1f3a">Reached</text>
+      <path d="M26 187h144" stroke="#dbeafe" stroke-width="2"/>
+      <text x="26" y="226" font-size="18" fill="#41536b">Queue work</text>
+      <text x="26" y="253" font-size="18" fill="#41536b">then back off</text>
+    </g>
+    <g transform="translate(1050 392)">
+      <rect width="196" height="274" rx="22" fill="#f6faff" stroke="#bfdbfe" stroke-width="2"/>
+      <text x="26" y="67" font-size="42" font-weight="850" fill="#1d4ed8">500</text>
+      <text x="26" y="108" font-size="21" font-weight="750" fill="#0b1f3a">Server</text>
+      <text x="26" y="137" font-size="21" font-weight="750" fill="#0b1f3a">Error</text>
+      <path d="M26 187h144" stroke="#dbeafe" stroke-width="2"/>
+      <text x="26" y="226" font-size="18" fill="#41536b">Retry briefly</text>
+      <text x="26" y="253" font-size="18" fill="#41536b">with a cap</text>
+    </g>
+    <g transform="translate(1266 392)">
+      <rect width="188" height="274" rx="22" fill="#f6faff" stroke="#bfdbfe" stroke-width="2"/>
+      <text x="26" y="67" font-size="42" font-weight="850" fill="#1d4ed8">503</text>
+      <text x="26" y="108" font-size="21" font-weight="750" fill="#0b1f3a">Server</text>
+      <text x="26" y="137" font-size="21" font-weight="750" fill="#0b1f3a">Overloaded</text>
+      <path d="M26 187h136" stroke="#dbeafe" stroke-width="2"/>
+      <text x="26" y="226" font-size="18" fill="#41536b">Back off;</text>
+      <text x="26" y="253" font-size="18" fill="#41536b">open circuit</text>
+    </g>
+  </g>
+
+  <rect x="126" y="694" width="1328" height="2" fill="#e2e8f0"/>
+  <circle cx="146" cy="716" r="7" fill="#64748b"/>
+  <text x="166" y="724" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="600" fill="#475569">Documented reference — not every status was forced or observed in the bounded live run.</text>
+  <rect x="86" y="785" width="1428" height="2" fill="#dbe7f3"/>
+  <text x="86" y="832" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="650" fill="#41536b">Tested July 27, 2026 UTC</text>
+  <text x="1514" y="832" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="700" fill="#1d4ed8">LIVE API + LOCAL RETRY LAB</text>
+</svg>

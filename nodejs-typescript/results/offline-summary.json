@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "verified_at_utc": "2026-07-27T19:16:43.0886559Z",
+  "runtime": "nodejs-typescript",
+  "node_version": "v24.14.0",
+  "openai_version": "6.49.0",
+  "typescript_version": "7.0.2",
+  "strict_typecheck": "pass",
+  "test_environment": "localhost-only",
+  "tests_total": 14,
+  "tests_passed": 14,
+  "tests_failed": 0,
+  "tests_skipped": 0,
+  "provider_requests_issued": 0,
+  "verified_contracts": [
+    "dependency pins",
+    "frozen provider plan",
+    "fail-closed live gate",
+    "request ledger and cap",
+    "privacy controls",
+    "postrun audit",
+    "real SDK serialization and parsing",
+    "retry classification",
+    "timeout propagation",
+    "AbortController cancellation"
+  ]
+}

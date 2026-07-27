@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "plan_sha256": "8ab54cea2cd319dffa4917e16b05af1fec07396cd046bd70720e4f7f6a64719c",
+  "cap": 9,
+  "issued": 9,
+  "case_ids": [
+    "node-ordinary-chat-v4-flash",
+    "node-stream-v4-flash",
+    "node-json-mode-v4-flash",
+    "node-tool-initial-v4-flash",
+    "node-tool-continuation-v4-flash",
+    "node-thinking-v4-pro",
+    "node-alias-deepseek-chat",
+    "node-alias-deepseek-reasoner",
+    "node-invalid-model-error"
+  ]
+}

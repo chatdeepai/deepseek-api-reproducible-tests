@@ -1,0 +1,602 @@
+<!-- wp:paragraph -->
+<p><strong>Last verified: July 27, 2026.</strong> This guide defines a <strong>DeepSeek evaluation framework</strong> for applications that call the DeepSeek API. It is an application-authored testing pattern, not an official DeepSeek product, hosted evaluation service, or universal scorecard. It combines versioned golden datasets, deterministic checks, RAG and tool metrics, calibrated model judges, human review, regression gates, and privacy-safe production feedback.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:quote -->
+<blockquote class="wp-block-quote"><p><strong>Evidence rule:</strong> official DeepSeek documentation describes the API contract; a dated live observation describes only the tested requests; an evaluator score is a derived judgment; and a release threshold is a local policy. Keeping those four evidence classes separate prevents a fluent report from becoming a misleading claim.</p></blockquote>
+<!-- /wp:quote -->
+
+<!-- wp:paragraph -->
+<p><strong>Contents:</strong> <a href="#quick-answer">quick answer</a> | <a href="#benchmarking-vs-application-evaluation">benchmarks vs application evals</a> | <a href="#evaluation-contract">risk contract</a> | <a href="#golden-dataset">golden dataset</a> | <a href="#run-manifest">run manifest</a> | <a href="#metric-types">metrics</a> | <a href="#hallucination-and-grounding">hallucination</a> | <a href="#json-output-evaluation">JSON</a> | <a href="#rag-evaluation">RAG</a> | <a href="#agent-tool-evaluation">agents</a> | <a href="#judge-and-human-review">judge calibration</a> | <a href="#repeated-runs">uncertainty</a> | <a href="#ci-regression">CI</a> | <a href="#production-feedback">production feedback</a> | <a href="#original-study">original study</a> | <a href="#release-scorecard">release decision</a> | <a href="#faq">FAQ</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"quick-answer"} -->
+<h2 class="wp-block-heading" id="quick-answer">DeepSeek Evaluation Framework: Quick Answer</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A DeepSeek evaluation framework is a repeatable system for deciding whether a DeepSeek-powered application satisfies its own task contract. Define the behavior and risk first, freeze representative cases, run an exact model and prompt configuration, score each failure dimension separately, route uncertainty to reviewers, apply a predeclared release gate, and monitor the shipped workflow. Public model benchmarks can help shortlist a model, but they cannot validate your prompts, retrieved documents, JSON schema, tools, safety policy, latency, or cost.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide also includes a <a href="#original-study">dated, bounded DeepSeek V4 application study</a> with a frozen plan, sanitized results, explicit limitations, and a reproducible test package.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Define:</strong> write the task contract, risk tier, owner, and unacceptable failures.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Freeze:</strong> version the golden dataset, prompts, model settings, retriever, tools, and scoring rules.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Run:</strong> execute a baseline and candidate under the same bounded plan.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Score:</strong> keep deterministic, model-based, human, and operational evidence separate.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Review:</strong> send ambiguous, high-risk, and scorer-disagreement cases to qualified people.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Gate:</strong> block critical failures and material regressions, even when the average improves.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Learn:</strong> promote reviewed production failures into the next dataset version.</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Start with the <a href="/docs/api/">DeepSeek API request and response contract</a> so the test harness validates the behavior your application actually receives. Then make every experiment reproducible enough that another engineer can explain a pass, a failure, or a changed result without seeing private user content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7694,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/01-deepseek-evaluation-system-architecture.png" alt="DeepSeek application evaluation architecture connecting task contracts, golden datasets, frozen runs, automated scorers, human review, release gates, production monitoring, and regression feedback" class="wp-image-7694" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual evaluation lifecycle. Public model benchmarks can help select candidates, but application evidence determines whether a release is safe to ship. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"benchmarking-vs-application-evaluation"} -->
+<h2 class="wp-block-heading" id="benchmarking-vs-application-evaluation">Model Benchmarking vs Application Evaluation</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Question</th><th>Model benchmark</th><th>Application evaluation</th></tr></thead><tbody><tr><td>What is tested?</td><td>A model across a published capability suite</td><td>Your complete workflow, prompts, context, tools, policies, and validators</td></tr><tr><td>What is the comparison unit?</td><td>Models or model versions</td><td>A production baseline and a release candidate</td></tr><tr><td>Who defines success?</td><td>The benchmark author</td><td>The product, domain, safety, and engineering owners</td></tr><tr><td>What can it support?</td><td>Candidate selection and external context</td><td>A task-specific release decision</td></tr><tr><td>What can it not prove?</td><td>Your hosted API reliability or product quality</td><td>General model superiority outside the tested distribution</td></tr></tbody></table><figcaption class="wp-element-caption">A benchmark can inform model selection. Only application evidence can validate the deployed system.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>For carefully scoped external context, the U.S. Center for AI Standards and Innovation published an <a href="https://www.nist.gov/news-events/news/2026/05/caisi-evaluation-deepseek-v4-pro" target="_blank" rel="noopener">April 2026 evaluation of the open-weight DeepSeek V4 Pro model</a>. CAISI served the model on cloud H200 and B200 GPUs and reported results across nine benchmarks spanning five domains. Its approximately eight-month capability-gap statement was an aggregate, IRT-inspired inference across its evaluation design, not a claim about every task.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>That study did <strong>not</strong> test the hosted <code>api.deepseek.com</code> service, this site's prompts, a private RAG index, or a production agent. Its cost comparison also used prices available for that separate study. It must not be used as evidence for current API price, availability, latency, or an application's release readiness. This is the boundary that keeps external benchmark context useful without turning it into borrowed proof.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"evaluation-contract"} -->
+<h2 class="wp-block-heading" id="evaluation-contract">Define the Evaluation Contract and Risk Tiers</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Write the evaluation contract before choosing metrics. A useful contract says what the system must do, what it must never do, which evidence is authoritative, who owns the decision, and what happens after a failure. "Helpful answer" is not testable. "Extract the invoice total as a decimal, cite the source page, abstain when the page is absent, and never initiate payment" is testable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Risk tier</th><th>Example consequence</th><th>Recommended evidence</th><th>Example release treatment</th></tr></thead><tbody><tr><td>Low</td><td>Style or convenience issue</td><td>Automated format and preference checks</td><td>Allow a small, understood variance</td></tr><tr><td>Moderate</td><td>Incorrect workflow or support answer</td><td>Deterministic assertions, groundedness, sampled human review</td><td>Require no material regression by segment</td></tr><tr><td>High</td><td>Financial, legal, safety, access, or irreversible impact</td><td>Case-level checks, domain review, authorization tests, abstention</td><td>Block on one known critical failure</td></tr></tbody></table><figcaption class="wp-element-caption">These tiers are an illustrative local policy, not a DeepSeek or NIST standard. Organizations should map them to their actual harms and obligations.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Give every case a task owner, risk owner, and reviewer path. Define the deployment slice too: language, customer type, document source, tool class, input length, and failure severity can matter more than the overall average. A candidate that improves common low-risk cases while breaking one access-control case should not pass because its mean score increased.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"golden-dataset"} -->
+<h2 class="wp-block-heading" id="golden-dataset">Build and Version a Golden Dataset</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A golden dataset is a versioned collection of cases with expected behavior, not a folder of impressive prompts. Each case needs a stable ID, task family, risk tier, input or message history, reference context, expected result or rubric, prohibited claims, expected tool trace, provenance, reviewer, and case-level gate. Multi-turn cases need the exact messages sent because DeepSeek Chat Completions is stateless; the caller supplies the history required for each turn.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>{
+  "id": "grounded-abstention",
+  "dataset_version": "support-eval-v3",
+  "risk": "high",
+  "context": "The supplied policy does not state a refund period.",
+  "question": "How many days is the refund period?",
+  "expected": {
+    "abstention_token": "INSUFFICIENT_CONTEXT",
+    "prohibited_claims": ["a guessed number"]
+  },
+  "owner": "support-policy",
+  "review_status": "approved"
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Separate development cases used during prompt design, regression cases that protect known behavior, and a blind holdout that is not copied into prompts or demonstrations. Run exact and near-duplicate detection across the splits. Track whether an example was derived from synthetic data, approved production feedback, a policy document, or an incident. Redact personal data and secrets before a trace becomes an eval case, and re-review cases when the underlying source expires.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Contamination can be subtler than an exact duplicate. A holdout answer may appear in a few-shot demonstration, a retrieval index, a judge rubric, a generated training example, or a debugging transcript. Maintain a source ledger, compare normalized text and semantic near-duplicates, and record which people saw the blind split. If a case leaks, move it out of the holdout and create a genuinely unseen replacement rather than quietly reporting the favorable result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>There is no universal minimum case count. Twenty carefully reviewed cases may expose a critical workflow failure that thousands of generic questions miss. Start with coverage of typical, edge, adversarial, and known-failure behavior, then expand based on production evidence. Publish the actual sample size and limitations instead of implying that dataset size alone creates statistical authority.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7695,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-golden-dataset-anatomy-and-splits.png" alt="Anatomy of a versioned DeepSeek golden evaluation case with development, regression, and blind holdout splits plus leakage, privacy, and deduplication controls" class="wp-image-7695" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual dataset design. A larger dataset is not automatically better; provenance, risk coverage, leakage control, and stable versions make results interpretable. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"run-manifest"} -->
+<h2 class="wp-block-heading" id="run-manifest">Record a Reproducible DeepSeek Run Manifest</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A model name is not a complete experiment identity. Freeze a run manifest before provider calls and hash it. Record the dataset and prompt versions, requested model, thinking mode, reasoning effort, tool schema, retrieval index, client and harness versions, timeout, concurrency, retry policy, request cap, case order, evaluator versions, UTC timestamp, and dated price snapshot. When the response returns <code>system_fingerprint</code>, retain a safe value internally for diagnosis; keep provider request IDs and tool-call IDs out of public evidence.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Manifest field</th><th>Why it matters</th><th>DeepSeek-specific note</th></tr></thead><tbody><tr><td>Requested and returned model</td><td>Detects routing or configuration drift</td><td>Use current canonical IDs and compare the response field</td></tr><tr><td><code>thinking.type</code></td><td>Changes response fields and valid controls</td><td>Thinking is documented as enabled by default</td></tr><tr><td><code>reasoning_effort</code></td><td>Defines the intended thinking configuration</td><td>Current documented values include <code>high</code> and <code>max</code></td></tr><tr><td>Sampling settings</td><td>Prevents false causal claims</td><td><code>temperature</code> and <code>top_p</code> do not take effect in thinking mode; presence and frequency penalties are deprecated and ineffective</td></tr><tr><td>Concurrency and retries</td><td>Affect latency, spend, duplication, and failure rate</td><td>Official limits are account-level concurrency, not RPM or TPM</td></tr><tr><td>Usage and price date</td><td>Makes cost math auditable</td><td>Separate cache-hit input, cache-miss input, and output</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">models and pricing page</a>, checked on July 27, 2026, lists <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>, both with a 1M-token context length, maximum output of 384K tokens, thinking and non-thinking modes, JSON Output, and Tool Calls. Verify <a href="https://api-docs.deepseek.com/api/list-models/" target="_blank" rel="noopener">the live model list</a> for the account before each study and use our <a href="/models/">current DeepSeek model guide</a> for application-level selection context.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Documented model</th><th>Cache-hit input / 1M</th><th>Cache-miss input / 1M</th><th>Output / 1M</th><th>Account concurrency</th></tr></thead><tbody><tr><td><code>deepseek-v4-flash</code></td><td>$0.0028</td><td>$0.14</td><td>$0.28</td><td>2,500</td></tr><tr><td><code>deepseek-v4-pro</code></td><td>$0.003625</td><td>$0.435</td><td>$0.87</td><td>500</td></tr></tbody></table><figcaption class="wp-element-caption">Official documentation snapshot checked July 27, 2026. Prices and availability can change; concurrency is account-level and shared by the account's keys, not an RPM or TPM quota.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The 1M-token context specification is a capacity limit, not proof that the application finds and uses the correct passage at every position. Long-context evaluation should vary evidence location, distractor density, source conflict, and output limits. Likewise, a high maximum output does not remove the need to treat <code>finish_reason: "length"</code> as an incomplete structured result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's <a href="https://api-docs.deepseek.com/news/news260424/" target="_blank" rel="noopener">V4 preview announcement</a> said that <code>deepseek-chat</code> and <code>deepseek-reasoner</code> would become unavailable after July 24, 2026 at 15:59 UTC. That cutoff has passed. New fixtures should use the canonical V4 IDs; do not claim whether a legacy alias still resolves without a dated live request. When evaluating thinking behavior, follow the <a href="/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode protocol</a> and score the final answer. The provider-returned <code>reasoning_content</code> field is not "hidden reasoning," but it should still be treated as sensitive and excluded from public artifacts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"metric-types"} -->
+<h2 class="wp-block-heading" id="metric-types">Choose Deterministic, Model-Based, Human, and Operational Metrics</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the cheapest reliable evaluator for each failure. Exact match, a numeric tolerance, JSON parsing, JSON Schema, citation-ID membership, allowlisted tool names, and authorization outcomes should be deterministic. A model judge is useful for tightly defined relevance, contradiction, or pairwise-preference questions, but its output is evaluator-produced evidence. Human reviewers own ambiguous meaning, high-impact policy, and scorer disagreements. Operational evidence covers latency, timeout, cancellation, tokens, cache fields, and estimated cost.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Evidence class</th><th>Examples</th><th>Source and unit</th><th>Decision owner</th></tr></thead><tbody><tr><td>Provider-returned</td><td>Model, finish reason, token usage, cache-hit and cache-miss tokens</td><td>DeepSeek response fields; tokens or categorical state</td><td>Engineering validates the contract</td></tr><tr><td>Application-measured</td><td>Duration, timeout, retry, cancellation, tool execution result</td><td>Application clock and control plane</td><td>Engineering or operations</td></tr><tr><td>Evaluator-produced</td><td>Exact match, schema result, claim support, pairwise preference</td><td>Named scorer and version; boolean, label, or bounded score</td><td>Evaluation owner</td></tr><tr><td>Human or reconciled</td><td>Reviewer label, disagreement resolution, release decision</td><td>Documented rubric and review record</td><td>Domain and risk owners</td></tr></tbody></table><figcaption class="wp-element-caption">Never present an application estimate or judge score as a field returned by DeepSeek.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Keep component results visible. A request can return HTTP 200 yet fail its format contract; valid JSON can fail its schema; a schema-valid answer can be unsupported; a correct model proposal can still be unauthorized to execute. Aggregating all of those states into one "quality score" hides the remediation path. For operational implementation, connect token and failure evidence to <a href="/docs/deepseek-observability/">privacy-safe DeepSeek observability</a> and check <a href="/docs/deepseek-context-caching/">DeepSeek context caching evidence</a> without assuming that a repeated prefix guarantees a hit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7696,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-deepseek-evaluator-ownership-matrix.png" alt="Ownership matrix for DeepSeek provider fields, application measurements, evaluator scores, human labels, and reconciled release evidence" class="wp-image-7696" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual signal taxonomy. Record who produced each value and how it was derived before combining it in a scorecard. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"hallucination-and-grounding"} -->
+<h2 class="wp-block-heading" id="hallucination-and-grounding">Measure Hallucination, Faithfulness, Factuality, and Groundedness</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>These terms answer different questions. <strong>Faithfulness</strong> asks whether a claim follows from the supplied context. <strong>Factuality</strong> asks whether it agrees with authoritative external truth. <strong>Groundedness</strong> asks whether the response is supported by the evidence the task permits it to use. <strong>Hallucination</strong> is a broader failure label that may include unsupported, invented, or contradictory content. A response can be faithful to stale context but factually wrong, or factually correct from prior knowledge but unfaithful to the supplied evidence.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Evaluate material claims, not only whole answers. Extract the claims; match each one to an allowed citation or source span; label it supported, unsupported, contradictory, or unverifiable; then test whether the task required abstention when support was absent. Run deterministic source-ID and quotation checks before a model judge. Route ambiguous or high-risk claims to a human who can inspect the authoritative source.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Supplied-context result</th><th>External-truth result</th><th>Useful label</th><th>Action</th></tr></thead><tbody><tr><td>Supported</td><td>Correct</td><td>Faithful and factual</td><td>Pass this dimension</td></tr><tr><td>Supported</td><td>Incorrect or stale</td><td>Faithful to bad context</td><td>Fix retrieval/source governance</td></tr><tr><td>Unsupported</td><td>Correct</td><td>Factual but ungrounded</td><td>Fail a closed-context contract</td></tr><tr><td>Unsupported</td><td>Unknown</td><td>Unsupported claim</td><td>Review or fail by risk</td></tr><tr><td>Contradicts context</td><td>Any</td><td>Contradiction</td><td>Fail and investigate</td></tr><tr><td>Abstains when evidence is absent</td><td>Not required</td><td>Correct abstention</td><td>Pass the abstention contract</td></tr></tbody></table><figcaption class="wp-element-caption">This taxonomy is more actionable than one universal hallucination percentage.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>If you use a 0-5 severity scale, label it as a local rubric and publish the annotation instructions. Calibrate it with examples and report reviewer disagreement. Do not claim that the number is an official DeepSeek, OpenAI, or NIST metric.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7697,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-hallucination-faithfulness-decision-tree.png" alt="Decision tree separating DeepSeek output faithfulness, factuality, groundedness, unsupported claims, contradictions, and correct abstention" class="wp-image-7697" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual claim-level classification. Hallucination, faithfulness, factuality, and groundedness answer different questions and should not be collapsed into one universal score. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"json-output-evaluation"} -->
+<h2 class="wp-block-heading" id="json-output-evaluation">Evaluate DeepSeek JSON Output</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official <a href="https://api-docs.deepseek.com/guides/json_mode/" target="_blank" rel="noopener">JSON Output guide</a> requires <code>response_format: {"type":"json_object"}</code>, and the prompt should explicitly request JSON and describe the expected structure. It also warns that content can occasionally be empty and that an insufficient <code>max_tokens</code> can truncate the result. Therefore, "the parser did not throw" is only one assertion.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>function evaluateJsonContract(content, finishReason, schemaCheck) {
+  const nonempty = typeof content === "string" &amp;&amp; content.length &gt; 0;
+  const finishReasonOk = finishReason === "stop";
+  let value = null;
+  let jsonParse = false;
+
+  if (nonempty) {
+    try {
+      value = JSON.parse(content);
+      jsonParse = true;
+    } catch {
+      jsonParse = false;
+    }
+  }
+
+  const schemaExact = jsonParse &amp;&amp; schemaCheck(value);
+  return { nonempty, finishReasonOk, jsonParse, schemaExact };
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>An exact schema check must validate required keys, reject forbidden extra keys with <code>additionalProperties: false</code>, and test types, enums, ranges, identifier membership, and business rules. Keep <code>nonempty</code>, <code>finish_reason_ok</code>, <code>json_parse</code>, <code>schema_exact</code>, <code>claims_supported</code>, and <code>task_success</code> as separate fields. The dedicated <a href="/docs/json-output/">DeepSeek JSON Output live tests and validation guide</a> covers the request format and stronger production implementation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"rag-evaluation"} -->
+<h2 class="wp-block-heading" id="rag-evaluation">Evaluate DeepSeek RAG Pipelines</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>RAG evaluation needs two scorecards because retrieval and generation fail differently. For the retriever, measure whether required evidence was present, how it ranked, whether distractors displaced it, and whether sources were stale or conflicting. For the generator, measure claim support, citation correctness, faithfulness, factuality, relevance, and abstention. An end-to-end answer score cannot tell you which component to fix.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Supported question:</strong> all required facts appear in the supplied context and answer.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Insufficient context:</strong> the required fact is absent and the model must abstain.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Distractor case:</strong> a plausible but irrelevant chunk competes with the authoritative source.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Stale or conflicting case:</strong> the system must apply source priority and surface uncertainty.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Retrieval failure:</strong> required evidence exists in the corpus but is missing from the selected context.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Watch for deceptive successes. A model can answer correctly from prior knowledge after poor retrieval, which should fail a closed-context grounding contract. It can also faithfully repeat an obsolete document, which points to source freshness rather than generation. Record retriever version, index build, chunking policy, filters, and source-set version in the run manifest so a changed answer can be traced to the right layer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7698,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-deepseek-rag-evaluation-two-stage-pipeline.png" alt="Two-stage DeepSeek RAG evaluation pipeline separating retriever coverage and ranking from generator faithfulness, citations, factuality, relevance, and abstention" class="wp-image-7698" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual RAG evaluation map. Score retrieval and generation separately so one stage cannot hide the other's failure. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"agent-tool-evaluation"} -->
+<h2 class="wp-block-heading" id="agent-tool-evaluation">Evaluate DeepSeek Agents and Tool Calls</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A tool call is a model proposal, not an executed action. Score the number and order of proposed calls, selected tool, JSON parsing, exact argument schema, allowlist membership, authorization result, side-effect policy, execution result, recovery behavior, continuation, and final task completion separately. The public study should use synthetic or stubbed tools and stop invalid or unauthorized proposals before execution.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official <a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">Tool Calls guide</a> warns that model-generated arguments can be invalid or include hallucinated parameters, so application-side validation remains mandatory. Strict mode is Beta, uses the <code>https://api.deepseek.com/beta</code> base URL, requires <code>strict: true</code> on each function, and supports a constrained JSON Schema subset. Even strict schema conformance does not prove that the correct tool was selected, the values are safe, the user is authorized, or the workflow succeeded. See the tested <a href="/docs/deepseek-tool-calls/">DeepSeek Tool Calls and function validation guide</a> for the full implementation boundary.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>const proposal = {
+  toolName: "lookup_synthetic_record",
+  argumentsValid: true,
+  allowlisted: true,
+  authorized: true,
+  sideEffectClass: "read_only"
+};
+
+const mayExecute =
+  proposal.argumentsValid &amp;&amp;
+  proposal.allowlisted &amp;&amp;
+  proposal.authorized &amp;&amp;
+  proposal.sideEffectClass === "read_only";
+
+// A public evaluation uses a stub even when mayExecute is true.
+</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Thinking-mode agent tests also need a protocol assertion. The official <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">Thinking Mode guide</a> says that when a thinking-mode turn returns tool calls, the assistant tool-call message, including its <code>reasoning_content</code>, must be passed back for the continuation request. Omission can produce HTTP 400. Test the handling without storing or publishing the raw reasoning field.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7699,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-deepseek-agent-tool-evaluation-trace.png" alt="DeepSeek agent evaluation trace covering model proposal, argument validation, authorization, stubbed tool execution, continuation, final answer, and reviewer outcome" class="wp-image-7699" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual agent trace. The application owns validation, authorization, execution, and side-effect safety; the model only proposes tool calls. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"judge-and-human-review"} -->
+<h2 class="wp-block-heading" id="judge-and-human-review">Calibrate LLM-as-a-Judge and Human Review</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>An LLM judge can scale review, but it cannot define truth by itself. Give the judge a narrow rubric, explicit pass and fail examples, an allowed output schema, and only the evidence needed for the decision. Classification, pass/fail, and randomized pairwise comparison are usually easier to audit than an unconstrained 1-10 quality score.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Human agreement:</strong> compare judge labels with blinded domain-review labels on a calibration subset.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Position bias:</strong> randomize baseline and candidate order, then measure whether reversing order changes the preference.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Style and verbosity bias:</strong> include concise-correct and verbose-wrong examples.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Self-preference:</strong> test whether the judge favors output from the same model family.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Prompt injection:</strong> include candidate output or context that tells the evaluator to award a pass.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Malformed judgment:</strong> route non-JSON or uncertain output to review rather than silently coercing it.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Version the judge prompt, model, mode, and rubric. Recalibrate after any change. Report agreement and disagreement, not just the judge's average. Human review should be risk-based: this framework uses qualified human approval as a local policy for ambiguous and high-impact cases, but that does not by itself state a legal requirement. Preserve reviewer privacy and document how disagreements were reconciled.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Agreement needs context. Raw percentage agreement can look high when one label dominates, while Cohen's kappa adjusts for chance agreement but can behave unexpectedly with rare classes and small samples. Publish the label distribution, confusion matrix, reviewer count, and unresolved cases alongside any summary statistic. If the calibration set is small, call the result a calibration check, not validation of the judge across domains.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"repeated-runs"} -->
+<h2 class="wp-block-heading" id="repeated-runs">Handle Non-Determinism, Repeated Runs, and Statistical Uncertainty</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>For variable tasks, one observation is not a stable estimate. Repeat the same frozen case, report the per-case pass rate and disagreement rate, and compare baseline and candidate on paired inputs. Randomize answer order for pairwise judging. Preserve a seed only when the complete system supports it; a stored seed does not create reproducibility when the provider does not guarantee deterministic execution.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Use uncertainty honestly. A Wilson interval is useful for a binomial pass rate, and an exact paired sign test can summarize discordant baseline-candidate pairs. Neither rescues a tiny or unrepresentative dataset. With six pairs, one changed case moves the reported rate by 16.7 percentage points. Show counts beside percentages, label small samples, inspect critical cases individually, and avoid claiming significance when the design cannot support it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Do not vary controls that the selected mode ignores. In DeepSeek thinking mode, the official <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">Thinking Mode guide</a> says <code>temperature</code>, <code>top_p</code>, <code>presence_penalty</code>, and <code>frequency_penalty</code> do not take effect. A sampling experiment that changes those fields while thinking remains enabled is not a valid causal comparison.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"ci-regression"} -->
+<h2 class="wp-block-heading" id="ci-regression">Run Regression Tests in CI Without Duplicate or Unbounded Spend</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use two gates. Run dataset validation, scorer unit tests, schema fixtures, cost reconciliation, and privacy checks offline on every change. Run paid provider evaluation only after explicit approval against a frozen plan. Reserve every planned request in a fail-closed ledger before sending it, cap total requests and estimated cost, use bounded concurrency, and disable automatic retries during the publication study so an ambiguous timeout cannot duplicate paid work.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code># Node.js 20+, no external packages
+npm test
+npm run offline
+npm run hash-plan
+
+# The public package deliberately refuses provider access.
+# A separately reviewed live adapter is required for paid calls.
+npm run live</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The reproducibility package for this article is available at <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/evaluation-framework" target="_blank" rel="noopener">the DeepSeek evaluation framework repository</a>. Its offline-first harness validates the synthetic dataset, exact and JSON scorers, grounding and abstention logic, non-executing tool checks, final-answer math, paired regression statistics, reviewer agreement, usage reconciliation, cost estimates, and recursive privacy audit. The default live command fails closed; the separately reviewed live adapter accepts an in-memory key, refuses duplicate run artifacts, and never persists provider payload text.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For production adaptations, use <a href="/docs/deepseek-python-sdk/">the DeepSeek Python SDK guide</a> or <a href="/docs/deepseek-nodejs-typescript/">the DeepSeek Node.js and TypeScript guide</a>, apply the documented <a href="/docs/api-rate-limits/">DeepSeek concurrency controls</a>, and classify failures with the <a href="/docs/deepseek-error-codes/">DeepSeek API error guide</a>. Creating a provider client is not permission to publish its raw payloads.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7700,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-ci-regression-and-release-gate.png" alt="Two-tier DeepSeek evaluation CI pipeline with offline checks, bounded provider runs, request and cost caps, regression gates, human review, and fail-closed publication" class="wp-image-7700" width="1600" height="900"/><figcaption class="wp-element-caption">Conceptual release gate. Offline checks run broadly; provider evaluation runs remain explicit, bounded, reproducible, privacy-audited, and fail closed. No live-result claims.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"production-feedback"} -->
+<h2 class="wp-block-heading" id="production-feedback">Monitor Production and Promote Failures Back Into the Dataset</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Offline evals protect only known distributions. In production, collect allowlisted metadata by default: task class, model and prompt versions, finish state, validation booleans, latency buckets, token counts, cache counts, safe error class, reviewer disposition, and business outcome. Do not export prompts, outputs, retrieved documents, tool payloads, authorization headers, raw errors, or <code>reasoning_content</code> simply because an observability platform can accept them.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Where content retention is genuinely necessary, establish consent or another appropriate basis, redact before export, restrict access, set retention periods, and keep private traces separate from public evidence. Sample failures into a review queue, assign a taxonomy, reproduce them with synthetic or minimized fixtures, obtain domain approval, and add only reviewed cases to a new dataset version. Rerun the production baseline as well as the candidate so the gate measures regression instead of comparing against an old memory.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A public artifact should expose the minimum evidence needed to reproduce the calculation: case aliases, configuration versions, booleans, bounded counts, aggregate token totals, scorer versions, and file hashes. It should exclude credentials, headers, account balance, request and tool-call IDs, raw prompts, generated answers, retrieved text, tool arguments and results, reasoning text, reviewer identity, raw errors, stack traces, and local paths. Run the privacy audit recursively because forbidden fields can hide inside nested objects.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Use provider-reported usage rather than character estimates. DeepSeek's current pricing separates cache-hit input, cache-miss input, and output tokens, so calculate each component from a dated <a href="/pricing/">DeepSeek API pricing snapshot</a>. The Chat Completions response supports an estimate, not an account balance; reconcile finance-critical reporting with billing records.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>estimatedCost =
+  (cacheHitInputTokens / 1_000_000) * cacheHitPrice +
+  (cacheMissInputTokens / 1_000_000) * cacheMissPrice +
+  (completionTokens / 1_000_000) * outputPrice;
+</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:heading {"anchor":"original-study"} -->
+<h2 class="wp-block-heading" id="original-study">Original DeepSeek V4 Evaluation Study: Method and Results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3,"anchor":"original-study-method"} -->
+<h3 class="wp-block-heading" id="original-study-method">Method and Controls</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Study date:</strong> July 27, 2026 UTC. This was a bounded application acceptance study against a frozen synthetic plan, not a general DeepSeek benchmark, reliability measurement, or SLA. The plan hash was <code>135c8d1b4682d88824d0cf4f9f9ad2e084480cdad08c9d9abd3155658033d1ed</code>. It paired six task contracts across <code>deepseek-v4-flash</code> as the baseline and <code>deepseek-v4-pro</code> as the candidate: exact output, exact JSON schema, grounded QA, insufficient-context abstention, non-executing tool selection, and thinking-mode final-answer math.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The predeclared cap was 12 provider requests, concurrency was one, automatic retries were zero, and the timeout was 30 seconds. Five task families disabled thinking; the math case enabled thinking with <code>reasoning_effort: high</code>. The harness scored only the final answer for that case and did not persist raw <code>reasoning_content</code>. The live-run model verification was: all 12 requests returned HTTP 200, the returned model matched the planned canonical ID in every observation, and a backend fingerprint field was present.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"original-study-results"} -->
+<h3 class="wp-block-heading" id="original-study-results">Verification and Results</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Before publication, the local verification suite passed 69 of 69 tests covering dataset and plan integrity, exact and schema scorers, grounding, abstention, tool safety, paired statistics, human-review calibration, usage and cost reconciliation, duplicate-run prevention, and recursive privacy checks. The temporary API key was revoked immediately after the live run and was never written to the package.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Post-run evidence audit:</strong> the frozen July 27 sanitizer retained and evaluated the first tool proposal but did not retain the number of proposals. Its two tool-case passes therefore establish that the first retained proposal matched the intended tool and argument contract; they do not prove that no additional proposal was returned. The retained evidence does prove that every returned model ID and terminal <code>finish_reason</code> matched the frozen request contract. The published harness now requires the requested model identity, exact terminal state, and exactly one tool proposal. Because tool-call cardinality cannot be reconstructed without the deliberately discarded provider payload, the post-run publication decision is <strong>human review required</strong>, even though the original frozen illustrative gate recorded a pass.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Study field</th><th>Sanitized result</th><th>Interpretation boundary</th></tr></thead><tbody><tr><td>Exact tested model IDs</td><td><code>deepseek-v4-flash</code>, <code>deepseek-v4-pro</code></td><td>Observed for this dated run only</td></tr><tr><td>Planned / observed requests</td><td>12 / 12</td><td>No automatic retries</td></tr><tr><td>Flash baseline contract passes</td><td>6 / 6</td><td>Small synthetic case set</td></tr><tr><td>Pro candidate contract passes</td><td>6 / 6</td><td>Small synthetic case set</td></tr><tr><td>Paired candidate wins / losses / ties</td><td>0 / 0 / 6</td><td>Counts, not a general model ranking</td></tr><tr><td>Total prompt / completion / all tokens</td><td>1476 / 367 / 1843</td><td>Provider usage after reconciliation</td></tr><tr><td>Estimated cost</td><td>$0.000648060000</td><td>Using official prices checked July 27, 2026; not a bill</td></tr><tr><td>Failed or review-routed cases</td><td>0 failures under the original frozen evaluator; post-run evidence audit requires human review because tool-call cardinality was not retained; 7 of 12 offline reviewer-calibration items also routed to human review</td><td>Raw outputs are not published</td></tr><tr><td>Privacy audit</td><td>Passed; 0 issues across 575 audited nodes</td><td>Publication fails closed unless it passes</td></tr><tr><td>Illustrative release outcome</td><td>Human review required after the post-run evidence audit; the original frozen illustrative gate recorded a pass, but tool-call cardinality was not retained</td><td>Local policy for this synthetic study</td></tr></tbody></table><figcaption class="wp-element-caption">All values must be read from the sanitized evidence summary after usage reconciliation and a passing privacy audit.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p><strong>Result interpretation:</strong> Flash and Pro each passed 6 of 6 bounded contracts under the original frozen evaluator, so all six paired comparisons were ties. This is mixed or insufficient comparative evidence, not proof of equivalence. The Wilson 95% interval for an observed 6 of 6 pass rate is 0.609657 to 1.000000, which is too wide for a production reliability claim. A post-run evidence audit changed the publication decision to human review required because the sanitizer did not retain tool-call cardinality.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"original-study-limitations"} -->
+<h3 class="wp-block-heading" id="original-study-limitations">Limitations</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Study limitations:</strong> The live result contains one observation per task-model pair and no stochastic repeats. The frozen sanitizer retained only the first tool proposal, not the total proposal count. The study used synthetic English-only cases, one account, a small paired sample, one serial execution plan, and no production traffic. It did not estimate availability, long-run latency, safety across untested domains, or performance over the 1M-token context limit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7703,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-deepseek-v4-live-evaluation-dashboard-1.png" alt="Sanitized DeepSeek V4 application evaluation dashboard showing the bounded case set, contract checks, RAG and tool results, run count and single-observation limitations, token usage, estimated cost, release decision, and privacy audit" class="wp-image-7703" width="1600" height="900"/><figcaption class="wp-element-caption">Sanitized live evidence from July 27, 2026 UTC. The post-run audit requires human review because tool-call cardinality was not retained; this is not a general DeepSeek benchmark, reliability measurement, or SLA.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"release-scorecard"} -->
+<h2 class="wp-block-heading" id="release-scorecard">Release Scorecard, Decision Rules, and Failure Analysis</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A release scorecard should contain absolute contract gates and paired regression gates. The following numbers are illustrative local policy for a synthetic reference application. They are not DeepSeek recommendations, industry standards, or statistically justified defaults for another product.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Dimension</th><th>Illustrative local gate</th><th>Owner</th><th>Failure response</th></tr></thead><tbody><tr><td>Critical exact, schema, authorization, and abstention cases</td><td>100% pass and no known regression</td><td>Engineering plus risk owner</td><td>Block release</td></tr><tr><td>Moderate-risk task success</td><td>No material paired decline from current production</td><td>Product and evaluation owner</td><td>Inspect slices and remediate</td></tr><tr><td>High-risk subjective cases</td><td>Qualified reviewer approval with resolved disagreements</td><td>Domain reviewer</td><td>Hold for human decision</td></tr><tr><td>Latency and cost</td><td>Within a predeclared product budget</td><td>Operations and finance</td><td>Optimize or obtain an explicit exception</td></tr><tr><td>Evidence integrity</td><td>Complete manifest, reconciled usage, passing privacy audit</td><td>Evaluation owner</td><td>No publication and no promotion</td></tr></tbody></table><figcaption class="wp-element-caption">Calibrate every threshold to deployment risk, baseline variance, sample size, review capacity, and business impact.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading {"level":3,"anchor":"failure-analysis-order"} -->
+<h3 class="wp-block-heading" id="failure-analysis-order">A Practical Failure-Analysis Order</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li>Confirm the case, prompt, dataset, model, mode, and evaluator versions.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Separate transport, terminal-state, parsing, schema, evidence, policy, and task failures.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Reproduce offline when possible; do not spend another provider request by reflex.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Compare the same case against the production baseline and inspect the risk slice.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Send judge disagreement or ambiguous source interpretation to a reviewer.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Fix the responsible layer, add the reviewed failure to a new dataset version, and rerun the gate.</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:heading {"anchor":"method-and-sources"} -->
+<h2 class="wp-block-heading" id="method-and-sources">Method and Source Boundaries</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Current DeepSeek facts in this guide were checked against the official <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">models and pricing table</a>, <a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">Chat Completions reference</a>, <a href="https://api-docs.deepseek.com/guides/json_mode/" target="_blank" rel="noopener">JSON Output guide</a>, <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">Thinking Mode guide</a>, <a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">Tool Calls guide</a>, <a href="https://api-docs.deepseek.com/guides/kv_cache/" target="_blank" rel="noopener">context caching guide</a>, and <a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">account-level concurrency guide</a>. General risk and evaluation principles were cross-checked with <a href="https://airc.nist.gov/airmf-resources/airmf/5-sec-core/" target="_blank" rel="noopener">NIST AI RMF Measure guidance</a>. No third-party framework behavior is presented as a DeepSeek platform fact.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Before adapting the harness, create and protect credentials using the <a href="/docs/deepseek-api-key/">DeepSeek API key guide</a>. Compatible clients can also follow the <a href="/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a>, but the evaluation contract remains application-owned regardless of client library.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"faq"} -->
+<h2 class="wp-block-heading" id="faq">Frequently Asked Questions</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-what-is-framework"} -->
+<h3 class="wp-block-heading" id="faq-what-is-framework">What is a DeepSeek evaluation framework?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>It is a task-specific system for testing an application that uses DeepSeek. It versions cases and configuration, runs a baseline and candidate, applies deterministic, model-based, human, and operational checks, then uses predeclared release rules. The framework described here is an application-authored pattern, not an official DeepSeek product.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-how-to-evaluate"} -->
+<h3 class="wp-block-heading" id="faq-how-to-evaluate">How do you evaluate a DeepSeek API application?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Define the task and unacceptable failures, build a representative golden dataset, freeze the model and application configuration, run paired tests, score each failure dimension separately, review uncertain or high-risk cases, and block critical regressions. Continue sampling privacy-safe production failures into later dataset versions.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-dataset-size"} -->
+<h3 class="wp-block-heading" id="faq-dataset-size">How many examples should a DeepSeek golden dataset contain?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>There is no universal number. Coverage of deployment behavior, known failures, edge cases, adversarial cases, and high-risk segments matters more than a headline count. Start with reviewed cases for each critical workflow, publish the sample size and limitations, and grow the dataset from approved production evidence.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-rag-hallucinations"} -->
+<h3 class="wp-block-heading" id="faq-rag-hallucinations">How do you test DeepSeek hallucinations in a RAG system?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Score retrieval and generation separately. Check whether required evidence was retrieved, then classify each material answer claim as supported, unsupported, contradictory, or unverifiable. Test citation membership and abstention when context is insufficient. Also include stale, conflicting, and distractor documents so a plausible answer cannot hide a pipeline failure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-self-evaluation"} -->
+<h3 class="wp-block-heading" id="faq-self-evaluation">Can DeepSeek evaluate its own answers?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>It can act as a model judge for narrow classifications or pairwise comparisons, but the score is not ground truth. Calibrate it against blinded human labels, test self-preference, position and verbosity bias, prompt injection, and malformed judgments, and route disagreements to review.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-release-metrics"} -->
+<h3 class="wp-block-heading" id="faq-release-metrics">Which DeepSeek evaluation metrics should block a release?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Block failures tied to the application's defined harm: exact schema violations, unauthorized tools, failed required abstention, unsupported high-risk claims, or a known critical regression. Average relevance or preference scores should not override a case-level safety or authorization failure. Thresholds must be calibrated locally.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-ci"} -->
+<h3 class="wp-block-heading" id="faq-ci">How do you run DeepSeek regression tests in CI/CD?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Run offline dataset, scorer, schema, and privacy tests on every change. Put provider calls behind an explicit bounded job with a frozen plan, request and spend caps, controlled concurrency, zero automatic retries for the study, sanitized artifacts, and a fail-closed release and publication decision.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-flash-vs-pro"} -->
+<h3 class="wp-block-heading" id="faq-flash-vs-pro">How do you compare DeepSeek V4 Flash and V4 Pro fairly?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use identical versioned cases, prompts, context, tool schemas, mode settings, timeouts, evaluator versions, and case order. Compare paired case outcomes and report usage and estimated cost by model. Do not mix current API prices with historical benchmark assumptions, and do not call a small application test a general model ranking.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-repetitions"} -->
+<h3 class="wp-block-heading" id="faq-repetitions">How many times should each LLM evaluation case be repeated?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Repeat stochastic cases enough to reveal meaningful variation for the decision and risk level; there is no universal count. Report both observations and cases, show per-case disagreement, and use uncertainty intervals only when the sample supports them. One pass is an observation, not a reliability estimate.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"faq-cost-control"} -->
+<h3 class="wp-block-heading" id="faq-cost-control">How do you control the token cost of a DeepSeek evaluation run?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Freeze a request cap, output-token limits, model mix, concurrency, retry policy, and price snapshot before the run. Reserve requests in a ledger, stop at the cap, and calculate cache-hit input, cache-miss input, and output separately from provider-reported usage. Treat the result as an estimate until reconciled with billing records.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Bottom line:</strong> a useful DeepSeek evaluation framework does not chase one impressive score. It makes the task, evidence, uncertainty, privacy boundary, and release decision inspectable. Freeze what you test, measure the component that can fail, publish only sanitized evidence, and let reviewed production failures make the next version harder to fool.</p>
+<!-- /wp:paragraph -->

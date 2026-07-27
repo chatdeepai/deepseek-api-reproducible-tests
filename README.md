@@ -19,6 +19,13 @@ This public evidence repository contains bounded, reproducible live tests used b
   - separate streaming `reasoning_content` and `content` measurements;
   - JSON Output and model-routing checks;
   - redacted JSON and CSV result summaries plus editable visuals.
+- [DeepSeek API Error Codes](./error-codes/)
+  - bounded 200, 400, and 401 controls against the current Chat Completions endpoint;
+  - observed 404, 405, and 415 route, method, and media-type responses;
+  - dated invalid-model, message-shape, temperature, and `user_id` validation evidence;
+  - explicit separation between official definitions, live observations, and local simulations;
+  - deterministic offline retry-policy fixtures for 400, 401, 402, 422, 429, 500, 503, and timeouts;
+  - redacted JSON and CSV summaries with a hard live-request ceiling.
 
 ## Evidence policy
 

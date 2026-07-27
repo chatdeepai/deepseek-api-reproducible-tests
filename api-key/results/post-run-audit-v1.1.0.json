@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.1.0",
+  "audit_type": "offline_audit_of_preserved_sanitized_observation",
+  "source": "results/final-results-summary.json",
+  "source_run_id": "api-key-20260727-live-01",
+  "source_test_date_utc": "2026-07-27",
+  "provider_requests_issued": 0,
+  "verdict": "pass",
+  "checks": {
+    "sourceSchemaRecognized": true,
+    "declaredCaseCountMatches": true,
+    "caseIdsAreUnique": true,
+    "allCasesMarkedPassed": true,
+    "exactAuthorizedStatuses": true,
+    "exactRejectedStatuses": true,
+    "modelListSchemaRecorded": true,
+    "completionSchemaRecorded": true,
+    "completionUsageReconciles": true,
+    "balanceSchemaRecorded": true,
+    "temporaryKeysClosed": true,
+    "privacyFlagsClosed": true,
+    "staticSecretScanClean": true
+  },
+  "interpretation": "This deterministic audit validates the preserved sanitized July 27 observation. It does not reissue provider requests and does not claim that the corrected future-run harness produced the historical result.",
+  "limitations": [
+    "Credentials, raw headers, raw response bodies, account data, and monetary values were intentionally omitted and cannot be reconstructed by this audit.",
+    "A future provider rerun must produce a new dated result instead of overwriting the preserved observation."
+  ]
+}

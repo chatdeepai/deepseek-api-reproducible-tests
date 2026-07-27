@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek streaming reasoning content live evidence</title>
+  <desc id="desc">A sanitized event timeline showing separate reasoning content and final content deltas in a live streaming response.</desc>
+  <rect width="1600" height="900" fill="#07111f"/>
+  <text x="90" y="98" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" fill="#f8fafc">Streaming: keep two independent buffers</text>
+  <text x="90" y="146" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23" fill="#94a3b8">Live V4 Flash response - 30 parsed events - HTTP 200 - raw reasoning redacted</text>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <rect x="90" y="214" width="1420" height="300" rx="30" fill="#111827" stroke="#334155" stroke-width="2"/>
+    <text x="132" y="270" font-size="23" font-weight="800" fill="#94a3b8">EVENT INDEX</text>
+    <line x1="162" y1="370" x2="1438" y2="370" stroke="#475569" stroke-width="8" stroke-linecap="round"/>
+
+    <rect x="205" y="326" width="982" height="88" rx="24" fill="#1d4ed8"/>
+    <text x="696" y="380" text-anchor="middle" font-size="28" font-weight="800" fill="#dbeafe">reasoning_content - events 1 through 23</text>
+
+    <rect x="1200" y="326" width="238" height="88" rx="24" fill="#059669"/>
+    <text x="1319" y="380" text-anchor="middle" font-size="27" font-weight="800" fill="#d1fae5">content - 24+</text>
+
+    <text x="162" y="458" font-size="21" fill="#94a3b8">0</text>
+    <text x="205" y="458" font-size="21" fill="#7dd3fc">1</text>
+    <text x="1170" y="458" font-size="21" fill="#7dd3fc">23</text>
+    <text x="1200" y="458" font-size="21" fill="#86efac">24</text>
+    <text x="1420" y="458" font-size="21" fill="#86efac">29</text>
+
+    <rect x="90" y="558" width="680" height="220" rx="28" fill="#0f172a" stroke="#1e3a8a"/>
+    <text x="132" y="614" font-size="25" font-weight="800" fill="#7dd3fc">SANITIZED COUNTS</text>
+    <text x="132" y="670" font-size="24" fill="#e2e8f0">23 reasoning chunks / 99 characters</text>
+    <text x="132" y="716" font-size="24" fill="#e2e8f0">5 content chunks / valid final JSON</text>
+    <text x="132" y="758" font-size="22" fill="#94a3b8">23 reasoning tokens in usage</text>
+
+    <rect x="814" y="558" width="696" height="220" rx="28" fill="#0f172a" stroke="#0f766e"/>
+    <text x="856" y="614" font-size="25" font-weight="800" fill="#86efac">SAFE PARSER RULE</text>
+    <text x="856" y="670" font-size="24" fill="#e2e8f0">Append delta.reasoning_content when present.</text>
+    <text x="856" y="716" font-size="24" fill="#e2e8f0">Append delta.content independently when present.</text>
+    <text x="856" y="758" font-size="22" fill="#94a3b8">Do not use else: a future chunk could contain both.</text>
+  </g>
+  <text x="90" y="852" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21" fill="#94a3b8">The final usage-bearing chunk can have no choice delta; guard every array access.</text>
+</svg>

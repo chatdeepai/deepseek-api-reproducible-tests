@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek history and tool-call replay controls</title>
+  <desc id="desc">Live results comparing ordinary prior reasoning history and thinking-mode tool-call history against the documented contract.</desc>
+  <rect width="1600" height="900" fill="#07111f"/>
+  <text x="88" y="98" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" fill="#f8fafc">What the API ignored, and what it accepted</text>
+  <text x="88" y="146" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23" fill="#94a3b8">Dated live controls - production examples still follow the official contract</text>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <rect x="88" y="204" width="694" height="500" rx="30" fill="#111827" stroke="#334155" stroke-width="2"/>
+    <text x="128" y="260" font-size="25" font-weight="800" fill="#7dd3fc">ORDINARY MULTI-TURN HISTORY</text>
+    <text x="128" y="310" font-size="22" fill="#cbd5e1">Previous assistant turn had no tool call.</text>
+
+    <rect x="128" y="354" width="614" height="82" rx="18" fill="#172554"/>
+    <text x="160" y="405" font-size="24" fill="#f8fafc">Replay actual reasoning</text>
+    <text x="650" y="405" text-anchor="end" font-size="24" font-weight="800" fill="#86efac">40 prompt tokens</text>
+
+    <rect x="128" y="452" width="614" height="82" rx="18" fill="#172554"/>
+    <text x="160" y="503" font-size="24" fill="#f8fafc">Omit reasoning</text>
+    <text x="650" y="503" text-anchor="end" font-size="24" font-weight="800" fill="#86efac">40 prompt tokens</text>
+
+    <rect x="128" y="550" width="614" height="82" rx="18" fill="#172554"/>
+    <text x="160" y="601" font-size="24" fill="#f8fafc">Insert long sentinel</text>
+    <text x="650" y="601" text-anchor="end" font-size="24" font-weight="800" fill="#86efac">40 prompt tokens</text>
+
+    <text x="128" y="672" font-size="21" fill="#94a3b8">All three returned HTTP 200 and the correct synthetic code.</text>
+
+    <rect x="818" y="204" width="694" height="500" rx="30" fill="#111827" stroke="#0f766e" stroke-width="2"/>
+    <text x="858" y="260" font-size="25" font-weight="800" fill="#86efac">THINKING TOOL-CALL HISTORY</text>
+    <text x="858" y="310" font-size="22" fill="#cbd5e1">Docs require full reasoning replay and warn of HTTP 400.</text>
+
+    <text x="858" y="378" font-size="23" font-weight="700" fill="#f8fafc">V4 Flash</text>
+    <rect x="1022" y="342" width="205" height="58" rx="15" fill="#064e3b"/>
+    <text x="1124" y="379" text-anchor="middle" font-size="22" font-weight="800" fill="#d1fae5">Replay: 200</text>
+    <rect x="1246" y="342" width="220" height="58" rx="15" fill="#064e3b"/>
+    <text x="1356" y="379" text-anchor="middle" font-size="22" font-weight="800" fill="#d1fae5">Omit: 200</text>
+
+    <text x="858" y="478" font-size="23" font-weight="700" fill="#f8fafc">V4 Pro</text>
+    <rect x="1022" y="442" width="205" height="58" rx="15" fill="#064e3b"/>
+    <text x="1124" y="479" text-anchor="middle" font-size="22" font-weight="800" fill="#d1fae5">Replay: 200</text>
+    <rect x="1246" y="442" width="220" height="58" rx="15" fill="#064e3b"/>
+    <text x="1356" y="479" text-anchor="middle" font-size="22" font-weight="800" fill="#d1fae5">Omit: 200</text>
+
+    <text x="858" y="566" font-size="23" font-weight="700" fill="#f8fafc">tool_choice: "auto"</text>
+    <text x="858" y="606" font-size="22" fill="#86efac">Accepted on Flash and Pro; both produced a tool call.</text>
+    <text x="858" y="660" font-size="21" fill="#94a3b8">Bounded July 27 behavior differed from current compatibility notes.</text>
+  </g>
+
+  <rect x="88" y="748" width="1424" height="96" rx="22" fill="#7c2d12" opacity=".88"/>
+  <text x="128" y="790" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="25" font-weight="800" fill="#ffedd5">Production rule: preserve content, reasoning_content, and tool_calls.</text>
+  <text x="128" y="824" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21" fill="#fed7aa">A permissive live validator can tighten later. Treat the documentation as the stable contract.</text>
+</svg>

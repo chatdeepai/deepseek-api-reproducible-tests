@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek reasoning effort and output budget live test</title>
+  <desc id="desc">A comparison of high and max reasoning effort plus a warning that reasoning tokens can consume the full max tokens budget.</desc>
+  <rect width="1600" height="900" fill="#f8fafc"/>
+  <text x="90" y="98" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" fill="#0f172a">Reasoning effort uses the output budget</text>
+  <text x="90" y="146" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23" fill="#475569">V4 Flash - same scheduling puzzle - single live high/max control at max_tokens 1024</text>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <rect x="90" y="208" width="940" height="430" rx="30" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="132" y="260" font-size="24" font-weight="800" fill="#334155">REASONING TOKENS</text>
+    <text x="132" y="344" font-size="28" font-weight="800" fill="#1d4ed8">high</text>
+    <rect x="260" y="306" width="650" height="54" rx="14" fill="#e2e8f0"/>
+    <rect x="260" y="306" width="305" height="54" rx="14" fill="#38bdf8"/>
+    <text x="585" y="344" font-size="27" font-weight="800" fill="#0f172a">376</text>
+
+    <text x="132" y="454" font-size="28" font-weight="800" fill="#047857">max</text>
+    <rect x="260" y="416" width="650" height="54" rx="14" fill="#e2e8f0"/>
+    <rect x="260" y="416" width="650" height="54" rx="14" fill="#34d399"/>
+    <text x="930" y="454" font-size="27" font-weight="800" fill="#0f172a">802</text>
+
+    <text x="132" y="548" font-size="25" fill="#334155">Observed max/high ratio</text>
+    <text x="520" y="548" font-size="36" font-weight="800" fill="#0f172a">2.13x tokens</text>
+    <text x="132" y="598" font-size="25" fill="#334155">Client-side latency</text>
+    <text x="520" y="598" font-size="30" font-weight="800" fill="#0f172a">3998 ms vs 6998 ms</text>
+
+    <rect x="1070" y="208" width="440" height="430" rx="30" fill="#0f172a"/>
+    <text x="1110" y="260" font-size="23" font-weight="800" fill="#7dd3fc">ESTIMATED REQUEST COST</text>
+    <text x="1110" y="342" font-size="24" fill="#cbd5e1">high</text>
+    <text x="1110" y="390" font-size="42" font-weight="800" fill="#ffffff">$0.00011746</text>
+    <text x="1110" y="476" font-size="24" fill="#cbd5e1">max</text>
+    <text x="1110" y="524" font-size="42" font-weight="800" fill="#ffffff">$0.00024752</text>
+    <text x="1110" y="582" font-size="23" font-weight="700" fill="#86efac">2.11x in this one pair</text>
+  </g>
+
+  <rect x="90" y="688" width="1420" height="132" rx="26" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+  <text x="132" y="742" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="27" font-weight="800" fill="#9a3412">Budget failure reproduced at max_tokens 512</text>
+  <text x="132" y="786" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" fill="#7c2d12">low used 512/512 reasoning tokens; max used 511/512. Both ended with finish_reason "length" and empty final content.</text>
+  <text x="90" y="864" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21" fill="#64748b">Do not generalize the ratios. The reliable production lesson is to inspect finish_reason and reserve enough output tokens.</text>
+</svg>

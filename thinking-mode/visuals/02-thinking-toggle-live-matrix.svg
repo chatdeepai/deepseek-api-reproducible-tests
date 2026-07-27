@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Live DeepSeek thinking toggle matrix</title>
+  <desc id="desc">A six-request matrix showing that omitted and enabled thinking returned reasoning content while disabled thinking did not.</desc>
+  <rect width="1600" height="900" fill="#07111f"/>
+  <text x="88" y="98" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="48" font-weight="800" fill="#f8fafc">Thinking toggle: six live API requests</text>
+  <text x="88" y="146" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="23" fill="#94a3b8">Same arithmetic task - answer valid in every row - raw reasoning not stored</text>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <text x="105" y="228" font-size="23" font-weight="800" fill="#94a3b8">MODEL</text>
+    <text x="355" y="228" font-size="23" font-weight="800" fill="#94a3b8">SETTING</text>
+    <text x="735" y="228" font-size="23" font-weight="800" fill="#94a3b8">REASONING</text>
+    <text x="1015" y="228" font-size="23" font-weight="800" fill="#94a3b8">TOKENS</text>
+    <text x="1220" y="228" font-size="23" font-weight="800" fill="#94a3b8">HTTP / TIME</text>
+  </g>
+
+  <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <g>
+      <rect x="82" y="254" width="1436" height="82" rx="18" fill="#111827" stroke="#1e3a8a"/>
+      <text x="105" y="305" font-size="25" font-weight="800" fill="#7dd3fc">V4 Flash</text>
+      <text x="355" y="305" font-size="25" fill="#e2e8f0">Omitted</text>
+      <text x="735" y="305" font-size="25" font-weight="800" fill="#34d399">Present</text>
+      <text x="1015" y="305" font-size="25" fill="#f8fafc">85 reasoning</text>
+      <text x="1220" y="305" font-size="25" fill="#f8fafc">200 / 1521 ms</text>
+    </g>
+    <g>
+      <rect x="82" y="350" width="1436" height="82" rx="18" fill="#111827" stroke="#1e3a8a"/>
+      <text x="105" y="401" font-size="25" font-weight="800" fill="#7dd3fc">V4 Flash</text>
+      <text x="355" y="401" font-size="25" fill="#e2e8f0">Enabled</text>
+      <text x="735" y="401" font-size="25" font-weight="800" fill="#34d399">Present</text>
+      <text x="1015" y="401" font-size="25" fill="#f8fafc">91 reasoning</text>
+      <text x="1220" y="401" font-size="25" fill="#f8fafc">200 / 1483 ms</text>
+    </g>
+    <g>
+      <rect x="82" y="446" width="1436" height="82" rx="18" fill="#111827" stroke="#334155"/>
+      <text x="105" y="497" font-size="25" font-weight="800" fill="#7dd3fc">V4 Flash</text>
+      <text x="355" y="497" font-size="25" fill="#e2e8f0">Disabled</text>
+      <text x="735" y="497" font-size="25" font-weight="800" fill="#fb7185">Absent</text>
+      <text x="1015" y="497" font-size="25" fill="#f8fafc">0 reasoning</text>
+      <text x="1220" y="497" font-size="25" fill="#f8fafc">200 / 1176 ms</text>
+    </g>
+    <g>
+      <rect x="82" y="542" width="1436" height="82" rx="18" fill="#111827" stroke="#0f766e"/>
+      <text x="105" y="593" font-size="25" font-weight="800" fill="#86efac">V4 Pro</text>
+      <text x="355" y="593" font-size="25" fill="#e2e8f0">Omitted</text>
+      <text x="735" y="593" font-size="25" font-weight="800" fill="#34d399">Present</text>
+      <text x="1015" y="593" font-size="25" fill="#f8fafc">157 reasoning</text>
+      <text x="1220" y="593" font-size="25" fill="#f8fafc">200 / 2550 ms</text>
+    </g>
+    <g>
+      <rect x="82" y="638" width="1436" height="82" rx="18" fill="#111827" stroke="#0f766e"/>
+      <text x="105" y="689" font-size="25" font-weight="800" fill="#86efac">V4 Pro</text>
+      <text x="355" y="689" font-size="25" fill="#e2e8f0">Enabled</text>
+      <text x="735" y="689" font-size="25" font-weight="800" fill="#34d399">Present</text>
+      <text x="1015" y="689" font-size="25" fill="#f8fafc">105 reasoning</text>
+      <text x="1220" y="689" font-size="25" fill="#f8fafc">200 / 2232 ms</text>
+    </g>
+    <g>
+      <rect x="82" y="734" width="1436" height="82" rx="18" fill="#111827" stroke="#334155"/>
+      <text x="105" y="785" font-size="25" font-weight="800" fill="#86efac">V4 Pro</text>
+      <text x="355" y="785" font-size="25" fill="#e2e8f0">Disabled</text>
+      <text x="735" y="785" font-size="25" font-weight="800" fill="#fb7185">Absent</text>
+      <text x="1015" y="785" font-size="25" fill="#f8fafc">0 reasoning</text>
+      <text x="1220" y="785" font-size="25" fill="#f8fafc">200 / 1035 ms</text>
+    </g>
+  </g>
+  <text x="88" y="864" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="22" fill="#94a3b8">One request per row. Use the result to verify field behavior, not to rank general latency.</text>
+</svg>

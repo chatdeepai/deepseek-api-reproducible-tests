@@ -1,0 +1,579 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "mode": "offline",
+  "deterministic_fixture_date": "2026-07-27",
+  "live_network_requests": 0,
+  "lifecycle_record_count": 6,
+  "lifecycle_summaries": [
+    {
+      "schema_version": 1,
+      "route_alias": "chat_completion",
+      "model": "deepseek-v4-flash",
+      "state": "completed",
+      "outcome": "success",
+      "status": 200,
+      "finish_reason": "stop",
+      "attempt_count": 1,
+      "retry_count": 0,
+      "duration_ms": 150,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 90,
+          "status": 200
+        },
+        {
+          "schema_version": 1,
+          "event": "completed",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "outcome": "success",
+          "finish_reason": "stop",
+          "attempt": 1,
+          "at_ms": 150,
+          "status": 200
+        }
+      ],
+      "cost_estimate": {
+        "status": "estimated",
+        "snapshot_id": "deepseek-pricing-2026-07-27",
+        "currency": "USD",
+        "prompt_tokens": 20,
+        "completion_tokens": 5,
+        "total_tokens": 25,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 20,
+        "reasoning_tokens": 0,
+        "reasoning_tokens_already_in_completion": true,
+        "estimated_cost_usd": "0.000004200000"
+      },
+      "stream_metrics": null,
+      "tool_trace": null,
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    },
+    {
+      "schema_version": 1,
+      "route_alias": "chat_stream",
+      "model": "deepseek-v4-flash",
+      "state": "completed",
+      "outcome": "success",
+      "status": 200,
+      "finish_reason": "stop",
+      "attempt_count": 1,
+      "retry_count": 0,
+      "duration_ms": 560,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "chat_stream",
+          "model": "deepseek-v4-flash",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "chat_stream",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "chat_stream",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 80,
+          "status": 200
+        },
+        {
+          "schema_version": 1,
+          "event": "stream_started",
+          "correlation_linked": true,
+          "route_alias": "chat_stream",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 90
+        },
+        {
+          "schema_version": 1,
+          "event": "completed",
+          "correlation_linked": true,
+          "route_alias": "chat_stream",
+          "model": "deepseek-v4-flash",
+          "outcome": "success",
+          "finish_reason": "stop",
+          "attempt": 1,
+          "at_ms": 560,
+          "status": 200
+        }
+      ],
+      "cost_estimate": {
+        "status": "estimated",
+        "snapshot_id": "deepseek-pricing-2026-07-27",
+        "currency": "USD",
+        "prompt_tokens": 18,
+        "completion_tokens": 6,
+        "total_tokens": 24,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 18,
+        "reasoning_tokens": 0,
+        "reasoning_tokens_already_in_completion": true,
+        "estimated_cost_usd": "0.000004200000"
+      },
+      "stream_metrics": {
+        "network_chunk_count": 1,
+        "json_event_count": 2,
+        "content_delta_count": 2,
+        "reasoning_delta_count": 0,
+        "content_chars": 12,
+        "reasoning_chars": 0,
+        "time_to_first_network_chunk_ms": 100,
+        "time_to_first_json_event_ms": 120,
+        "time_to_first_content_ms": 210,
+        "maximum_inter_event_gap_ms": 180,
+        "terminal_usage_present": true,
+        "finish_reason": "stop",
+        "duration_ms": 560,
+        "raw_chunks_retained": false
+      },
+      "tool_trace": null,
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    },
+    {
+      "schema_version": 1,
+      "route_alias": "tool_round_trip",
+      "model": "deepseek-v4-flash",
+      "state": "completed",
+      "outcome": "success",
+      "status": 200,
+      "finish_reason": "stop",
+      "attempt_count": 1,
+      "retry_count": 0,
+      "duration_ms": 240,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "tool_round_trip",
+          "model": "deepseek-v4-flash",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "tool_round_trip",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "tool_round_trip",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 85,
+          "status": 200
+        },
+        {
+          "schema_version": 1,
+          "event": "completed",
+          "correlation_linked": true,
+          "route_alias": "tool_round_trip",
+          "model": "deepseek-v4-flash",
+          "outcome": "success",
+          "finish_reason": "stop",
+          "attempt": 1,
+          "at_ms": 240,
+          "status": 200
+        }
+      ],
+      "cost_estimate": {
+        "status": "estimated",
+        "snapshot_id": "deepseek-pricing-2026-07-27",
+        "currency": "USD",
+        "prompt_tokens": 80,
+        "completion_tokens": 20,
+        "total_tokens": 100,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 80,
+        "reasoning_tokens": 0,
+        "reasoning_tokens_already_in_completion": true,
+        "estimated_cost_usd": "0.000016800000"
+      },
+      "stream_metrics": null,
+      "tool_trace": {
+        "tool_alias": "tool_lookup_synthetic",
+        "phase_count": 5,
+        "phases": [
+          "tool_requested",
+          "tool_validated",
+          "tool_authorized",
+          "tool_executed",
+          "tool_replayed"
+        ],
+        "validation_passed": true,
+        "authorization_passed": true,
+        "execution_outcome": "pass",
+        "trace_complete": true,
+        "duration_ms": 180,
+        "correlation_linked": true,
+        "provider_tool_call_id_stored": false,
+        "tool_arguments_stored": false,
+        "tool_result_stored": false
+      },
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    },
+    {
+      "schema_version": 1,
+      "route_alias": "chat_completion",
+      "model": "deepseek-v4-flash",
+      "state": "completed",
+      "outcome": "success",
+      "status": 200,
+      "finish_reason": "stop",
+      "attempt_count": 2,
+      "retry_count": 1,
+      "duration_ms": 480,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 70,
+          "status": 503
+        },
+        {
+          "schema_version": 1,
+          "event": "retry_scheduled",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "error_class": "provider_overloaded",
+          "attempt": 1,
+          "at_ms": 80,
+          "retry_delay_ms": 250
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 2,
+          "at_ms": 330
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 2,
+          "at_ms": 420,
+          "status": 200
+        },
+        {
+          "schema_version": 1,
+          "event": "completed",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "outcome": "success",
+          "finish_reason": "stop",
+          "attempt": 2,
+          "at_ms": 480,
+          "status": 200
+        }
+      ],
+      "cost_estimate": {
+        "status": "estimated",
+        "snapshot_id": "deepseek-pricing-2026-07-27",
+        "currency": "USD",
+        "prompt_tokens": 22,
+        "completion_tokens": 4,
+        "total_tokens": 26,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 22,
+        "reasoning_tokens": 0,
+        "reasoning_tokens_already_in_completion": true,
+        "estimated_cost_usd": "0.000004200000"
+      },
+      "stream_metrics": null,
+      "tool_trace": null,
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    },
+    {
+      "schema_version": 1,
+      "route_alias": "chat_completion",
+      "model": "deepseek-v4-flash",
+      "state": "failed",
+      "outcome": "provider_error",
+      "status": 429,
+      "finish_reason": null,
+      "attempt_count": 1,
+      "retry_count": 0,
+      "duration_ms": 110,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "attempt": 1,
+          "at_ms": 95,
+          "status": 429
+        },
+        {
+          "schema_version": 1,
+          "event": "failed",
+          "correlation_linked": true,
+          "route_alias": "chat_completion",
+          "model": "deepseek-v4-flash",
+          "outcome": "provider_error",
+          "error_class": "rate_limited",
+          "attempt": 1,
+          "at_ms": 110,
+          "status": 429
+        }
+      ],
+      "cost_estimate": null,
+      "stream_metrics": null,
+      "tool_trace": null,
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    },
+    {
+      "schema_version": 1,
+      "route_alias": "thinking_completion",
+      "model": "deepseek-v4-pro",
+      "state": "completed",
+      "outcome": "incomplete",
+      "status": 200,
+      "finish_reason": "length",
+      "attempt_count": 1,
+      "retry_count": 0,
+      "duration_ms": 900,
+      "correlation_linked": true,
+      "lifecycle_events": [
+        {
+          "schema_version": 1,
+          "event": "created",
+          "correlation_linked": true,
+          "route_alias": "thinking_completion",
+          "model": "deepseek-v4-pro",
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "attempt_started",
+          "correlation_linked": true,
+          "route_alias": "thinking_completion",
+          "model": "deepseek-v4-pro",
+          "attempt": 1,
+          "at_ms": 0
+        },
+        {
+          "schema_version": 1,
+          "event": "headers_received",
+          "correlation_linked": true,
+          "route_alias": "thinking_completion",
+          "model": "deepseek-v4-pro",
+          "attempt": 1,
+          "at_ms": 100,
+          "status": 200
+        },
+        {
+          "schema_version": 1,
+          "event": "completed",
+          "correlation_linked": true,
+          "route_alias": "thinking_completion",
+          "model": "deepseek-v4-pro",
+          "outcome": "incomplete",
+          "finish_reason": "length",
+          "attempt": 1,
+          "at_ms": 900,
+          "status": 200
+        }
+      ],
+      "cost_estimate": {
+        "status": "estimated",
+        "snapshot_id": "deepseek-pricing-2026-07-27",
+        "currency": "USD",
+        "prompt_tokens": 24,
+        "completion_tokens": 32,
+        "total_tokens": 56,
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 24,
+        "reasoning_tokens": 30,
+        "reasoning_tokens_already_in_completion": true,
+        "estimated_cost_usd": "0.000038280000"
+      },
+      "stream_metrics": null,
+      "tool_trace": null,
+      "provider_request_id_stored": false,
+      "internal_correlation_id_stored": false
+    }
+  ],
+  "retry_controls": {
+    "cases": [
+      {
+        "category": "rate_limited",
+        "retryable": true,
+        "action": "schedule_backoff"
+      },
+      {
+        "category": "request_defect",
+        "retryable": false,
+        "action": "fix_or_surface"
+      },
+      {
+        "category": "side_effect_uncertain",
+        "retryable": false,
+        "action": "reconcile_before_retry"
+      }
+    ],
+    "first_retry_backoff_ms": 250,
+    "second_retry_backoff_ms": 500
+  },
+  "redaction_controls": {
+    "synthetic_patterns_checked": 6,
+    "all_patterns_redacted": true,
+    "allowlisted_record_field_count": 10,
+    "unsafe_fields_discarded": true
+  },
+  "dashboard": {
+    "schema_version": 1,
+    "request_total": 6,
+    "success_total": 4,
+    "incomplete_total": 1,
+    "failure_total": 1,
+    "availability": 0.666667,
+    "error_rate": 0.166667,
+    "incomplete_rate": 0.166667,
+    "attempt_total": 7,
+    "retry_total": 1,
+    "p50_duration_ms": 240,
+    "p95_duration_ms": 900,
+    "stream_total": 1,
+    "p95_time_to_first_content_ms": 210,
+    "tool_trace_total": 1,
+    "complete_tool_trace_total": 1,
+    "prompt_tokens": 164,
+    "completion_tokens": 67,
+    "total_tokens": 231,
+    "estimated_cost_usd": "0.000067680000",
+    "raw_payloads_retained": false,
+    "internal_identifiers_published": false
+  },
+  "slo_evaluation": {
+    "status": "critical",
+    "sample_size": 6,
+    "availability_error_budget_burn": 33.3333,
+    "alerts": [
+      {
+        "metric": "availability_error_budget_burn",
+        "severity": "critical",
+        "observed": 33.3333,
+        "target": 5
+      },
+      {
+        "metric": "incomplete_rate",
+        "severity": "warning",
+        "observed": 0.166667,
+        "target": 0.01
+      }
+    ]
+  },
+  "correlation_controls": {
+    "lifecycle_links_present": true,
+    "internal_identifiers_published": false
+  },
+  "privacy_boundary": {
+    "raw_prompts_stored": false,
+    "raw_outputs_stored": false,
+    "raw_reasoning_stored": false,
+    "provider_identifiers_stored": false,
+    "tool_payloads_stored": false,
+    "credentials_stored": false
+  }
+}

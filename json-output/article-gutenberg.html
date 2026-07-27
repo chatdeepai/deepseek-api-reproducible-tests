@@ -1,0 +1,605 @@
+<!-- wp:paragraph -->
+<p><strong>DeepSeek JSON Output is enabled by sending <code>"response_format": {"type": "json_object"}</code>, explicitly asking for JSON in the system or user prompt, showing the desired object shape, and allowing enough output tokens to finish it.</strong> DeepSeek’s official contract is about syntactically valid JSON. Your application must still verify required keys, primitive types, enums, null handling, ranges, and business rules before it trusts the result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide separates three evidence types. <strong>Official</strong> means a statement appears in DeepSeek’s current documentation. <strong>Live</strong> means a dated result from the bounded V4 test matrix and includes an exact denominator. <strong>Offline</strong> means a deterministic parser or validator fixture that made no provider request. The live and offline result fields below are populated from reviewed, sanitized artifacts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Official documentation was reviewed on July 27, 2026 UTC. Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek. The existing canonical URL remains <code>https://chat-deep.ai/docs/json-output/</code>; this page belongs in the Docs category and uses no WordPress tags.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Live — July 27, 2026 UTC:</strong> the bounded execution ran from <code>09:44:48.338Z</code> to <code>09:48:42.812Z</code>. One <code>GET /models</code> request returned HTTP 200 in 808.470 ms and listed <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. The 20 planned completion requests produced 18 HTTP 200 responses and two bounded HTTP 400 controls. Final content was non-empty in 18/18 successful completions; 17/18 parsed as JSON, 17/18 passed the exact local schema, and 16/18 matched every reference fact. Both streaming tests, 2/2, reached <code>[DONE]</code>. The two repetitions in each core configuration are descriptive observations, not population reliability estimates.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">DeepSeek JSON Output requirements</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> DeepSeek’s <a href="https://api-docs.deepseek.com/guides/json_mode/">JSON Output guide</a> lists four practical requirements and cautions. The current <a href="https://api-docs.deepseek.com/api/create-chat-completion/">Chat Completion reference</a> adds an important whitespace warning and defines the accepted <code>response_format.type</code> values.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Requirement</th><th>Why it matters</th><th>Production check</th></tr></thead><tbody><tr><td>Set <code>response_format.type</code> to <code>json_object</code></td><td>Enables DeepSeek JSON Output instead of the default <code>text</code> format</td><td>Assert the request body contains the exact object</td></tr><tr><td>Include the word <code>json</code> in a system or user prompt</td><td>The official guide requires an explicit JSON instruction</td><td>Validate the final prompt after templates are assembled</td></tr><tr><td>Provide an example of the desired JSON shape</td><td>Guides the model toward the intended structure</td><td>Use an example with the same keys and primitive types</td></tr><tr><td>Set <code>max_tokens</code> reasonably</td><td>An insufficient allowance can cut the JSON string off midway</td><td>Treat <code>finish_reason: "length"</code> as potentially incomplete</td></tr><tr><td>Handle empty content</td><td>DeepSeek says JSON Output may occasionally return empty content</td><td>Check for a non-empty string before calling <code>JSON.parse</code></td></tr></tbody></table><figcaption class="wp-element-caption">Official requirements summarized from DeepSeek’s JSON Output guide and Chat Completion reference, checked July 27, 2026 UTC.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7599,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/official-json-output-requirements.png" alt="Official DeepSeek JSON Output notice listing response_format json_object, the JSON prompt instruction, example shape, max_tokens, and empty-content guidance." class="wp-image-7599"/><figcaption class="wp-element-caption">Official DeepSeek JSON Output notice, captured July 27, 2026 UTC. The image contains public documentation only.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>The reference says <code>response_format.type</code> accepts <code>text</code> or <code>json_object</code>, and <code>text</code> is the default. It also warns that enabling JSON Output without instructing the model to produce JSON can lead to a stream of whitespace until the output limit, making the request appear stuck. This is why the API control and the prompt instruction belong together.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Minimal raw HTTPS request</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>curl https://api.deepseek.com/chat/completions \
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek-v4-flash",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Return JSON only. Use exactly this shape: {\"ticket_id\":\"T-204\",\"issue\":\"account_access\",\"reset_attempts\":3,\"order_id\":null,\"urgent\":true}"
+      },
+      {
+        "role": "user",
+        "content": "Ticket T-204: The customer cannot sign in after three failed password resets. No order ID was provided."
+      }
+    ],
+    "response_format": {"type": "json_object"},
+    "thinking": {"type": "disabled"},
+    "max_tokens": 128,
+    "stream": false
+  }'</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The explicit non-thinking setting is an editorial starting configuration for a small extraction task, not an official claim that thinking must be disabled for JSON. DeepSeek’s current model documentation says both V4 models support JSON Output and both thinking modes. The original matrix therefore tests enabled and disabled modes instead of assuming one is universally better.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Valid JSON is not the same as schema-valid data</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><code>JSON.parse</code> answers a narrow question: is this string valid JSON syntax? It does not prove that the top-level value is an object, that required keys exist, that unexpected keys are absent, or that values have the right types. A response can be valid JSON and still be unusable or unsafe for the application.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Validation layer</th><th>Example failure that still passes earlier layers</th><th>Required action</th></tr></thead><tbody><tr><td>Non-empty content</td><td>An empty string has no JSON value to parse</td><td>Reject or follow a bounded recovery policy</td></tr><tr><td>JSON syntax</td><td><code>{"urgent":"yes"}</code> parses successfully</td><td>Run a schema validator after parsing</td></tr><tr><td>Top-level shape</td><td><code>[]</code> is valid JSON but not the required object</td><td>Require a non-null, non-array object</td></tr><tr><td>Exact keys</td><td>A required field is missing or an unapproved field appears</td><td>Compare required and allowed key sets</td></tr><tr><td>Primitive types and enums</td><td><code>reset_attempts</code> is a string or <code>issue</code> is outside the enum</td><td>Validate each property</td></tr><tr><td>Reference facts</td><td>The schema is valid but the ticket ID or count is wrong</td><td>Compare extractable facts with the source</td></tr><tr><td>Business rules</td><td><code>urgent</code> is false when resets are three or more</td><td>Recompute deterministic rules locally</td></tr></tbody></table><figcaption class="wp-element-caption">Application validation continues after syntactic JSON parsing.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7602,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-parse-vs-schema.png" alt="Valid JSON that passes parsing but fails local schema checks for types, missing keys, and extra keys." class="wp-image-7602"/><figcaption class="wp-element-caption">Valid JSON is only the syntax layer; applications must still enforce exact keys, types, enums, null rules, source facts, and business rules.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>For the benchmark’s synthetic ticket, the exact object contains five keys: <code>ticket_id</code>, <code>issue</code>, <code>reset_attempts</code>, <code>order_id</code>, and <code>urgent</code>. The local validator checks the exact key set, types, the permitted <code>issue</code> enum, explicit null behavior, source facts, and the rule that three or more failed resets make the ticket urgent. That scoring is a local contract, not a provider-side JSON Schema guarantee.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Original V4 test methodology</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The bounded study added reproducible evidence without turning a correctness test into a load test. It used one authenticated model inventory request followed by exactly 20 sequential Chat Completions calls. Application concurrency was one, automatic live retries were disabled, and the safety policy stopped a segment after an unexpected non-success response or transport failure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>Fixed origin:</strong> <code>https://api.deepseek.com</code>.</li><li><strong>Allowed completion endpoint:</strong> <code>/chat/completions</code>.</li><li><strong>Allowed models:</strong> <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>.</li><li><strong>Maximum live concurrency:</strong> one.</li><li><strong>Automatic retries:</strong> zero.</li><li><strong>Per-request deadline:</strong> 60 seconds.</li><li><strong>Largest output allowance:</strong> 512 tokens.</li><li><strong>Inputs:</strong> synthetic, English-only, and free of private data.</li><li><strong>Excluded:</strong> account, balance, billing, key-management, alias, and deliberate rate-limit tests.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The bounded harness recorded only sanitized metadata: test label, date, public model name, request settings, status, elapsed time, finish reason, content presence and length, hashes, parser and validator flags, token counters, and streaming event counts. It did not publish the API key, Authorization header, balance, provider completion ID, system fingerprint, raw response headers, raw reasoning, or arbitrary failed output. The <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a> owns credential setup and rotation; this page does not reproduce those steps.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Group</th><th>Purpose</th><th>Calls</th></tr></thead><tbody><tr><td>A</td><td>Flash/Pro × thinking enabled/disabled, two descriptive repetitions</td><td>8</td></tr><tr><td>B</td><td>Prompt requirement ablation</td><td>3</td></tr><tr><td>C</td><td>Truncation, escaping, synthetic injection, and null edge cases</td><td>5</td></tr><tr><td>D</td><td>Streaming assembly on Flash and Pro</td><td>2</td></tr><tr><td>E</td><td>Strong prompt with <code>response_format</code> omitted</td><td>2</td></tr></tbody></table><figcaption class="wp-element-caption">Executed bounded matrix: 20 Chat Completions requests, sequential execution, no automatic live retries, and a total configured output allowance of 5,704 tokens.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The execution completed in three safety-bounded segments. Segment one stopped after B2 returned HTTP 400. After review, segment two submitted only the next unexecuted test, B3, and stopped when that bounded control also returned HTTP 400. Segment three resumed at C1 and completed C1–E2. No earlier completion was repeated: the final merged artifact contains one inventory request and each test ID A1–E2 exactly once, for 21 HTTP requests in total.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">V4 Flash and Pro with thinking enabled or disabled</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> the <a href="https://api-docs.deepseek.com/api/list-models/">model inventory reference</a> and Chat Completion model enum identify <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. The current <a href="https://api-docs.deepseek.com/quick_start/pricing/">Models &amp; Pricing page</a> marks JSON Output as supported on both. It also says both support thinking and non-thinking modes, with thinking enabled by default.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> DeepSeek’s <a href="https://api-docs.deepseek.com/guides/thinking_mode/">Thinking Mode guide</a> places intermediate reasoning in <code>reasoning_content</code> and the final answer in <code>content</code>. JSON parsing belongs on final <code>content</code>, not on <code>reasoning_content</code>. The benchmark records only whether reasoning exists plus its length and hash; it never publishes the reasoning text. The full implementation context belongs in the site’s <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>Requested / returned model</th><th>Thinking</th><th>Rep</th><th>HTTP</th><th>Final content</th><th>JSON.parse</th><th>Exact schema</th><th>Reference facts</th><th>Finish</th><th>Completion tokens</th><th>Reasoning present / tokens</th><th>Elapsed</th></tr></thead><tbody><tr><td>A1 — July 27, 2026 UTC</td><td><code>deepseek-v4-flash</code> / <code>deepseek-v4-flash</code></td><td>Disabled</td><td>1</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>31</td><td>No / not reported</td><td>885.183 ms</td></tr><tr><td>A2 — July 27, 2026 UTC</td><td><code>deepseek-v4-flash</code> / <code>deepseek-v4-flash</code></td><td>Disabled</td><td>2</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>31</td><td>No / not reported</td><td>1,085.063 ms</td></tr><tr><td>A3 — July 27, 2026 UTC</td><td><code>deepseek-v4-flash</code> / <code>deepseek-v4-flash</code></td><td>Enabled, high</td><td>1</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>77</td><td>Yes / 45</td><td>1,249.275 ms</td></tr><tr><td>A4 — July 27, 2026 UTC</td><td><code>deepseek-v4-flash</code> / <code>deepseek-v4-flash</code></td><td>Enabled, high</td><td>2</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>140</td><td>Yes / 108</td><td>1,738.955 ms</td></tr><tr><td>A5 — July 27, 2026 UTC</td><td><code>deepseek-v4-pro</code> / <code>deepseek-v4-pro</code></td><td>Disabled</td><td>1</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>31</td><td>No / not reported</td><td>997.402 ms</td></tr><tr><td>A6 — July 27, 2026 UTC</td><td><code>deepseek-v4-pro</code> / <code>deepseek-v4-pro</code></td><td>Disabled</td><td>2</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>31</td><td>No / not reported</td><td>1,195.830 ms</td></tr><tr><td>A7 — July 27, 2026 UTC</td><td><code>deepseek-v4-pro</code> / <code>deepseek-v4-pro</code></td><td>Enabled, high</td><td>1</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>147</td><td>Yes / 115</td><td>2,423.323 ms</td></tr><tr><td>A8 — July 27, 2026 UTC</td><td><code>deepseek-v4-pro</code> / <code>deepseek-v4-pro</code></td><td>Enabled, high</td><td>2</td><td>200</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td><code>stop</code></td><td>102</td><td>Yes / 70</td><td>2,032.048 ms</td></tr></tbody></table><figcaption class="wp-element-caption">Live A1–A8 results from July 27, 2026 UTC. Each requested model name matched the returned public model name. Two repetitions per configuration are descriptive only.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7600,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/live-results-matrix.png" alt="Sanitized live DeepSeek JSON Output matrix for V4 Flash and V4 Pro with thinking enabled and disabled." class="wp-image-7600"/><figcaption class="wp-element-caption">Sanitized live results from eight core calls within one bounded 20-completion test; all eight passed JSON parsing, local schema, and reference-fact checks.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Across A1–A8, 8/8 calls returned HTTP 200, non-empty final content, directly parseable JSON, the exact five-key local schema, and all reference facts. All eight ended with <code>finish_reason: "stop"</code>; no core call returned empty, whitespace-only, or length-finished content. Each assembled final string was 95 characters.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Reasoning metadata was present in 4/4 thinking-enabled calls and absent in 4/4 explicitly disabled calls. The enabled calls reported 45, 108, 115, and 70 reasoning tokens; the disabled calls reported none. The final JSON, not the reasoning channel, was parsed and scored, and no raw reasoning is published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Elapsed time ranged from 885.183 ms to 2,423.323 ms in this tiny sequential sample. Thinking-enabled calls also used more completion tokens here, but two repetitions cannot establish a permanent latency, cost, or quality ranking between Flash, Pro, or thinking modes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Prompt ablation: the JSON word, an example, and neither</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s official JSON Output notice tells users to include the word <code>json</code> and provide an example. The bounded prompt ablation tests those pieces without hard-coding an expected failure. A strong control contains both. One case retains the word but removes the example; another retains an example while omitting the token <code>json</code>; the final case omits both. Low output caps bound the official whitespace-risk condition.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The correct interpretation is behavioral, not causal. If a weakened prompt happens to produce parseable content once, that does not cancel the official requirement. If it produces empty content, whitespace, invalid JSON, or <code>finish_reason: "length"</code>, that result applies to the exact prompt, model, settings, and date tested. It does not prove that every future request will fail in the same way.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>JSON word</th><th>Example</th><th>Output cap</th><th>HTTP / elapsed</th><th>Content state</th><th>Whitespace-only</th><th>Length</th><th>Finish / completion tokens</th><th>JSON.parse</th><th>Schema / facts</th></tr></thead><tbody><tr><td>A1 strong reference</td><td>Yes</td><td>Yes</td><td>512</td><td>200 / 885.183 ms</td><td>Non-empty</td><td>No</td><td>95 chars</td><td><code>stop</code> / 31</td><td>Pass</td><td>Pass / pass</td></tr><tr><td>B1</td><td>Yes</td><td>No</td><td>128</td><td>200 / 1,046.193 ms</td><td>Non-empty</td><td>No</td><td>117 chars</td><td><code>stop</code> / 45</td><td>Pass</td><td>Pass / fail</td></tr><tr><td>B2</td><td>No</td><td>Yes</td><td>32</td><td>400 / 277.191 ms</td><td>No completion content</td><td>Not applicable</td><td>Not returned</td><td>Not returned</td><td>No content to parse</td><td>Not assessed</td></tr><tr><td>B3</td><td>No</td><td>No</td><td>32</td><td>400 / 413.451 ms</td><td>No completion content</td><td>Not applicable</td><td>Not returned</td><td>Not returned</td><td>No content to parse</td><td>Not assessed</td></tr></tbody></table><figcaption class="wp-element-caption">Live prompt-ablation observations from July 27, 2026 UTC. A1 is the strong reference row; its 512-token cap differs from the bounded ablation caps shown. Results apply only to these exact requests.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>B1 retained the JSON instruction but removed the example. Its response parsed and passed the exact schema, yet failed the independent reference-fact check. This is a concrete demonstration that parseable, schema-valid JSON can still contain a wrong source fact; the failed value is not reproduced here.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>B2 and B3 omitted the word <code>json</code> and returned HTTP 400 before completion content was available. They therefore produced neither an empty completion nor a whitespace-only completion: parsing, finish reason, and completion-token fields were unavailable. These were accepted as bounded controls in the reviewed artifact, but each still triggered the safety stop for its segment. No automatic retry was sent.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7601,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-prompt-ablation-live-results.png" alt="Live DeepSeek JSON Output prompt ablation comparing the word JSON and an example-object control." class="wp-image-7601"/><figcaption class="wp-element-caption">Live prompt controls: the word-only run parsed but missed a reference fact; the example-only and neither variants returned HTTP 400.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Prompt-only controls without response_format</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Two additional controls kept the strong JSON prompt and example but omitted <code>response_format</code>. These are dated one-call observations of prompt behavior, not a replacement for the documented API control.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>Model</th><th>response_format</th><th>HTTP / elapsed</th><th>Content</th><th>Finish / tokens</th><th>Parse / schema / facts</th></tr></thead><tbody><tr><td>E1</td><td><code>deepseek-v4-flash</code></td><td>Omitted</td><td>200 / 1,029.117 ms</td><td>Non-empty, 95 chars</td><td><code>stop</code> / 31</td><td>Pass / pass / pass</td></tr><tr><td>E2</td><td><code>deepseek-v4-pro</code></td><td>Omitted</td><td>200 / 1,360.094 ms</td><td>Non-empty, 95 chars</td><td><code>stop</code> / 31</td><td>Pass / pass / pass</td></tr></tbody></table><figcaption class="wp-element-caption">Live prompt-only controls from July 27, 2026 UTC. Both happened to return the expected JSON once; neither result makes <code>response_format</code> unnecessary.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Empty content, whitespace, and finish_reason length</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> DeepSeek says JSON Output may occasionally return empty content and suggests modifying the prompt to mitigate the issue. Empty content is not invalid JSON—it contains no JSON value at all. Check for a string and then check <code>content.trim().length</code> before parsing. Do not let a JSON-decoding exception hide the more precise diagnosis that no final content was returned.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> the Chat Completion reference warns that a missing JSON instruction can produce whitespace until the token limit. Track empty and whitespace-only states separately. Whitespace is legal around a JSON value, but a response containing only whitespace has no value. A client should not strip Markdown fences or repair malformed output silently and then report a clean JSON success; that conceals the provider response your application actually received.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> <code>finish_reason: "length"</code> can mean generation reached <code>max_tokens</code> or the conversation reached the model context limit. The returned content may be partially cut off. A deliberate eight-token truncation control in the bounded matrix records finish reason, content length, and parse status, but one result cannot define how every large object will terminate.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Live — July 27, 2026 UTC:</strong> empty final content was observed in 0/18 successful completions, and whitespace-only final content was observed in 0/18. Across all 20 planned completion requests, 18 returned non-empty content; B2 and B3 returned HTTP 400 without completion content and are not counted as empty model outputs. This bounded observation does not contradict the official warning that empty content may occasionally occur.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>Purpose</th><th>Model</th><th>Output cap</th><th>HTTP</th><th>Content state / length</th><th>Whitespace-only</th><th>Finish reason</th><th>Completion tokens</th><th>JSON.parse</th></tr></thead><tbody><tr><td>C1</td><td>Deliberate truncation</td><td><code>deepseek-v4-flash</code></td><td>8</td><td>200</td><td>Non-empty / 21 chars</td><td>No</td><td><code>length</code></td><td>8</td><td>Fail</td></tr></tbody></table><figcaption class="wp-element-caption">C1 reached the eight-token output cap, returned partial non-empty content, and did not parse as JSON. Treat a length-finished structured response as incomplete.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Use bounded recovery, not blind JSON retries</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Recovery should start by preserving the failure class. Empty content, whitespace-only content, invalid JSON, a schema mismatch, and <code>finish_reason: "length"</code> are different outcomes. A corrected prompt may be appropriate for empty or whitespace behavior; a larger but still reasonable output allowance may address a known truncation; and a schema mismatch may need a clearer example or smaller task. Do not send the identical request repeatedly without a finite attempt budget.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>HTTP failures belong to a separate decision path. Correct 400, 401, 402, or 422 conditions before resubmitting. Apply bounded backoff to transient 429, 500, or 503 responses according to application policy, and remember that a network timeout does not prove the provider performed no work. If a completion can trigger an external write, keep parsing and validation separate from that write and use an application-level duplicate-work guard.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Escaping, nulls, and synthetic prompt injection</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Structured-output code must survive ordinary JSON edge cases. Quotes and backslashes need escaping, newline characters must be encoded correctly, and missing facts should use an explicit contract such as <code>null</code> instead of an invented value. Unicode is valid JSON; store and transmit it as UTF-8, and validate its meaning at the application layer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The benchmark also includes a synthetic input that tells the model to ignore the schema and produce Markdown. The local validator checks whether the final object still satisfies the exact contract. This is a narrow instruction-conflict control, not a security benchmark. Production systems need input isolation, authorization, output validation, least-privilege actions, and human review where consequences are material.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>Control</th><th>Model</th><th>HTTP / elapsed</th><th>Content</th><th>Parse</th><th>Schema</th><th>Facts</th><th>Missing / extra keys</th><th>Finish / output tokens</th></tr></thead><tbody><tr><td>C1</td><td>Eight-token truncation</td><td><code>deepseek-v4-flash</code></td><td>200 / 1,068.862 ms</td><td>Non-empty, 21 chars</td><td>Fail</td><td>Fail</td><td>Fail</td><td>Not assessed after parse failure</td><td><code>length</code> / 8</td></tr><tr><td>C2</td><td>Quotes, backslashes, and newline escaping</td><td><code>deepseek-v4-flash</code></td><td>200 / 912.826 ms</td><td>Non-empty, 101 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td>None / 0</td><td><code>stop</code> / 33</td></tr><tr><td>C3</td><td>Quotes, backslashes, and newline escaping</td><td><code>deepseek-v4-pro</code></td><td>200 / 1,239.678 ms</td><td>Non-empty, 101 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td>None / 0</td><td><code>stop</code> / 33</td></tr><tr><td>C4</td><td>Synthetic conflicting instruction</td><td><code>deepseek-v4-flash</code></td><td>200 / 1,043.989 ms</td><td>Non-empty, 95 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td>None / 0</td><td><code>stop</code> / 31</td></tr><tr><td>C5</td><td>Missing facts represented as null</td><td><code>deepseek-v4-pro</code></td><td>200 / 1,424.654 ms</td><td>Non-empty, 99 chars</td><td>Pass</td><td>Pass</td><td>Pass</td><td>None / 0</td><td><code>stop</code> / 31</td></tr></tbody></table><figcaption class="wp-element-caption">Live C1–C5 edge-case results from July 27, 2026 UTC. Four of five passed syntax, exact schema, and source-fact validation; the intentionally truncated C1 response did not parse.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The Flash and Pro escaping controls both preserved the synthetic path, quotes, and newline after parsing. C5 preserved the explicit nullable contract for missing reset-attempt and order facts. C4 returned the exact expected object despite a synthetic request to ignore the schema and use Markdown, but one narrow pass is not evidence of prompt-injection safety.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7603,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-edge-case-live-results.png" alt="DeepSeek JSON Output live edge-case results for truncation, escaping, synthetic injection, and missing facts." class="wp-image-7603"/><figcaption class="wp-element-caption">Four of five edge-case calls passed parsing, schema, and reference checks; the deliberate eight-token truncation control ended at length and did not parse.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Streaming DeepSeek JSON safely</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Official:</strong> with <code>stream: true</code>, DeepSeek sends data-only server-sent events and terminates the stream with <code>data: [DONE]</code>. If <code>stream_options.include_usage</code> is enabled, an additional usage chunk appears before <code>[DONE]</code>; its <code>choices</code> array is empty. A parser must not assume every event contains <code>choices[0]</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Streaming does not make each delta valid standalone JSON. The client should concatenate final-content deltas, keep reasoning deltas separate, ignore colon-prefixed SSE comments, recognize the usage-only event, require <code>[DONE]</code>, and call <code>JSON.parse</code> only after the final content is assembled. If the stream ends without <code>[DONE]</code>, treat the result as incomplete even when the collected text looks parseable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Live test</th><th>Model / mode</th><th>Headers / first data / total</th><th>SSE data events</th><th>Reasoning events</th><th>Keep-alive / invalid</th><th>Usage / DONE</th><th>Assembled final content</th><th>Finish / tokens</th><th>Parse / schema</th></tr></thead><tbody><tr><td>D1</td><td><code>deepseek-v4-flash</code> / disabled</td><td>280.960 / 312.028 / 993.286 ms</td><td>34</td><td>Not separately counted; reasoning absent</td><td>0 / 0</td><td>1 / yes</td><td>95 chars; SHA-256 <code>d21923f03e8c029cead4670cd0eba9b115a4cf10db993f1e6f527404bd4c6f2f</code></td><td><code>stop</code> / 31 completion</td><td>Pass / pass</td></tr><tr><td>D2</td><td><code>deepseek-v4-pro</code> / enabled, high</td><td>336.731 / 340.433 / 2,992.096 ms</td><td>214</td><td>Not separately counted; reasoning present, 180 tokens</td><td>0 / 0</td><td>1 / yes</td><td>95 chars; SHA-256 <code>d21923f03e8c029cead4670cd0eba9b115a4cf10db993f1e6f527404bd4c6f2f</code></td><td><code>stop</code> / 212 completion</td><td>Pass / pass</td></tr></tbody></table><figcaption class="wp-element-caption">Live streaming observations from July 27, 2026 UTC. Times are milliseconds from request start. The harness counted all SSE data events but did not split them into separate content-event and reasoning-event counters.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Both streams, 2/2, reached <code>[DONE]</code>, included one usage-only event, ended with an empty trailing buffer, and contained zero invalid SSE data events. After final-content assembly, both strings were non-empty, had the same sanitized SHA-256 digest, parsed directly, passed the exact schema, and matched the reference facts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>D2 exposed reasoning metadata, but reasoning was kept out of the final-content buffer and no raw reasoning is published. Because this harness did not count content-delta and reasoning-delta events separately, the table reports the exact available all-data-event count rather than inventing a finer breakdown.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7604,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-streaming-validation.png" alt="DeepSeek JSON streaming timeline from response headers through SSE events, usage, DONE, final parsing, and schema validation." class="wp-image-7604"/><figcaption class="wp-element-caption">Both bounded streams reached DONE and passed parsing, schema, and reference checks after complete assembly.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>async function collectDeepSeekJsonStream(response) {
+  if (!response.ok || !response.body) {
+    await response.body?.cancel();
+    throw new Error(`DeepSeek stream failed with HTTP ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let finalContent = "";
+  let doneSeen = false;
+  let reasoningCharacters = 0;
+  let usage = null;
+
+  const processEvent = (eventText) =&gt; {
+    const data = eventText
+      .split("\n")
+      .filter((line) =&gt; !line.startsWith(":"))
+      .filter((line) =&gt; line.startsWith("data:"))
+      .map((line) =&gt; line.slice(5).trimStart())
+      .join("\n");
+
+    if (!data) return;
+    if (data === "[DONE]") {
+      doneSeen = true;
+      return;
+    }
+
+    const event = JSON.parse(data);
+    if (event.usage &amp;&amp; event.choices?.length === 0) {
+      usage = event.usage;
+      return;
+    }
+
+    const delta = event.choices?.[0]?.delta;
+    if (typeof delta?.reasoning_content === "string") {
+      reasoningCharacters += delta.reasoning_content.length;
+    }
+    if (typeof delta?.content === "string") {
+      finalContent += delta.content;
+    }
+  };
+
+  while (true) {
+    const { value, done } = await reader.read();
+    buffer += decoder.decode(value, { stream: !done });
+    buffer = buffer.replaceAll("\r\n", "\n");
+
+    let boundary = buffer.indexOf("\n\n");
+    while (boundary !== -1) {
+      processEvent(buffer.slice(0, boundary));
+      buffer = buffer.slice(boundary + 2);
+      boundary = buffer.indexOf("\n\n");
+    }
+    if (done) break;
+  }
+
+  if (buffer.trim()) processEvent(buffer);
+  if (!doneSeen) throw new Error("DeepSeek stream ended before [DONE]");
+  if (!finalContent.trim()) throw new Error("DeepSeek returned empty final content");
+
+  return {
+    value: JSON.parse(finalContent),
+    usage,
+    reasoningCharacters,
+  };
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The example counts reasoning characters but does not print or persist reasoning. Applications that need full thinking-mode history behavior should follow the dedicated Thinking Mode documentation rather than expanding this JSON parser into a general reasoning logger.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Production Node.js parsing and validation</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The following dependency-free Node.js example makes one non-streaming request, refuses to run without a server-side environment variable, rejects redirects, checks the HTTP status, distinguishes empty content, treats <code>length</code> as incomplete, parses once, and applies the benchmark’s exact local contract. The complete reproducibility harness adds request ceilings, plan validation, artifact redaction, and offline fixtures. For SDK installation and TypeScript-specific behavior, use the <a href="https://chat-deep.ai/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>const API_URL = "https://api.deepseek.com/chat/completions";
+const EXPECTED_KEYS = [
+  "issue",
+  "order_id",
+  "reset_attempts",
+  "ticket_id",
+  "urgent",
+];
+const ALLOWED_ISSUES = new Set([
+  "account_access",
+  "billing",
+  "technical",
+]);
+
+function validateTicket(value) {
+  const issues = [];
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return ["top-level value must be an object"];
+  }
+
+  const keys = Object.keys(value).sort();
+  const missing = EXPECTED_KEYS.filter((key) =&gt; !keys.includes(key));
+  const extra = keys.filter((key) =&gt; !EXPECTED_KEYS.includes(key));
+  if (missing.length) issues.push(`missing keys: ${missing.join(", ")}`);
+  if (extra.length) issues.push(`extra keys: ${extra.join(", ")}`);
+
+  if (typeof value.ticket_id !== "string") {
+    issues.push("ticket_id must be a string");
+  }
+  if (!ALLOWED_ISSUES.has(value.issue)) {
+    issues.push("issue is outside the allowed enum");
+  }
+  if (
+    value.reset_attempts !== null &amp;&amp;
+    !Number.isInteger(value.reset_attempts)
+  ) {
+    issues.push("reset_attempts must be an integer or null");
+  }
+  if (value.order_id !== null &amp;&amp; typeof value.order_id !== "string") {
+    issues.push("order_id must be a string or null");
+  }
+  if (typeof value.urgent !== "boolean") {
+    issues.push("urgent must be a boolean");
+  }
+
+  // Deterministic reference checks for this synthetic benchmark only.
+  if (value.ticket_id !== "T-204") issues.push("ticket_id fact mismatch");
+  if (value.reset_attempts !== 3) issues.push("reset_attempts fact mismatch");
+  if (value.order_id !== null) issues.push("order_id should be null");
+  if (value.urgent !== true) issues.push("urgent business rule mismatch");
+  return issues;
+}
+
+async function main() {
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) throw new Error("DEEPSEEK_API_KEY is not set");
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    redirect: "manual",
+    signal: AbortSignal.timeout(60_000),
+    headers: {
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "deepseek-v4-flash",
+      messages: [
+        {
+          role: "system",
+          content:
+            "Return JSON only. Use exactly this example shape: " +
+            "{\"ticket_id\":\"T-204\",\"issue\":\"account_access\"," +
+            "\"reset_attempts\":3,\"order_id\":null,\"urgent\":true}",
+        },
+        {
+          role: "user",
+          content:
+            "Ticket T-204: The customer cannot sign in after three " +
+            "failed password resets. No order ID was provided.",
+        },
+      ],
+      response_format: { type: "json_object" },
+      thinking: { type: "disabled" },
+      max_tokens: 128,
+      stream: false,
+    }),
+  });
+
+  if (!response.ok) {
+    await response.body?.cancel();
+    throw new Error(`DeepSeek returned HTTP ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const choice = payload.choices?.[0];
+  if (choice?.finish_reason === "length") {
+    throw new Error("DeepSeek JSON may be truncated");
+  }
+
+  const content = choice?.message?.content;
+  if (typeof content !== "string" || !content.trim()) {
+    throw new Error("DeepSeek returned empty final content");
+  }
+
+  const value = JSON.parse(content);
+  const issues = validateTicket(value);
+  if (issues.length) {
+    throw new Error(`Schema validation failed: ${issues.join("; ")}`);
+  }
+
+  console.log(value);
+}
+
+main().catch((error) =&gt; {
+  console.error(error.message);
+  process.exitCode = 1;
+});</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>In a real product, replace the benchmark-specific checks with a maintained schema validator and business-rule layer. Keep the original response classification in telemetry: HTTP status, finish reason, content state, parser result, schema result, model, token counters, and latency. Do not log the API key, raw Authorization header, private prompts, or hidden reasoning. The <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek Observability guide</a> owns the broader logging and alerting design.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">JSON Output versus Tool Calls</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Need</th><th>JSON Output</th><th>Tool Calls</th></tr></thead><tbody><tr><td>Return structured final content to the application</td><td>Use <code>response_format: json_object</code></td><td>Usually unnecessary</td></tr><tr><td>Ask the model to select a function</td><td>Not the function-selection interface</td><td>Define tools and inspect <code>tool_calls</code></td></tr><tr><td>Validate generated structure</td><td>Validate parsed final <code>content</code></td><td>Validate generated function arguments</td></tr><tr><td>Execute an external action</td><td>Never execute merely because JSON parsed</td><td>Authorize and execute the selected function in application code</td></tr><tr><td>Handle side effects</td><td>Keep parsing separate from writes</td><td>Use least privilege, idempotency, and authorization</td></tr></tbody></table><figcaption class="wp-element-caption">JSON Output and Tool Calls solve different application problems. Both require local validation.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s API reference explicitly warns that generated tool arguments may be invalid JSON or contain hallucinated parameters, so they must be validated before a function runs. The <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">DeepSeek Tool Calls guide</a> owns function schemas, argument validation, and execution loops.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Troubleshooting DeepSeek JSON mode</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Symptom</th><th>Check first</th><th>Safe response</th></tr></thead><tbody><tr><td>Empty <code>content</code></td><td>Confirm the prompt explicitly requests JSON and shows the shape</td><td>Do not parse; modify the prompt and retry only within a bounded policy</td></tr><tr><td>Whitespace-only output or apparently stuck request</td><td>Check that the final assembled prompt contains the word <code>json</code></td><td>Cancel at the application deadline; correct the prompt before resubmitting</td></tr><tr><td><code>JSON.parse</code> throws</td><td>Inspect content state, finish reason, and output allowance</td><td>Do not silently strip fences or repair arbitrary output as a success</td></tr><tr><td>HTTP 200 but incomplete object</td><td>Check <code>finish_reason</code> for <code>length</code></td><td>Increase a reasonable output allowance or reduce the requested structure</td></tr><tr><td>JSON parses but fields are wrong</td><td>Run exact schema, enum, reference-fact, and business-rule checks</td><td>Reject the object or request a corrected response</td></tr><tr><td>Unexpected extra keys</td><td>Compare against an explicit allow-list</td><td>Reject by default when extra properties affect downstream safety</td></tr><tr><td>Streaming parser fails on usage event</td><td>Check for an empty <code>choices</code> array with a top-level <code>usage</code> object</td><td>Record usage separately and continue until <code>[DONE]</code></td></tr><tr><td>Thinking text is mixed with JSON</td><td>Parse final <code>content</code>, not <code>reasoning_content</code></td><td>Keep the two channels separate and avoid logging raw reasoning</td></tr><tr><td>HTTP 400, 401, 402, 422, 429, 500, or 503</td><td>Classify the HTTP failure before touching JSON parsing</td><td>Use the <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek Error Codes guide</a></td></tr></tbody></table><figcaption class="wp-element-caption">Troubleshooting should preserve the original failure class instead of converting everything into a JSON parse error.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Reproducibility and limitations</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The public harness is safe by default: no argument prints usage, plan validation and offline fixtures cannot read an API key or access the network, and only an explicit live mode can call the fixed DeepSeek origin. The plan validator enforces the 20-call ceiling, sequential execution, model allow-list, output limits, exact prompt variants, and prohibited endpoint list.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Offline check</th><th>Exact result</th></tr></thead><tbody><tr><td>JavaScript syntax</td><td>Pass</td></tr><tr><td>Live-plan contract</td><td>Pass: one inventory request; 20 completion IDs exactly once; group counts 8/3/5/2/2; concurrency 1; retries 0; maximum output cap 512; total configured output allowance 5,704</td></tr><tr><td>Offline safety mode</td><td><code>valid: true</code>; provider requests 0; API key read <code>false</code></td></tr><tr><td>Non-streaming fixtures</td><td>8/8 passed: valid core, valid JSON with wrong schema, invalid JSON, truncated JSON, empty, whitespace-only, valid escaping, and valid nullable data</td></tr><tr><td>SSE fixture</td><td>Pass: 2 keep-alive comments, 4 data events, 1 usage-only event, <code>[DONE]</code> seen, reasoning redacted, and parse/schema/reference-fact checks all passed</td></tr><tr><td>Sanitized artifact scans</td><td>JSON scan passed; CSV scan passed; a deliberately injected leak was detected by the negative control</td></tr></tbody></table><figcaption class="wp-element-caption">Offline — no provider requests. These deterministic checks validate the plan, local parsers, validators, and redaction guardrails; they are not live model evidence.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The English-only harness, sanitized summary, fixtures, and editable visuals are available in the public <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/json-output">DeepSeek JSON Output evidence directory on GitHub</a>. Raw provider output and hidden reasoning are intentionally excluded, so the public artifact supports request-accounting and implementation review but not independent re-parsing of the omitted response text.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7605,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-reproducibility-guardrails.png" alt="DeepSeek JSON Output test guardrails showing a 20-call ceiling, one inventory request, concurrency one, zero retries, and redaction." class="wp-image-7605"/><figcaption class="wp-element-caption">Local safety guardrails enforced one model inventory, 20 sequential completions, zero automatic retries, and a strict redaction policy.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>The live matrix remains intentionally small: two repetitions per core configuration and one call for most edge cases. It can document compatibility and reveal concrete failure shapes on the test date, but it cannot establish a universal parse rate, schema-adherence rate, security guarantee, or permanent model ranking. A timeout leaves provider work uncertain. A successful prompt-only control does not make <code>response_format</code> unnecessary. A successful synthetic injection control does not prove production prompt-injection safety.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Model behavior, validation, and documentation can change. Recheck DeepSeek’s primary sources and rerun a bounded compatibility matrix before a material production change. Use the <a href="https://chat-deep.ai/docs/api/">DeepSeek API overview</a> for the general request lifecycle, the <a href="https://chat-deep.ai/models/">DeepSeek Models page</a> for model selection context, and the <a href="https://chat-deep.ai/pricing/">DeepSeek Pricing page</a> for current copied pricing context.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Frequently asked questions</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I make DeepSeek return JSON?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Set <code>response_format</code> to <code>{"type":"json_object"}</code>, explicitly use the word <code>json</code> in the system or user prompt, provide an example of the desired object, and choose a reasonable <code>max_tokens</code> allowance. Then check for non-empty final <code>content</code>, parse it, and validate it locally.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does json_object enforce my JSON Schema?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. DeepSeek documents valid JSON strings, not conformance to every application-specific schema. Required properties, exact keys, types, enums, ranges, null behavior, source facts, and business rules still need local validation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why is DeepSeek JSON Output empty?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek officially says empty content may occasionally occur and recommends modifying the prompt to mitigate it. Do not assign one universal cause. Record the exact prompt, model, settings, finish reason, content state, and date, then use a bounded recovery policy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why does DeepSeek JSON mode appear stuck?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Chat Completion reference warns that omitting a JSON instruction can lead to whitespace until the output limit. Ensure the assembled prompt explicitly requests JSON, set an application deadline, and distinguish whitespace-only output from a connection that is still open.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Do V4 Flash and V4 Pro support JSON Output?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. DeepSeek’s current Models &amp; Pricing page marks JSON Output as supported for both <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. Model choice remains a workload decision; official feature support alone does not prove one model is always more schema-reliable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can I use DeepSeek JSON Output with Thinking Mode?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Both current V4 models support JSON Output and thinking mode. Parse the final answer from <code>content</code>; keep <code>reasoning_content</code> separate. Thinking defaults to enabled, so set the toggle explicitly when reproducibility matters.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can I parse each streaming JSON delta?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Not as a complete object. Concatenate final-content deltas, handle the optional usage-only event, wait for <code>[DONE]</code>, and then parse and validate the assembled string. Keep reasoning deltas out of the final JSON buffer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I remove Markdown fences before JSON.parse?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Not in the primary success path. Silent cleanup can hide a contract failure. Record that the original content was not directly parseable, improve the prompt, and decide explicitly whether a narrowly defined recovery parser is acceptable for your application.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Is JSON Output the same as Tool Calls?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. JSON Output structures the assistant’s final content. Tool Calls let the model select a defined function and generate arguments. Both outputs require validation, but only authorized application code should execute an external action.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><em>Official DeepSeek documentation checked July 27, 2026 UTC. Live observations and offline checks were populated from reviewed sanitized artifacts; no secrets, account data, raw reasoning, or arbitrary failed output are published.</em></p>
+<!-- /wp:paragraph -->

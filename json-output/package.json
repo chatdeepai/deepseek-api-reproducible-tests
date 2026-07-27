@@ -1,0 +1,19 @@
+{
+  "name": "deepseek-json-output-reproducible-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded DeepSeek V4 JSON Output harness with offline parser, schema, redaction, and SSE validation.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check run-json-output.mjs",
+    "validate": "node run-json-output.mjs --validate-plan",
+    "test:offline": "node run-json-output.mjs --test-offline",
+    "test": "npm run check && npm run validate && npm run test:offline",
+    "plan": "node run-json-output.mjs --plan",
+    "live": "node run-json-output.mjs --execute",
+    "resume": "node run-json-output.mjs --resume-latest"
+  }
+}

@@ -11,6 +11,14 @@ This public evidence repository contains bounded, reproducible live tests used b
   - prefix-length matrix;
   - mutation controls;
   - redacted JSON and CSV result summaries.
+- [DeepSeek Thinking Mode](./thinking-mode/)
+  - default, enabled, and disabled controls on V4 Flash and V4 Pro;
+  - bounded `high` versus `max` reasoning-effort evidence;
+  - output-budget exhaustion controls;
+  - ordinary and tool-call history compatibility probes;
+  - separate streaming `reasoning_content` and `content` measurements;
+  - JSON Output and model-routing checks;
+  - redacted JSON and CSV result summaries plus editable visuals.
 
 ## Evidence policy
 

@@ -2,7 +2,7 @@
   "page_title_h1": "DeepSeek API Key: How to Create, Test, Store, Rotate, and Revoke One Safely",
   "seo_title": "DeepSeek API Key: Create, Test, Store & Revoke Safely",
   "focus_keyword": "DeepSeek API Key",
-  "meta_description": "Create, test, store, rotate, and revoke a DeepSeek API key safely. Includes live 200/401 checks, environment variables, rotation tests, and leak prevention.",
+  "meta_description": "Create, test, store, rotate, and revoke a DeepSeek API key safely. Includes live 200/401 checks, environment variables, and leak-response steps.",
   "excerpt": "A practical, independently tested guide to creating and securing a DeepSeek API key, with live authentication, rotation, revocation, and leak-prevention checks.",
   "slug": "deepseek-api-key",
   "canonical": "https://chat-deep.ai/docs/deepseek-api-key/",

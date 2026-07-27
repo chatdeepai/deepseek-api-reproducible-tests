@@ -7,10 +7,13 @@ Checked for the 2026-07-27 test design. Only first-party DeepSeek documentation 
 | [DeepSeek API quick start](https://api-docs.deepseek.com/) | The documented API host, Bearer authentication pattern, and Chat Completions entry point. |
 | [List Models](https://api-docs.deepseek.com/api/list-models) | `GET /models` as the low-cost authentication probe. |
 | [Create Chat Completion](https://api-docs.deepseek.com/api/create-chat-completion) | The request shape for the single bounded completion probe. |
+| [Thinking Mode](https://api-docs.deepseek.com/guides/thinking_mode/) | Thinking defaults to enabled; the bounded deterministic smoke test therefore disables it explicitly. |
 | [Get User Balance](https://api-docs.deepseek.com/api/get-user-balance) | `GET /user/balance` and the `is_available` response field. Monetary fields are intentionally excluded from evidence. |
 | [DeepSeek API keys console](https://platform.deepseek.com/api_keys) | Authorized creation and revocation of temporary keys outside the test harness. |
 | [DeepSeek error codes](https://api-docs.deepseek.com/quick_start/error_codes) | First-party interpretation of common authentication and availability statuses. |
 | [DeepSeek pricing](https://api-docs.deepseek.com/quick_start/pricing/) | Confirms that model requests can incur token charges; no price is hard-coded in this suite. |
+| [DeepSeek FAQ](https://api-docs.deepseek.com/faq/) | Documents the Platform export used to inspect monthly usage broken down by API key. |
+| [DeepSeek Open Platform Terms](https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html) | API keys must be kept secure and must not be exposed in browser or other client-side code. |
 
 ## Source handling
 

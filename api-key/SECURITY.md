@@ -32,7 +32,7 @@ The harness does not create or revoke keys. Those are provider-console operation
 - local secret stores;
 - browser storage.
 
-An `.env.example` is intentionally omitted because the harness has no environment-loading path. This reduces the chance that an operator will normalize storing a live credential beside the evidence.
+The tracked `.env.example` contains only an empty `DEEPSEEK_API_KEY` field and the public fixed base URL. It is documentation only: the harness has no environment-loading path and never reads this file. Never place a real credential in `.env.example`.
 
 ## Network confinement
 
@@ -44,11 +44,13 @@ The live request function constructs every URL from an allowlisted path and the 
 - undeclared methods;
 - undeclared endpoint paths.
 
-Every network request enters a module-wide serial queue. There is no generic retry loop. The only repeated requests are explicitly labeled revocation-propagation polls with a hard limit of three.
+Every network request enters a module-wide serial queue. There is no generic retry loop. The only repeated requests are explicitly labeled revocation-propagation polls with a hard limit of six per declared revoked-key check.
+
+Authorized cases pass only on exactly HTTP 200 plus the documented endpoint schema. Authentication-rejection cases pass only on exactly HTTP 401. HTTP 403 and every other unexpected status remain visible as sanitized diagnostics but fail the declared expectation.
 
 ## Paid request protection
 
-The completion probe is optional and requires an exact permit. A module-wide counter is incremented before dispatch, so a timeout or HTTP error still consumes the allowance. Output is capped at eight generated tokens and the request is never retried.
+The completion probe is optional and requires an exact permit. A module-wide counter is incremented before dispatch, so a timeout or HTTP error still consumes the allowance. Thinking mode is explicitly disabled, output is capped at 16 generated tokens, and the request is never retried.
 
 The process-wide counter cannot prevent a person from restarting Node. The operator must therefore preserve the one-run process and treat a restart as the end of the paid test, not a way to reset its budget.
 
@@ -56,15 +58,19 @@ The process-wide counter cannot prevent a person from restarting Node. The opera
 
 The live runner builds result objects from an allowlist of fields. It never returns a sent header or raw provider payload.
 
-The balance parser reads only the documented availability boolean. Monetary fields are neither copied nor summarized.
+The balance parser reads the documented availability boolean plus the presence and length of the balance-info array. Array entries and monetary fields are neither copied nor summarized.
+
+The model-list parser requires the documented `object: "list"` value, a non-empty `data` array, and complete public model records. It returns only validation booleans, a count, and public model IDs.
 
 The completion parser records:
 
 - response status;
+- whether the documented chat-completion schema passed;
+- whether the returned model matches the fixed requested model;
 - content presence and length;
 - equality to the fixed synthetic reference;
 - finish reason;
-- usage counters when numeric.
+- non-negative integer usage counters and whether they reconcile.
 
 It omits the generated text itself.
 
@@ -83,6 +89,10 @@ Run `scanText` or `scanFiles` before publication. The scanner looks for:
 Findings contain only a rule ID and location. Matched secret text is not printed.
 
 A clean scan reduces risk but does not prove absence. Manual inspection remains required.
+
+## Historical evidence boundary
+
+`results/final-results-summary.json` is a preserved sanitized observation from July 27, 2026. The version 1.1 post-run audit validates its internal status, schema, lifecycle, privacy, and secret-scan invariants without contacting DeepSeek. It does not claim that the corrected future-run harness generated the historical result, and a future live run must create a new dated artifact instead of overwriting it.
 
 ## Screenshot rules
 

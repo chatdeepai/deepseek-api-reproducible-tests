@@ -1,12 +1,14 @@
 # DeepSeek API Key Test Plan
 
-Version: 1.0  
+Version: 1.1  
 Evidence date: 2026-07-27  
 Runtime: Node.js 20 or newer  
 Fixed API origin: `https://api.deepseek.com`  
 Maximum application concurrency: 1  
 Generic retries: 0  
 Maximum paid completions: 1 per Node process
+
+The July 27 sanitized result is preserved historical evidence from the original authorized controller. This version defines the stricter contract for future reruns; it does not claim that the corrected harness generated the historical artifact.
 
 ## Research questions
 
@@ -29,17 +31,17 @@ Real credentials are supplied only as in-memory function arguments. They are nev
 
 | ID | Request | Credential variant | Calls | Expected interpretation |
 |---|---|---:|---:|---|
-| A1 | `GET /models` | Valid Bearer key | 1 | A 2xx response supports successful authentication at test time. |
-| A2 | `GET /models` | Header omitted | 1 | HTTP 401 or 403 supports authentication enforcement. |
-| A3 | `GET /models` | Empty Bearer value | 1 | HTTP 401 or 403 supports rejection of an empty credential. |
-| A4 | `GET /models` | Wrong scheme plus synthetic value | 1 | HTTP 401 or 403 supports Bearer-scheme enforcement. |
-| A5 | `GET /models` | Synthetic invalid Bearer value | 1 | HTTP 401 or 403 supports invalid-key rejection. |
-| B1 | `GET /user/balance` | Valid Bearer key | 1 | Record only status and the boolean `is_available` signal. |
-| C1 | `POST /chat/completions` | Valid Bearer key | 0 or 1 | Optional bounded proof that the key can authorize a completion. |
-| D1 | `GET /models` | Old valid key | 1 | Establish an authorized baseline. |
-| D2 | `GET /models` | New valid key | 1 | Establish replacement-key continuity during overlap. |
-| E1 | `GET /models` | Revoked old key | 1–6 | Declared propagation polls; stop on HTTP 401 or 403. |
-| E2 | `GET /models` | Active new key | 1 | Confirm continuity after the old key is rejected or polling ends. |
+| A1 | `GET /models` | Valid Bearer key | 1 | Exactly HTTP 200 plus the documented non-empty model-list schema. |
+| A2 | `GET /models` | Header omitted | 1 | Exactly HTTP 401. |
+| A3 | `GET /models` | Empty Bearer value | 1 | Exactly HTTP 401. |
+| A4 | `GET /models` | Wrong scheme plus synthetic value | 1 | Exactly HTTP 401. |
+| A5 | `GET /models` | Synthetic invalid Bearer value | 1 | Exactly HTTP 401. |
+| B1 | `GET /user/balance` | Valid Bearer key | 1 | Exactly HTTP 200, boolean `is_available`, and a `balance_infos` array; publish no entries or amounts. |
+| C1 | `POST /chat/completions` | Valid Bearer key | 0 or 1 | Exactly HTTP 200 plus the declared model, exact synthetic answer, stop finish, and reconciling usage schema. |
+| D1 | `GET /models` | Old valid key | 1 | Exactly HTTP 200 plus valid model-list schema. |
+| D2 | `GET /models` | New valid key | 1 | Exactly HTTP 200 plus valid model-list schema. |
+| E1 | `GET /models` | Revoked old key | 1-6 | Declared propagation polls; only HTTP 401 proves rejection. |
+| E2 | `GET /models` | Active new key | 1 | Exactly HTTP 200 plus valid model-list schema after old-key rejection. |
 
 ## Paid-call budget
 
@@ -50,6 +52,7 @@ Case C1 is the only paid-capable request in the harness. It is guarded by all of
 - model fixed to `deepseek-v4-flash`;
 - synthetic prompt fixed by the harness;
 - `max_tokens` fixed to 16;
+- thinking fixed to `{ "type": "disabled" }`;
 - temperature fixed to 0;
 - streaming disabled;
 - no retry after transport or HTTP failure.
@@ -58,13 +61,15 @@ The budget counts an attempted network request even if it fails.
 
 ## Revocation polling
 
-Revocation is performed manually outside the harness. E1 is allowed to poll because provider-side revocation propagation may not be instantaneous.
+Revocation is performed manually outside the harness. E1 is allowed to poll because provider-side revocation propagation may not be instantaneous. The preserved run used the revoked-key check for both the old key and the final replacement-key cleanup: four static negative controls plus two revoked-key controls produced the reported six negative or revoked logical cases.
 
-- maximum polls: 6;
-- allowed interval: 0–30,000 milliseconds;
+- maximum polls: 6 per declared revoked-key check;
+- allowed interval: 0-30,000 milliseconds;
 - default interval: 2,000 milliseconds;
-- stop immediately after HTTP 401 or 403;
+- stop immediately after HTTP 401;
 - stop immediately after a transport failure;
+- continue only after HTTP 200, which means the key was still accepted at that poll;
+- stop and fail closed on every other HTTP status;
 - do not repeat E2;
 - do not reinterpret polls as retries for unrelated failures.
 
@@ -76,6 +81,7 @@ Allowed evidence includes:
 - HTTP method and status;
 - normalized status class;
 - elapsed milliseconds;
+- endpoint-specific response-schema booleans;
 - booleans such as `authorized`, `revokedObserved`, and `available`;
 - request and poll counts;
 - public model name used by the one paid case;
@@ -107,6 +113,8 @@ Stop live work immediately when:
 - a credential cannot be validated as an in-memory value;
 - the operator cannot distinguish the old and new temporary keys safely;
 - a prospective artifact fails the secret scan.
+- an authorized case returns anything other than HTTP 200 or fails its endpoint schema;
+- an authentication-rejection case returns anything other than HTTP 401;
 
 ## Publication standard
 

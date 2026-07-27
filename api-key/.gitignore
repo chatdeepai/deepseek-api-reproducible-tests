@@ -11,5 +11,6 @@ results/*
 !results/final-results-summary.csv
 !results/offline-results-summary.json
 !results/independent-audit.json
+!results/post-run-audit-v1.1.0.json
 screenshots/*
 !screenshots/.gitkeep

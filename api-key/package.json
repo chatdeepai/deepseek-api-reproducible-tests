@@ -1,6 +1,6 @@
 {
   "name": "deepseek-api-key-reproducible-tests",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "A dependency-free, safety-bounded DeepSeek API key authentication and rotation harness.",
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "check": "node src/offline-runner.mjs --syntax-only",
+    "audit:existing": "node src/post-run-audit.mjs",
     "test:offline": "node --test tests/offline.test.mjs",
     "test": "node src/offline-runner.mjs"
   }

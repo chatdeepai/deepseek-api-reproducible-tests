@@ -3,6 +3,10 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
+<p>This is also an explicit provider requirement, not only a local recommendation. Section 2.2 of the <a href="https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html" target="_blank" rel="noopener">DeepSeek Open Platform Terms of Service</a> requires users to keep API keys secure, prevent leakage, avoid sharing or public disclosure, and not expose a key in browser or other client-side code.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
 <p>This guide goes beyond setup instructions. We created two temporary keys, ran a bounded 12-case authentication and rotation study, and revoked both keys when testing ended. All 12 cases produced their expected result: six valid authenticated operations returned HTTP 200 and six negative or revoked-key controls returned HTTP 401. The test published no key value, key fragment, Authorization header, balance amount, account identifier, raw response body, or provider request ID.</p>
 <!-- /wp:paragraph -->
 
@@ -91,7 +95,7 @@
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading" id="macos-linux">macOS and Linux: prompt without echoing the key</h3>
+<h3 class="wp-block-heading" id="macos-linux">Bash on macOS or Linux: prompt without echoing the key</h3>
 <!-- /wp:heading -->
 
 <!-- wp:code -->
@@ -105,7 +109,7 @@ test -n "${DEEPSEEK_API_KEY:-}" \
 <!-- /wp:code -->
 
 <!-- wp:paragraph -->
-<p>The secret is entered at the prompt instead of appearing in the command itself. The check confirms only presence; it never prints the value. When the session ends, run <code>unset DEEPSEEK_API_KEY</code>. Your production deployment should obtain the value from its secret store rather than an interactive prompt.</p>
+<p>This example uses Bash's <code>read -s</code> and <code>-p</code> flags. On a system whose default shell is zsh or another shell, start Bash explicitly or use that shell's documented no-echo prompt instead of assuming identical flags. The secret is entered at the prompt rather than appearing in the command itself, and the check confirms only presence. When the session ends, run <code>unset DEEPSEEK_API_KEY</code>. Production deployments should obtain the value from a secret store rather than an interactive prompt.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
@@ -398,12 +402,20 @@ console.log("Authentication succeeded; model records:", models.data.length);</co
 <p>Creating a key is not the same as receiving unlimited free API usage. The <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">official pricing page</a> states that model usage is billed by tokens and that prices may change. This credential guide does not duplicate a volatile price table. Check our <a href="https://chat-deep.ai/pricing/">DeepSeek pricing page</a> for the comparison and verify final figures on the official page before a production launch. Use the balance guide for availability checks, alerts, and privacy-safe handling of monetary data.</p>
 <!-- /wp:paragraph -->
 
+<!-- wp:paragraph -->
+<p><strong>To view usage by API key,</strong> the <a href="https://api-docs.deepseek.com/faq/" target="_blank" rel="noopener">official DeepSeek FAQ</a> directs users to open the Platform's Usage page, choose a month, export and unzip the usage package, then inspect the file named <code>amount</code>, which breaks usage down by key. Keep that report private because it is account-specific. This export is different from <code>GET /user/balance</code>: the documented balance endpoint reports account balance availability and totals, not per-key usage.</p>
+<!-- /wp:paragraph -->
+
 <!-- wp:heading -->
 <h2 class="wp-block-heading" id="methodology-limitations">Methodology, evidence, and limitations</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
 <p>The live suite used one authorized DeepSeek Platform account, one network environment, the fixed origin <code>https://api.deepseek.com</code>, maximum concurrency one, and zero automatic retries. It made 12 logical requests, including one completion capable of incurring token charges. Key creation and revocation occurred in the official console; the harness received credentials only through an authorized in-memory controller.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Post-run harness audit:</strong> the preserved sanitized result passed a deterministic offline audit with zero new provider requests. The audit rechecked the exact 200 and 401 outcomes, recorded model-list, completion, balance, token-usage, cleanup, and privacy evidence. It also found that the original paid smoke test did not explicitly disable DeepSeek's default thinking behavior. The <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">official Thinking Mode guide</a> says thinking defaults to enabled and temperature has no effect in that mode, so the original temperature setting must not be interpreted as a determinism control. The public harness is now stricter for future runs: it explicitly disables thinking for that 16-token smoke test, requires exact status codes, validates response schemas, and fails closed. This correction does not claim that the revised code produced the historical observation; the dated result remains preserved separately.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -500,6 +512,14 @@ console.log("Authentication succeeded; model records:", models.data.length);</co
 
 <!-- wp:paragraph -->
 <p>Key creation and model usage are different questions. The official pricing page describes token-based charges for model requests and says prices may change. Check current pricing and usable balance before enabling production traffic, and cap automated smoke tests so a deployment loop cannot create unbounded calls.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-usage-by-key">How can I view usage by DeepSeek API key?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Open the Platform's Usage page, select the relevant month, export and unzip the usage package, and inspect the <code>amount</code> CSV. The official FAQ says that file contains usage details broken down by key. Treat the export as private billing data; do not publish it or confuse it with the account-level <code>/user/balance</code> response.</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->

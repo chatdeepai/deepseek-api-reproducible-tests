@@ -1,0 +1,25 @@
+{
+  "post_id": 3202,
+  "content_type": "page",
+  "cluster": "API and Developer Docs",
+  "title": "DeepSeek Context Caching: Live Cache-Hit Tests and Cost Guide",
+  "h1": "DeepSeek Context Caching: How Cache Hits Work and How to Measure Them",
+  "seo_title": "DeepSeek Context Caching: Live Cache-Hit Tests & Cost Guide",
+  "meta_description": "Test DeepSeek context and prompt caching with live API calls. See cache-hit fields, prefix rules, cost math, latency results, and fixes for zero hits.",
+  "slug": "deepseek-context-caching",
+  "canonical": "https://chat-deep.ai/docs/deepseek-context-caching/",
+  "tags": [],
+  "tag_policy": "The site does not use WordPress tags.",
+  "primary_keyword": "DeepSeek context caching",
+  "secondary_keywords": [
+    "DeepSeek cache hit",
+    "DeepSeek API caching",
+    "DeepSeek prefix caching",
+    "DeepSeek KV cache",
+    "prompt_cache_hit_tokens",
+    "prompt_cache_miss_tokens",
+    "DeepSeek cache pricing",
+    "DeepSeek cache not working"
+  ],
+  "last_verified": "2026-07-27 UTC"
+}

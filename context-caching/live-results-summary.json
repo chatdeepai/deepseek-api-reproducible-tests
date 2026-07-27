@@ -1,0 +1,226 @@
+{
+  "benchmark": "DeepSeek Context Caching Live Tests",
+  "tested_at": "2026-07-27T06:24:05Z/2026-07-27T06:30:56Z",
+  "timezone_note": "UTC; July 26, 2026 in PDT",
+  "endpoint": "https://api.deepseek.com/chat/completions",
+  "model": "deepseek-v4-flash",
+  "thinking": "disabled",
+  "stream": false,
+  "data_policy": {
+    "prompt_content": "deterministic synthetic English only",
+    "api_key_persisted": false,
+    "account_balance_persisted": false,
+    "personal_data_sent": false
+  },
+  "prices_used_usd_per_million_tokens": {
+    "cache_hit_input": 0.0028,
+    "cache_miss_input": 0.14,
+    "output": 0.28,
+    "verified_at": "2026-07-26",
+    "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+  },
+  "headline_results": {
+    "exact_extension_second_call": {
+      "http_status": 200,
+      "prompt_tokens": 6906,
+      "cache_hit_tokens": 6784,
+      "cache_miss_tokens": 122,
+      "cache_hit_rate_percent": 98.23,
+      "latency_ms": 1020,
+      "actual_input_cost_usd": 0.00003608,
+      "no_cache_input_cost_usd": 0.00096684,
+      "input_savings_percent": 96.27
+    },
+    "stable_prefix_warm_calls": {
+      "requests": 4,
+      "http_200": 4,
+      "prompt_tokens": 23602,
+      "cache_hit_tokens": 23552,
+      "cache_miss_tokens": 50,
+      "cache_hit_rate_percent": 99.79,
+      "median_latency_ms": 1035,
+      "actual_input_cost_usd": 0.00007296,
+      "no_cache_input_cost_usd": 0.00330428,
+      "input_savings_usd": 0.00323132
+    },
+    "volatile_first_line_calls": {
+      "requests": 5,
+      "http_200": 5,
+      "prompt_tokens": 29573,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 29573,
+      "cache_hit_rate_percent": 0,
+      "median_latency_ms": 1139,
+      "actual_input_cost_usd": 0.00414022,
+      "no_cache_input_cost_usd": 0.00414022
+    }
+  },
+  "exact_extension": [
+    {
+      "call": 1,
+      "http_status": 200,
+      "prompt_tokens": 6893,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 6893,
+      "latency_ms": 996
+    },
+    {
+      "call": 2,
+      "http_status": 200,
+      "prompt_tokens": 6906,
+      "cache_hit_tokens": 6784,
+      "cache_miss_tokens": 122,
+      "latency_ms": 1020
+    }
+  ],
+  "divergent_suffix": [
+    {
+      "call": 1,
+      "shape": "A+B",
+      "http_status": 200,
+      "prompt_tokens": 7074,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 7074,
+      "latency_ms": 1250
+    },
+    {
+      "call": 2,
+      "shape": "A+C",
+      "http_status": 200,
+      "prompt_tokens": 7074,
+      "cache_hit_tokens": 7040,
+      "cache_miss_tokens": 34,
+      "latency_ms": 1055
+    },
+    {
+      "call": 3,
+      "shape": "A+D",
+      "http_status": 200,
+      "prompt_tokens": 7072,
+      "cache_hit_tokens": 7040,
+      "cache_miss_tokens": 32,
+      "latency_ms": 945
+    }
+  ],
+  "user_id_isolation": [
+    {
+      "phase": "user_A_cold",
+      "http_status": 200,
+      "prompt_tokens": 5901,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 5901,
+      "latency_ms": 1217
+    },
+    {
+      "phase": "user_A_warm",
+      "http_status": 200,
+      "prompt_tokens": 5901,
+      "cache_hit_tokens": 5888,
+      "cache_miss_tokens": 13,
+      "latency_ms": 1166
+    },
+    {
+      "phase": "user_B_first_request",
+      "http_status": 200,
+      "prompt_tokens": 5901,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 5901,
+      "latency_ms": 1039
+    },
+    {
+      "phase": "user_B_warm",
+      "http_status": 200,
+      "prompt_tokens": 5901,
+      "cache_hit_tokens": 5888,
+      "cache_miss_tokens": 13,
+      "latency_ms": 1086
+    },
+    {
+      "phase": "user_A_recheck",
+      "http_status": 200,
+      "prompt_tokens": 5901,
+      "cache_hit_tokens": 5888,
+      "cache_miss_tokens": 13,
+      "latency_ms": 999
+    }
+  ],
+  "prefix_length_matrix": [
+    {
+      "synthetic_records": 1,
+      "warm_prompt_tokens": 92,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 92,
+      "cache_hit_rate_percent": 0
+    },
+    {
+      "synthetic_records": 2,
+      "warm_prompt_tokens": 132,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 132,
+      "cache_hit_rate_percent": 0
+    },
+    {
+      "synthetic_records": 4,
+      "warm_prompt_tokens": 212,
+      "cache_hit_tokens": 128,
+      "cache_miss_tokens": 84,
+      "cache_hit_rate_percent": 60.38
+    },
+    {
+      "synthetic_records": 8,
+      "warm_prompt_tokens": 372,
+      "cache_hit_tokens": 256,
+      "cache_miss_tokens": 116,
+      "cache_hit_rate_percent": 68.82
+    },
+    {
+      "synthetic_records": 16,
+      "warm_prompt_tokens": 692,
+      "cache_hit_tokens": 640,
+      "cache_miss_tokens": 52,
+      "cache_hit_rate_percent": 92.49
+    },
+    {
+      "synthetic_records": 32,
+      "warm_prompt_tokens": 1332,
+      "cache_hit_tokens": 1280,
+      "cache_miss_tokens": 52,
+      "cache_hit_rate_percent": 96.1
+    },
+    {
+      "synthetic_records": 64,
+      "warm_prompt_tokens": 2612,
+      "cache_hit_tokens": 2560,
+      "cache_miss_tokens": 52,
+      "cache_hit_rate_percent": 98.01
+    },
+    {
+      "synthetic_records": 128,
+      "warm_prompt_tokens": 5172,
+      "cache_hit_tokens": 5120,
+      "cache_miss_tokens": 52,
+      "cache_hit_rate_percent": 98.99
+    }
+  ],
+  "mutation_controls": [
+    {
+      "mutation": "one synthetic line changed near the middle",
+      "second_prompt_tokens": 5748,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 5748
+    },
+    {
+      "mutation": "one synthetic line changed near the end",
+      "second_prompt_tokens": 6201,
+      "cache_hit_tokens": 0,
+      "cache_miss_tokens": 6201
+    }
+  ],
+  "interpretation_limits": [
+    "These are observations for one account, endpoint, model, payload set, and short time window.",
+    "Context-cache construction and retention are provider-managed and best effort.",
+    "Non-zero cache-hit token counts were multiples of 128 in this run, but the test does not prove an official current minimum or storage-unit size.",
+    "Latency measurements are small non-streaming samples and are not a service-level guarantee.",
+    "The user_id experiment observes returned usage fields; it does not inspect provider infrastructure."
+  ]
+}

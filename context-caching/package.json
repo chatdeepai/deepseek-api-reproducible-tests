@@ -1,0 +1,15 @@
+{
+  "name": "deepseek-context-caching-live-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded, reproducible DeepSeek context-caching benchmark that records only redacted metadata.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --check run-context-caching.mjs",
+    "plan": "node run-context-caching.mjs --plan",
+    "live": "node run-context-caching.mjs --execute"
+  }
+}

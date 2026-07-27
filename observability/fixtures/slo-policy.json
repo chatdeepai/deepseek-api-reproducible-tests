@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "policy_id": "synthetic-observability-slo-v1",
+  "minimum_request_sample": 5,
+  "availability_target": 0.99,
+  "maximum_incomplete_rate": 0.01,
+  "maximum_p95_duration_ms": 2000,
+  "maximum_p95_time_to_first_content_ms": 800,
+  "warning_error_budget_burn": 2,
+  "critical_error_budget_burn": 5
+}

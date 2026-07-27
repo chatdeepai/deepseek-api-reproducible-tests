@@ -1,0 +1,19 @@
+{
+  "name": "deepseek-api-rate-limits-reproducible-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded DeepSeek V4 concurrency observation plan plus deterministic offline queue, retry, and keep-alive tests.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check run-api-rate-limits.mjs",
+    "validate": "node run-api-rate-limits.mjs --validate-plan",
+    "validate:offline": "node run-api-rate-limits.mjs --validate-offline",
+    "test": "npm run check && npm run validate && npm run validate:offline",
+    "plan": "node run-api-rate-limits.mjs --plan",
+    "simulate": "node run-api-rate-limits.mjs --simulate",
+    "live": "node run-api-rate-limits.mjs --execute"
+  }
+}

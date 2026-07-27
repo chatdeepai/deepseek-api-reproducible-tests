@@ -1,0 +1,15 @@
+{
+  "page_url": "https://chat-deep.ai/docs/api-rate-limits/",
+  "wordpress_post_id": 4351,
+  "post_type": "post",
+  "category": "Docs",
+  "tags": [],
+  "focus_keyword": "DeepSeek API rate limits",
+  "wordpress_title": "DeepSeek API Rate Limits: V4 Concurrency, 429 Errors, and Safe Queue Tests",
+  "seo_title": "DeepSeek API Rate Limits: V4 Concurrency & Live Tests",
+  "meta_description": "DeepSeek API rate limits explained with V4 Pro and Flash concurrency facts, 429 guidance, and original live API, queue, retry, and keep-alive tests.",
+  "slug": "api-rate-limits",
+  "canonical": "https://chat-deep.ai/docs/api-rate-limits/",
+  "featured_visual": "visuals/01-featured.png",
+  "last_evidence_check_utc": "2026-07-27"
+}

@@ -1,0 +1,13 @@
+label,tested_at,http_status,latency_ms,requested_model,returned_model,prompt_tokens,completion_tokens,total_tokens,content_equals_ok,leading_empty_lines,retry_after_present,response_bytes
+flash_control,2026-07-27T08:43:37.288Z,200,962,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+pro_control,2026-07-27T08:43:38.416Z,200,1128,deepseek-v4-pro,deepseek-v4-pro,8,1,9,true,0,false,463
+flash_sequential_1,2026-07-27T08:45:11.770Z,200,1125,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_sequential_2,2026-07-27T08:45:12.801Z,200,1031,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_sequential_3,2026-07-27T08:45:13.799Z,200,997,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_sequential_4,2026-07-27T08:45:14.706Z,200,907,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_concurrent_1,2026-07-27T08:45:26.598Z,200,1075,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_concurrent_2,2026-07-27T08:45:26.605Z,200,1081,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_concurrent_3,2026-07-27T08:45:26.627Z,200,1103,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+flash_concurrent_4,2026-07-27T08:45:26.628Z,200,1103,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+nonstream_parser_control,2026-07-27T08:45:32.438Z,200,754,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,0,false,465
+stream_parser_control,2026-07-27T08:46:02.291Z,200,756,deepseek-v4-flash,deepseek-v4-flash,8,1,9,true,,false,1063

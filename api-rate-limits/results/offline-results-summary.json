@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_type": "offline_deterministic_simulation",
+  "provider_requests_made": 0,
+  "api_key_read": false,
+  "warning": "These results are local simulations and must not be presented as DeepSeek provider observations.",
+  "queue_benchmarks": [
+    {
+      "configured_worker_cap": 1,
+      "observed_peak_active_jobs": 1,
+      "cap_respected": true,
+      "synthetic_job_count": 24,
+      "total_service_ms": 2435,
+      "makespan_ms": 2435,
+      "queue_wait_p50_ms": 1160,
+      "queue_wait_p95_ms": 2305,
+      "mean_active_workers": 1
+    },
+    {
+      "configured_worker_cap": 2,
+      "observed_peak_active_jobs": 2,
+      "cap_respected": true,
+      "synthetic_job_count": 24,
+      "total_service_ms": 2435,
+      "makespan_ms": 1230,
+      "queue_wait_p50_ms": 520,
+      "queue_wait_p95_ms": 1135,
+      "mean_active_workers": 1.98
+    },
+    {
+      "configured_worker_cap": 4,
+      "observed_peak_active_jobs": 4,
+      "cap_respected": true,
+      "synthetic_job_count": 24,
+      "total_service_ms": 2435,
+      "makespan_ms": 620,
+      "queue_wait_p50_ms": 220,
+      "queue_wait_p95_ms": 520,
+      "mean_active_workers": 3.927
+    },
+    {
+      "configured_worker_cap": 8,
+      "observed_peak_active_jobs": 8,
+      "cap_respected": true,
+      "synthetic_job_count": 24,
+      "total_service_ms": 2435,
+      "makespan_ms": 380,
+      "queue_wait_p50_ms": 80,
+      "queue_wait_p95_ms": 225,
+      "mean_active_workers": 6.408
+    }
+  ],
+  "retry_policy_simulations": [
+    {
+      "scenario_id": "rate_limit_then_success",
+      "sequence": [
+        "http_429",
+        "http_429",
+        "http_200"
+      ],
+      "terminal_reason": "success",
+      "attempts": 3,
+      "total_virtual_backoff_ms": 1950,
+      "retry_after_exercised": true
+    },
+    {
+      "scenario_id": "server_overloaded_then_success",
+      "sequence": [
+        "http_503",
+        "http_200"
+      ],
+      "terminal_reason": "success",
+      "attempts": 2,
+      "total_virtual_backoff_ms": 375
+    },
+    {
+      "scenario_id": "server_error_then_success",
+      "sequence": [
+        "http_500",
+        "http_200"
+      ],
+      "terminal_reason": "success",
+      "attempts": 2,
+      "total_virtual_backoff_ms": 312
+    },
+    {
+      "scenario_id": "invalid_request_no_retry",
+      "sequence": [
+        "http_400"
+      ],
+      "terminal_reason": "non_retryable_outcome",
+      "attempts": 1,
+      "total_virtual_backoff_ms": 0
+    },
+    {
+      "scenario_id": "timeout_unknown_then_success",
+      "sequence": [
+        "network_timeout",
+        "http_200"
+      ],
+      "terminal_reason": "success",
+      "attempts": 2,
+      "total_virtual_backoff_ms": 250
+    },
+    {
+      "scenario_id": "cancelled_during_backoff",
+      "sequence": [
+        "http_503",
+        "cancelled"
+      ],
+      "terminal_reason": "cancelled",
+      "attempts": 2,
+      "total_virtual_backoff_ms": 375
+    }
+  ],
+  "parser_fixtures": {
+    "nonstreaming_blank_line_fixture": {
+      "leading_blank_line_count": 3,
+      "parsed_ok": true,
+      "input_byte_count": 43
+    },
+    "streaming_sse_keep_alive_fixture": {
+      "input_chunk_count": 5,
+      "keep_alive_comment_count": 2,
+      "data_event_count": 2,
+      "done_seen": true,
+      "reconstructed_local_payload": "OK"
+    }
+  },
+  "reproduction_note": "Run npm run simulate to regenerate the complete deterministic schedules and retry traces."
+}

@@ -1,0 +1,438 @@
+<!-- wp:paragraph -->
+<p><strong>DeepSeek Thinking Mode is enabled by default on both <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>.</strong> You can control it with <code>{"thinking":{"type":"enabled"}}</code> or <code>{"thinking":{"type":"disabled"}}</code>. When thinking is enabled, the API returns private reasoning in <code>reasoning_content</code> and the user-facing answer in <code>content</code>. The most important production detail is that reasoning tokens count inside the completion-token budget and cost, so a request can return HTTP 200 yet finish with no final answer if <code>max_tokens</code> is too small.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide combines the <a href="https://api-docs.deepseek.com/guides/thinking_mode/">official DeepSeek Thinking Mode contract</a> with original API controls run on July 27, 2026 UTC. The tests used synthetic English prompts, the official Chat Completions endpoint, and the two IDs returned by the live models endpoint. Raw reasoning, credentials, balances, private account data, and request identifiers were never saved.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek. Before running the examples, use our <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key setup guide</a> to keep credentials out of source code, then verify the endpoint and request format in the <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">DeepSeek Thinking Mode: quick results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"hasFixedLayout":true} -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Question</th><th>Official contract</th><th>July 27 live observation</th></tr></thead><tbody><tr><td>Is thinking on by default?</td><td>Yes</td><td>Omitting the toggle returned <code>reasoning_content</code> on Flash and Pro</td></tr><tr><td>Can it be disabled?</td><td>Yes</td><td>Explicitly disabled requests returned valid answers with no reasoning field on both models</td></tr><tr><td>Where is reasoning returned?</td><td><code>message.reasoning_content</code></td><td>Present beside <code>message.content</code>, not inside it</td></tr><tr><td>Does reasoning use <code>max_tokens</code>?</td><td>Generated tokens share the output allowance</td><td>Two 512-token probes exhausted the allowance before a final answer</td></tr><tr><td>Should ordinary prior reasoning be replayed?</td><td>No; it is ignored when no tool call occurred</td><td>Replay, omission, and a long sentinel all produced 40 prompt tokens</td></tr><tr><td>Must tool-call reasoning be replayed?</td><td>Yes; the guide warns of HTTP 400 if omitted</td><td>Our bounded omission controls returned 200, so production code still follows the stricter contract</td></tr><tr><td>Does streaming separate reasoning and answer text?</td><td>Yes</td><td>Reasoning began at event 1; final content began at event 24 in one stream</td></tr><tr><td>Can JSON Output be empty?</td><td>The docs warn that JSON Output can occasionally return empty content and require a JSON instruction</td><td>A minimal prompt that requested JSON still returned 200 with empty content; a stronger system instruction fixed it</td></tr></tbody></table><figcaption class="wp-element-caption">Each live row is a bounded compatibility check, not a universal model benchmark.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How to enable or disable thinking</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The current <a href="https://api-docs.deepseek.com/api/create-chat-completion/">Chat Completions reference</a> documents <code>thinking.type</code> as either <code>enabled</code> or <code>disabled</code>, with enabled as the default. Explicit configuration is safer than relying on a default that a dependency or model profile could obscure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com",
+)
+
+response = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=[{"role": "user", "content": "Return only the final integer: 17 * 19"}],
+    reasoning_effort="high",
+    max_tokens=1024,
+    extra_body={"thinking": {"type": "enabled"}},
+)
+
+message = response.choices[0].message
+print(message.content)  # user-facing answer
+# Do not log message.reasoning_content in production.</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>With the OpenAI Python client, the toggle belongs in <code>extra_body</code>; <code>reasoning_effort</code> remains a top-level argument. To turn thinking off, change the type to <code>disabled</code>. See our <a href="https://chat-deep.ai/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a> and <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python guide</a> for client setup and environment-variable handling.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7574,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-thinking-toggle-live-matrix.png" alt="Live DeepSeek Thinking Mode toggle matrix for V4 Flash and V4 Pro" class="wp-image-7574"/><figcaption class="wp-element-caption">Six live requests used the same arithmetic task. Every answer was valid; omitted and enabled thinking returned reasoning, while disabled thinking did not. One request per row means the timings are descriptive only.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>For Flash, the omitted, enabled, and disabled calls used 85, 91, and zero reasoning tokens. For Pro, they used 157, 105, and zero. The differences between omitted and explicitly enabled runs are normal nondeterministic variation; they do not show that omission selects a different effort level. The reliable result is the response shape: the default behaved like enabled, and disabled removed reasoning on both current models.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Understanding reasoning_content and the response shape</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In a non-streaming response, <code>reasoning_content</code> is a sibling of <code>content</code>. Treat the former as sensitive intermediate model output and the latter as the answer intended for your application. A sanitized response has this shape:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-json">{
+  "choices": [{
+    "finish_reason": "stop",
+    "message": {
+      "role": "assistant",
+      "reasoning_content": "[present but deliberately not logged]",
+      "content": "{\"answer\":323}"
+    }
+  }],
+  "usage": {
+    "prompt_tokens": 58,
+    "completion_tokens": 92,
+    "completion_tokens_details": {
+      "reasoning_tokens": 85
+    }
+  }
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not parse the final answer from the reasoning field. Validate <code>content</code>, check <code>finish_reason</code>, and read <code>usage.completion_tokens_details.reasoning_tokens</code> when it is returned. If you log full API bodies by default, add a redaction rule before deploying Thinking Mode. Our <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek observability guide</a> covers safer field-level telemetry.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Reasoning effort and the output-token budget</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents two native effort choices: <code>high</code> and <code>max</code>. The default is high for regular requests, while some complex agent integrations may select max automatically. Compatibility values are mapped rather than treated as separate native levels: <code>low</code> and <code>medium</code> map to high, and <code>xhigh</code> maps to max.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The key operational risk is budget exhaustion. In our five-value Flash probe at <code>max_tokens: 512</code>, low used 512 reasoning tokens and returned empty final content with <code>finish_reason: "length"</code>. Max used 511 reasoning tokens and also ended at length with empty content. Xhigh reached the same 512-token completion ceiling but produced some final content. Medium and high stopped normally in this particular run. These results do not establish a quality ranking; they demonstrate that HTTP 200 alone is not a success criterion.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7575,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-reasoning-effort-output-budget.png" alt="DeepSeek high versus max reasoning effort and output token budget live test" class="wp-image-7575"/><figcaption class="wp-element-caption">With a 1,024-token allowance, both bounded control calls completed correctly. Max used 802 reasoning tokens versus 376 for high in this one pair. The ratio is not a general promise.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>We repeated the same scheduling puzzle with a 1,024-token allowance so both high and max could finish. High used 376 reasoning tokens and 386 total completion tokens; max used 802 reasoning tokens and 811 completion tokens. Client-side elapsed time was 3,998 ms and 6,998 ms, respectively. Because this was one request per setting from one network location, use the numbers to understand the budget trade-off, not to predict latency.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Set a realistic <code>max_tokens</code> allowance for reasoning plus the final response.</li><li>Reject or retry <code>finish_reason: "length"</code> when complete output is required.</li><li>Validate that <code>content</code> is non-empty before parsing it.</li><li>Measure reasoning-token percentiles on your own workload before choosing high or max.</li><li>Bound retries so an empty answer cannot create an uncontrolled cost loop.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek also states that <code>temperature</code>, <code>top_p</code>, <code>presence_penalty</code>, and <code>frequency_penalty</code> have no effect in thinking mode. They may be accepted for compatibility without changing generation. Remove them from a thinking-specific configuration rather than assuming they tune reasoning.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Ordinary multi-turn history: omit old reasoning</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>When an assistant turn did not call a tool, DeepSeek says its prior <code>reasoning_content</code> does not need to be sent in the next conversation request and will be ignored if supplied. Retain the assistant's final <code>content</code>, because that is part of the visible conversation, but you can omit its private reasoning.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Our control began with a synthetic code and then asked the model to recall it. The continuation was sent three ways: with the actual prior reasoning, without reasoning, and with a deliberately long synthetic sentinel in its place. All three returned HTTP 200, recalled the correct code, and reported exactly 40 prompt tokens. The unchanged token count is bounded evidence that ordinary prior reasoning was ignored, matching the documented rule.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-python">messages = [
+    {"role": "user", "content": first_question},
+    {
+        "role": "assistant",
+        # Keep the visible answer; omit prior reasoning when no tool call occurred.
+        "content": first_response.choices[0].message.content or "",
+    },
+    {"role": "user", "content": follow_up},
+]</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Tool calls: replay the complete assistant message</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Tool-call history has a stricter rule. DeepSeek's Thinking Mode guide says that when the model performs a tool call, the intermediate assistant message's <code>reasoning_content</code> must be fully passed back in subsequent requests. The documented production shape preserves <code>content</code>, <code>reasoning_content</code>, and <code>tool_calls</code>, followed by each matching tool result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-python">import json
+
+first = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=messages,
+    tools=tools,
+    reasoning_effort="high",
+    extra_body={"thinking": {"type": "enabled"}},
+)
+
+m = first.choices[0].message
+assistant_tool_message = {
+    "role": "assistant",
+    "content": m.content or "",
+    "reasoning_content": m.reasoning_content or "",
+    "tool_calls": [
+        {
+            "id": call.id,
+            "type": "function",
+            "function": {
+                "name": call.function.name,
+                "arguments": call.function.arguments,
+            },
+        }
+        for call in (m.tool_calls or [])
+    ],
+}
+messages.append(assistant_tool_message)
+
+for call in m.tool_calls or []:
+    arguments = json.loads(call.function.arguments)
+    result = run_validated_tool(call.function.name, arguments)
+    messages.append({
+        "role": "tool",
+        "tool_call_id": call.id,
+        "content": json.dumps(result),
+    })
+
+final = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=messages,
+    tools=tools,
+    reasoning_effort="high",
+    extra_body={"thinking": {"type": "enabled"}},
+)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Validate function names and JSON arguments before executing anything, enforce an allow-list, and apply timeouts to the real tool. For a broader implementation, see our <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">DeepSeek tool-calling guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">A live compatibility gap, not a new contract</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The official guide explicitly warns that omitting tool-call reasoning produces HTTP 400. Our July 27 negative controls did not reproduce that error: both Flash and Pro accepted continuations with or without prior <code>reasoning_content</code>, and all bounded branches returned the correct synthetic inventory value. Additional Flash controls accepted a missing <code>content</code> field and a null value. Explicit <code>tool_choice: "auto"</code> also returned a tool call on both models.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>That permissive behavior may be temporary, model-specific, or changed by later validation. It is not a reason to delete required fields. Production code should follow the documented shape above so it remains valid if the server tightens enforcement.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7576,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-history-and-tool-call-controls.png" alt="DeepSeek thinking-mode multi-turn and tool-call history live test results" class="wp-image-7576"/><figcaption class="wp-element-caption">The ordinary-history control matched the documentation. Tool-call omission was accepted in this dated test even though the official contract requires full reasoning replay.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Streaming reasoning_content safely</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Streaming responses expose separate <code>delta.reasoning_content</code> and <code>delta.content</code> fields. Accumulate them independently. Do not use an <code>else</code> branch that assumes a chunk can contain only one field, and guard the final usage-only event because <code>choices</code> is empty when <code>stream_options.include_usage</code> is enabled.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-javascript">let reasoning = "";
+let answer = "";
+let usage = null;
+
+for await (const chunk of stream) {
+  if (chunk.usage) usage = chunk.usage;
+
+  const delta = chunk.choices?.[0]?.delta;
+  if (!delta) continue;
+
+  if (typeof delta.reasoning_content === "string") {
+    reasoning += delta.reasoning_content;
+  }
+  if (typeof delta.content === "string") {
+    answer += delta.content;
+  }
+}
+
+if (!answer || !answer.trim()) {
+  throw new Error("DeepSeek returned no final content");
+}
+// Keep reasoning out of ordinary application logs.
+console.log({ answer, reasoningTokens:
+  usage?.completion_tokens_details?.reasoning_tokens });</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>In our sanitized Flash stream, 30 server-sent events were parsed. Reasoning first appeared at event 1 and accounted for 23 chunks; final content began at event 24 and used five chunks. The final content was valid, and usage reported 23 reasoning tokens. This sequence illustrates why two buffers work, but another response can use different chunk boundaries.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7577,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-streaming-reasoning-content.png" alt="DeepSeek streaming live test showing reasoning_content events before final content events" class="wp-image-7577"/><figcaption class="wp-element-caption">A live streaming response with raw reasoning redacted. Check both delta fields independently and handle the empty choices array in the usage-bearing event.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">JSON Output with Thinking Mode</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Thinking Mode and JSON Output can be used together, but <code>response_format: {"type":"json_object"}</code> is not a substitute for a clear instruction. DeepSeek's documentation requires the prompt to ask for JSON and also warns that JSON Output can occasionally return empty content. Our minimal thinking-enabled user prompt did request JSON, yet it returned HTTP 200 with <code>finish_reason: "stop"</code> and empty final content. A retry with a stronger, explicit system instruction returned valid JSON; the equivalent non-thinking control also returned valid JSON.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code class="language-python">import json
+
+response = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=[
+        {
+            "role": "system",
+            "content": (
+                "Return one valid JSON object with exactly the keys "
+                "\"status\" and \"count\". Do not use Markdown."
+            ),
+        },
+        {"role": "user", "content": "Status is ready and count is 3."},
+    ],
+    response_format={"type": "json_object"},
+    max_tokens=512,
+    extra_body={"thinking": {"type": "enabled"}},
+)
+
+choice = response.choices[0]
+text = choice.message.content
+if choice.finish_reason != "stop" or not text or not text.strip():
+    raise RuntimeError("Empty or incomplete JSON response")
+data = json.loads(text)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>After parsing, validate required keys and types against your own schema. Use a small, bounded retry for empty content, but do not retry malformed requests indefinitely. Our dedicated <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a> covers validation and recovery patterns.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7578,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-json-output-and-model-routing.png" alt="DeepSeek JSON Output empty response and model alias routing live test" class="wp-image-7578"/><figcaption class="wp-element-caption">The explicit JSON instruction fixed an empty-content result. The same study also found a difference between model discovery and legacy alias routing.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Thinking Mode token cost</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Reasoning does not have a separate surcharge. It is included in <code>completion_tokens</code> and is billed at the model's output-token rate. Using the <a href="https://api-docs.deepseek.com/quick_start/pricing/">official pricing snapshot</a> checked on the test date, V4 Flash cost $0.0028 per million cache-hit input tokens, $0.14 per million cache-miss input tokens, and $0.28 per million output tokens. V4 Pro cost $0.003625, $0.435, and $0.87 for the same categories. Prices can change, so recheck the official table before budgeting.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>estimated_cost =
+  (cache_hit_input_tokens * cache_hit_price
+  + cache_miss_input_tokens * cache_miss_price
+  + completion_tokens * output_price) / 1_000_000</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>In the six-call toggle matrix, estimated request cost ranged from $0.00001092 for Flash with thinking disabled to $0.00016878 for the single Pro default-thinking call. The high/max Flash control cost estimates were $0.00011746 and $0.00024752. These values describe those prompts only. Your cost depends on input length, <a href="https://chat-deep.ai/docs/deepseek-context-caching/">context-cache hits</a>, reasoning length, final-answer length, and model choice.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Recommended production defaults</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A conservative starting profile is V4 Flash, thinking explicitly enabled, high effort, a task-specific output allowance, and no ineffective sampling parameters. Add a per-request timeout, but do not assume a slow request has failed while reasoning is still being generated. Record the model, HTTP status, finish reason, prompt tokens, cache-hit tokens, completion tokens, reasoning tokens, and sanitized elapsed time. Never put an API key or raw reasoning in logs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>At the application boundary, accept a response only after confirming that a choice exists, <code>content</code> is non-empty, the finish reason is suitable for the task, and structured output passes validation. Treat <code>length</code>, empty content, a malformed tool call, and invalid JSON as distinct outcomes with separate counters. Retry only failures that can plausibly succeed unchanged, and cap both attempts and total elapsed time. The <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a> explains safer credential storage, while the <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a> covers the complete request lifecycle.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For higher-stakes workflows, route a measured subset to V4 Pro or max effort instead of making that the global default. Evaluate accuracy, empty-output rate, tool-call validity, token use, and tail latency together. This preserves Thinking Mode's benefit while making its variable generation budget observable and controllable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Current models and legacy aliases</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The live <code>GET /models</code> response listed only <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. Both officially support thinking and non-thinking modes, a 1M-token context window, JSON Output, and tool calls. The pricing page lists a maximum output of 384K tokens, although applications should choose a smaller task-appropriate limit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>We also sent bounded completion probes to <code>deepseek-chat</code> and <code>deepseek-reasoner</code>. Both were accepted on July 27 and the response reported <code>deepseek-v4-flash</code>. However, neither alias appeared in model discovery, and the V4 release notice had announced retirement after July 24. That mismatch is precisely why new code should use explicit V4 IDs rather than depend on undocumented grace-period routing. Check our <a href="https://chat-deep.ai/models/">DeepSeek models guide</a> and <a href="https://chat-deep.ai/docs/migrate-deepseek-chat-reasoner-to-v4/">V4 migration guide</a> for current routing guidance.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Troubleshooting checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>HTTP 200 but empty content:</strong> inspect <code>finish_reason</code>, reasoning-token usage, and your output allowance. For JSON Output, add an explicit JSON instruction and use a bounded retry.</li><li><strong><code>finish_reason</code> is <code>length</code>:</strong> reasoning or answer generation exhausted <code>max_tokens</code>. Increase the allowance or simplify the task and required output.</li><li><strong>No <code>reasoning_content</code>:</strong> confirm the toggle was enabled and inspect the returned model. Thinking disabled should not return reasoning.</li><li><strong>Tool continuation fails:</strong> replay the full assistant tool-call message, including <code>content</code>, <code>reasoning_content</code>, and <code>tool_calls</code>, then attach every tool result to the correct <code>tool_call_id</code>.</li><li><strong>Streaming parser crashes at the end:</strong> the usage-bearing chunk can have an empty <code>choices</code> array. Use optional access and process usage separately.</li><li><strong>Sampling settings appear ineffective:</strong> temperature, top-p, presence penalty, and frequency penalty do not affect thinking mode.</li><li><strong>Unexpected alias behavior:</strong> query the models endpoint and migrate to explicit V4 IDs. Do not infer availability from one successful legacy request.</li><li><strong>Repeated 4xx or 5xx responses:</strong> classify the status before retrying. See the <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek error-code guide</a> and <a href="https://chat-deep.ai/docs/api-rate-limits/">rate-limit guide</a>.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How the tests can be reproduced</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The public <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/thinking-mode">DeepSeek Thinking Mode test harness on GitHub</a> uses Node.js 20 or newer and the built-in <code>fetch</code> API. Its fixed endpoint and model allow-list, sequential request plan, token caps, and request budget can be validated without an API key. A live run reads a temporary key only from the process environment.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The published evidence stores status codes, timings, response-shape flags, token counts, hashes, and sanitized error metadata. It does not store prompts, final answer text, chain-of-thought text, tool arguments, tool-call IDs, raw responses, authorization headers, balances, or private identifiers. Results remain limited by nondeterministic output, one client location, small samples, and an API that can change after the test date. Use the harness to verify compatibility in your own environment, not to claim universal speed or reasoning quality.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Frequently asked questions</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Is DeepSeek Thinking Mode enabled by default?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. The current official documentation says thinking defaults to enabled. Our omitted-toggle controls also returned reasoning on both V4 Flash and V4 Pro. Sending an explicit toggle is still clearer in production.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I turn DeepSeek reasoning off?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Send <code>{"thinking":{"type":"disabled"}}</code> in the request body. With the OpenAI Python SDK, pass it through <code>extra_body</code>. Both disabled controls returned a valid answer without <code>reasoning_content</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">What is the difference between content and reasoning_content?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><code>reasoning_content</code> contains the model's intermediate reasoning; <code>content</code> contains the user-facing answer. They are separate fields. Applications should render or parse <code>content</code> and avoid logging raw reasoning.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Do reasoning tokens count toward max_tokens and cost?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. Reasoning tokens are part of completion-token usage, consume the output allowance, and are charged at the output rate. Always check for empty content and <code>finish_reason: "length"</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I use high or max reasoning effort?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Start with high and test against a representative evaluation set. Move selected complex tasks to max only when measured quality gains justify additional tokens, latency, and cost. One live pair cannot determine the best setting for every workload; our <a href="https://chat-deep.ai/docs/deepseek-evaluation-framework/">DeepSeek evaluation framework</a> explains how to compare them.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Must reasoning_content be sent in conversation history?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Not after an ordinary assistant response without tool calls; DeepSeek says it is ignored. After a thinking-mode tool call, the official contract requires replaying it in the assistant message. Follow that stricter rule even if a current compatibility test succeeds without it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can DeepSeek Thinking Mode return JSON?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. Set <code>response_format</code> to <code>json_object</code>, explicitly instruct the model to return JSON, validate non-empty content, parse it, and enforce your own schema. A 200 response does not eliminate the need for those checks.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><em>Last live verification: July 27, 2026 UTC. API behavior, model routing, limits, and prices may change. Recheck the linked official DeepSeek documentation before a production rollout.</em></p>
+<!-- /wp:paragraph -->

@@ -1,0 +1,17 @@
+{
+  "name": "deepseek-thinking-mode-live-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded DeepSeek thinking-mode harness that stores metadata, hashes, and lengths without persisting chain-of-thought.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check run-thinking-mode.mjs",
+    "validate": "node run-thinking-mode.mjs --validate-plan",
+    "test": "npm run check && npm run validate",
+    "plan": "node run-thinking-mode.mjs --plan",
+    "live": "node run-thinking-mode.mjs --execute"
+  }
+}

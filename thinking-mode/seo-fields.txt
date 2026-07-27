@@ -1,0 +1,7 @@
+H1: DeepSeek Thinking Mode: Live Tests for reasoning_content, Effort, and Tool Calls
+SEO title: DeepSeek Thinking Mode: Live API Tests & reasoning_content
+Meta description: Run DeepSeek Thinking Mode with V4 Flash or Pro. See live tests for reasoning_content, effort, streaming, tool calls, JSON output, tokens, and cost.
+Slug: deepseek-thinking-mode
+Focus keyword: DeepSeek Thinking Mode
+Category: Docs
+Tags: none

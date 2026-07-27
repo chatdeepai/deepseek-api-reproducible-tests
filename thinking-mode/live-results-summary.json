@@ -1,0 +1,340 @@
+{
+  "study": "DeepSeek Thinking Mode live API tests",
+  "tested_at_utc": "2026-07-27",
+  "endpoint": "https://api.deepseek.com/chat/completions",
+  "models_endpoint": {
+    "http_status": 200,
+    "listed_model_ids": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro"
+    ]
+  },
+  "redaction": {
+    "api_key_saved": false,
+    "authorization_header_saved": false,
+    "raw_reasoning_content_saved": false,
+    "account_balance_saved": false,
+    "private_account_identifiers_saved": false
+  },
+  "pricing_snapshot_usd_per_million_tokens": {
+    "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+    "deepseek-v4-flash": {
+      "cache_hit_input": 0.0028,
+      "cache_miss_input": 0.14,
+      "output": 0.28
+    },
+    "deepseek-v4-pro": {
+      "cache_hit_input": 0.003625,
+      "cache_miss_input": 0.435,
+      "output": 0.87
+    }
+  },
+  "thinking_toggle": [
+    {
+      "label": "flash_default_omitted",
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "thinking_sent": "omitted",
+      "http_status": 200,
+      "latency_ms": 1521,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": true,
+      "reasoning_content_chars": 277,
+      "prompt_tokens": 58,
+      "completion_tokens": 92,
+      "reasoning_tokens": 85,
+      "estimated_cost_usd": 0.00003388
+    },
+    {
+      "label": "flash_explicit_enabled",
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "thinking_sent": "enabled",
+      "http_status": 200,
+      "latency_ms": 1483,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": true,
+      "reasoning_content_chars": 290,
+      "prompt_tokens": 58,
+      "completion_tokens": 99,
+      "reasoning_tokens": 91,
+      "estimated_cost_usd": 0.00003584
+    },
+    {
+      "label": "flash_explicit_disabled",
+      "requested_model": "deepseek-v4-flash",
+      "returned_model": "deepseek-v4-flash",
+      "thinking_sent": "disabled",
+      "http_status": 200,
+      "latency_ms": 1176,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": false,
+      "reasoning_content_chars": 0,
+      "prompt_tokens": 58,
+      "completion_tokens": 10,
+      "reasoning_tokens": null,
+      "estimated_cost_usd": 0.00001092
+    },
+    {
+      "label": "pro_default_omitted",
+      "requested_model": "deepseek-v4-pro",
+      "returned_model": "deepseek-v4-pro",
+      "thinking_sent": "omitted",
+      "http_status": 200,
+      "latency_ms": 2550,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": true,
+      "reasoning_content_chars": 619,
+      "prompt_tokens": 58,
+      "completion_tokens": 165,
+      "reasoning_tokens": 157,
+      "estimated_cost_usd": 0.00016878
+    },
+    {
+      "label": "pro_explicit_enabled",
+      "requested_model": "deepseek-v4-pro",
+      "returned_model": "deepseek-v4-pro",
+      "thinking_sent": "enabled",
+      "http_status": 200,
+      "latency_ms": 2232,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": true,
+      "reasoning_content_chars": 412,
+      "prompt_tokens": 58,
+      "completion_tokens": 113,
+      "reasoning_tokens": 105,
+      "estimated_cost_usd": 0.00012354
+    },
+    {
+      "label": "pro_explicit_disabled",
+      "requested_model": "deepseek-v4-pro",
+      "returned_model": "deepseek-v4-pro",
+      "thinking_sent": "disabled",
+      "http_status": 200,
+      "latency_ms": 1035,
+      "finish_reason": "stop",
+      "answer_valid": true,
+      "reasoning_content_present": false,
+      "reasoning_content_chars": 0,
+      "prompt_tokens": 58,
+      "completion_tokens": 10,
+      "reasoning_tokens": null,
+      "estimated_cost_usd": 0.00003393
+    }
+  ],
+  "reasoning_effort": {
+    "max_tokens_512_probe": [
+      {
+        "reasoning_effort": "low",
+        "http_status": 200,
+        "latency_ms": 5251,
+        "finish_reason": "length",
+        "content_present": false,
+        "completion_tokens": 512,
+        "reasoning_tokens": 512
+      },
+      {
+        "reasoning_effort": "medium",
+        "http_status": 200,
+        "latency_ms": 4586,
+        "finish_reason": "stop",
+        "content_present": true,
+        "completion_tokens": 471,
+        "reasoning_tokens": 462
+      },
+      {
+        "reasoning_effort": "high",
+        "http_status": 200,
+        "latency_ms": 4262,
+        "finish_reason": "stop",
+        "content_present": true,
+        "completion_tokens": 417,
+        "reasoning_tokens": 406
+      },
+      {
+        "reasoning_effort": "xhigh",
+        "http_status": 200,
+        "latency_ms": 5081,
+        "finish_reason": "length",
+        "content_present": true,
+        "completion_tokens": 512,
+        "reasoning_tokens": 503
+      },
+      {
+        "reasoning_effort": "max",
+        "http_status": 200,
+        "latency_ms": 4765,
+        "finish_reason": "length",
+        "content_present": false,
+        "completion_tokens": 512,
+        "reasoning_tokens": 511
+      }
+    ],
+    "max_tokens_1024_control": [
+      {
+        "reasoning_effort": "high",
+        "http_status": 200,
+        "latency_ms": 3998,
+        "finish_reason": "stop",
+        "answer_valid": true,
+        "completion_tokens": 386,
+        "reasoning_tokens": 376,
+        "estimated_cost_usd": 0.00011746
+      },
+      {
+        "reasoning_effort": "max",
+        "http_status": 200,
+        "latency_ms": 6998,
+        "finish_reason": "stop",
+        "answer_valid": true,
+        "completion_tokens": 811,
+        "reasoning_tokens": 802,
+        "estimated_cost_usd": 0.00024752
+      }
+    ],
+    "single_pair_ratios_high_to_max": {
+      "reasoning_tokens": 2.13,
+      "latency": 1.75,
+      "estimated_cost": 2.11
+    }
+  },
+  "ordinary_multi_turn": [
+    {
+      "variant": "replay_actual_reasoning_content",
+      "http_status": 200,
+      "prompt_tokens": 40,
+      "answer_valid": true
+    },
+    {
+      "variant": "omit_reasoning_content",
+      "http_status": 200,
+      "prompt_tokens": 40,
+      "answer_valid": true
+    },
+    {
+      "variant": "replace_with_long_sentinel",
+      "http_status": 200,
+      "prompt_tokens": 40,
+      "answer_valid": true
+    }
+  ],
+  "tool_call_history": {
+    "official_documentation_rule": "Replay full reasoning_content after a thinking-mode tool call.",
+    "flash": {
+      "initial_call": {
+        "http_status": 200,
+        "finish_reason": "tool_calls",
+        "reasoning_content_present": true,
+        "tool_name": "lookup_inventory"
+      },
+      "continuation_with_reasoning_content": {
+        "http_status": 200,
+        "answer_valid": true
+      },
+      "continuation_without_reasoning_content": {
+        "http_status": 200,
+        "answer_valid": true
+      },
+      "continuation_without_content_field": {
+        "http_status": 200,
+        "answer_valid": true
+      },
+      "continuation_with_null_content": {
+        "http_status": 200,
+        "answer_valid": true
+      }
+    },
+    "pro": {
+      "initial_call": {
+        "http_status": 200,
+        "finish_reason": "tool_calls",
+        "reasoning_content_present": true,
+        "tool_name": "lookup_inventory"
+      },
+      "continuation_with_reasoning_content": {
+        "http_status": 200,
+        "answer_valid": true
+      },
+      "continuation_without_reasoning_content": {
+        "http_status": 200,
+        "answer_valid": true
+      }
+    },
+    "interpretation": "The bounded July 27, 2026 controls did not reproduce the documented 400. Production code should still preserve reasoning_content because the official contract requires it and permissive validation can change."
+  },
+  "tool_choice_auto": [
+    {
+      "model": "deepseek-v4-flash",
+      "http_status": 200,
+      "finish_reason": "tool_calls",
+      "tool_call_count": 1
+    },
+    {
+      "model": "deepseek-v4-pro",
+      "http_status": 200,
+      "finish_reason": "tool_calls",
+      "tool_call_count": 1
+    }
+  ],
+  "streaming": {
+    "http_status": 200,
+    "event_count": 30,
+    "first_reasoning_event_index": 1,
+    "first_content_event_index": 24,
+    "reasoning_chunk_count": 23,
+    "content_chunk_count": 5,
+    "final_content_valid": true,
+    "reasoning_tokens": 23
+  },
+  "json_output": [
+    {
+      "thinking": "enabled",
+      "prompt_variant": "minimal",
+      "http_status": 200,
+      "finish_reason": "stop",
+      "content_empty": true,
+      "json_valid": false
+    },
+    {
+      "thinking": "enabled",
+      "prompt_variant": "explicit_system_instruction",
+      "http_status": 200,
+      "finish_reason": "stop",
+      "content_empty": false,
+      "json_valid": true
+    },
+    {
+      "thinking": "disabled",
+      "prompt_variant": "explicit_system_instruction",
+      "http_status": 200,
+      "finish_reason": "stop",
+      "content_empty": false,
+      "json_valid": true
+    }
+  ],
+  "legacy_alias_probe": [
+    {
+      "requested_model": "deepseek-chat",
+      "http_status": 200,
+      "returned_model": "deepseek-v4-flash"
+    },
+    {
+      "requested_model": "deepseek-reasoner",
+      "http_status": 200,
+      "returned_model": "deepseek-v4-flash",
+      "note": "The eight-token cap was consumed before final content was produced."
+    }
+  ],
+  "limitations": [
+    "Each row is a bounded live observation, not a universal benchmark.",
+    "Latency was measured client-side from one network location.",
+    "Reasoning text is nondeterministic and was hashed rather than stored.",
+    "The API may change after the stated test date.",
+    "Legacy aliases were accepted in completion requests but were absent from the live models listing."
+  ]
+}

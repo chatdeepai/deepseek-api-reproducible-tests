@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "title": "DeepSeek Node.js and TypeScript preregistered provider request plan",
+  "status": "not_run",
+  "frozen_at_utc": "2026-07-27",
+  "provider_origin": "https://api.deepseek.com",
+  "versions": {
+    "node_minimum": "20",
+    "openai": "6.49.0",
+    "typescript": "7.0.2",
+    "@types/node": "24.13.3"
+  },
+  "provider_request_cap": 9,
+  "planned_provider_requests": 9,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "default_timeout_ms": 30000,
+  "evidence_policy": {
+    "persist_api_key": false,
+    "persist_headers": false,
+    "persist_prompts": false,
+    "persist_outputs": false,
+    "persist_reasoning": false,
+    "persist_provider_request_ids": false,
+    "persist_tool_call_ids": false,
+    "persist_tool_arguments": false,
+    "persist_account_data": false
+  },
+  "cases": [
+    {
+      "sequence": 1,
+      "id": "node-ordinary-chat-v4-flash",
+      "scenario": "ordinary_chat",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 32,
+      "acceptance": "The SDK parses one non-streaming Chat Completion; only type, finish state, and presence booleans are retained."
+    },
+    {
+      "sequence": 2,
+      "id": "node-stream-v4-flash",
+      "scenario": "streaming",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 32,
+      "acceptance": "The async iterable reaches a terminal state; only event counts and field-presence booleans are retained."
+    },
+    {
+      "sequence": 3,
+      "id": "node-json-mode-v4-flash",
+      "scenario": "json_output",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 64,
+      "acceptance": "The returned text parses as JSON and matches the frozen local schema before being discarded."
+    },
+    {
+      "sequence": 4,
+      "id": "node-tool-initial-v4-flash",
+      "scenario": "tool_initial",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 64,
+      "acceptance": "Exactly one allowlisted function call has schema-valid arguments; identifiers and arguments remain in memory only."
+    },
+    {
+      "sequence": 5,
+      "id": "node-tool-continuation-v4-flash",
+      "scenario": "tool_continuation",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 48,
+      "acceptance": "A fixed local result is replayed only after the initial call passes every safety check."
+    },
+    {
+      "sequence": 6,
+      "id": "node-thinking-v4-pro",
+      "scenario": "thinking",
+      "model": "deepseek-v4-pro",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "max_tokens": 96,
+      "acceptance": "The SDK preserves reasoning field presence without persisting the reasoning value."
+    },
+    {
+      "sequence": 7,
+      "id": "node-alias-deepseek-chat",
+      "scenario": "alias_probe",
+      "model": "deepseek-chat",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 16,
+      "acceptance": "Record a dated typed success or typed provider error without assuming future alias availability."
+    },
+    {
+      "sequence": 8,
+      "id": "node-alias-deepseek-reasoner",
+      "scenario": "alias_probe",
+      "model": "deepseek-reasoner",
+      "thinking": "enabled",
+      "reasoning_effort": "high",
+      "max_tokens": 32,
+      "acceptance": "Record a dated typed success or typed provider error without assuming future alias availability."
+    },
+    {
+      "sequence": 9,
+      "id": "node-invalid-model-error",
+      "scenario": "invalid_model",
+      "model": "deepseek-does-not-exist",
+      "thinking": "disabled",
+      "reasoning_effort": null,
+      "max_tokens": 16,
+      "acceptance": "A non-2xx response is retained only as status, safe SDK exception class, and allowlisted error code."
+    }
+  ]
+}

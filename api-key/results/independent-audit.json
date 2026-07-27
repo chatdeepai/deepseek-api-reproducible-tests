@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0.0",
+  "audit_date_utc": "2026-07-27",
+  "source": "final-results-summary.json",
+  "verdict": "pass",
+  "checks": {
+    "logical_cases": 12,
+    "unique_case_ids": 12,
+    "all_cases_marked_passed": true,
+    "http_200_cases": 6,
+    "http_401_cases": 6,
+    "temporary_keys_created": 2,
+    "temporary_keys_revoked": 2,
+    "temporary_key_rows_remaining": 0,
+    "offline_cases_passed": 10,
+    "offline_cases_total": 10,
+    "public_candidate_text_files_scanned": 30,
+    "secret_scanner_findings": 0
+  },
+  "limitations": [
+    "The audit recomputes internal counts and safety invariants from sanitized evidence.",
+    "It cannot reissue provider requests or independently inspect intentionally omitted credentials, raw headers, raw response bodies, account data, or monetary values."
+  ]
+}

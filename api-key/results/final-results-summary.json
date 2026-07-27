@@ -1,0 +1,231 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_type": "bounded_deepseek_api_key_lifecycle_observations",
+  "warning": "Dated observations from one account and network environment; not a universal availability or latency benchmark.",
+  "run_id": "api-key-20260727-live-01",
+  "started_at_utc": "2026-07-27T10:42:01.137Z",
+  "completed_at_utc": "2026-07-27T10:46:07.911Z",
+  "test_date_utc": "2026-07-27",
+  "api_origin": "https://api.deepseek.com",
+  "execution": {
+    "logical_live_cases": 12,
+    "http_requests": 12,
+    "paid_generation_requests": 1,
+    "maximum_concurrency": 1,
+    "automatic_retries": 0,
+    "revocation_poll_policy_ms": [0, 2000, 5000, 10000, 20000, 30000]
+  },
+  "credential_lifecycle": {
+    "temporary_keys_created": 2,
+    "temporary_keys_revoked": 2,
+    "revocations_confirmed_within_30s": 2,
+    "replacement_key_continuity_checks_passed": 1,
+    "temporary_key_rows_remaining": 0,
+    "one_time_secret_dialog_screenshots_captured": 0
+  },
+  "privacy": {
+    "authorization_headers_published": false,
+    "api_key_values_published": false,
+    "api_key_prefixes_or_suffixes_published": false,
+    "account_balance_values_published": false,
+    "account_identifiers_published": false,
+    "exact_secret_occurrences_in_summary": 0
+  },
+  "outcomes": {
+    "passed_cases": 12,
+    "total_cases": 12,
+    "valid_authenticated_operations_passed": 6,
+    "valid_authenticated_operations_total": 6,
+    "authentication_denials_passed": 6,
+    "authentication_denials_total": 6,
+    "observed_models": ["deepseek-v4-flash", "deepseek-v4-pro"],
+    "balance_availability_boolean_observed": true
+  },
+  "results": [
+    {
+      "case_id": "LIVE-01",
+      "requested_at_utc": "2026-07-27T10:42:01.137Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "A",
+      "auth_variant": "valid",
+      "status": 200,
+      "latency_ms": 497,
+      "content_type": "application/json",
+      "schema_checks": {
+        "object_is_list": true,
+        "data_is_nonempty": true,
+        "every_model_has_id": true
+      },
+      "model_ids": ["deepseek-v4-flash", "deepseek-v4-pro"],
+      "model_count": 2,
+      "passed": true
+    },
+    {
+      "case_id": "LIVE-02",
+      "requested_at_utc": "2026-07-27T10:42:07.835Z",
+      "method": "POST",
+      "path": "/chat/completions",
+      "credential_alias": "A",
+      "auth_variant": "valid",
+      "status": 200,
+      "latency_ms": 785,
+      "content_type": "application/json",
+      "schema_checks": {
+        "object_is_chat_completion": true,
+        "has_choice": true,
+        "content_nonempty": true,
+        "usage_present": true
+      },
+      "model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "content_exact_authenticated_ok": true,
+      "usage": {
+        "prompt_tokens": 17,
+        "completion_tokens": 6,
+        "total_tokens": 23
+      },
+      "passed": true
+    },
+    {
+      "case_id": "LIVE-03",
+      "requested_at_utc": "2026-07-27T10:42:12.429Z",
+      "method": "GET",
+      "path": "/user/balance",
+      "credential_alias": "A",
+      "auth_variant": "valid",
+      "status": 200,
+      "latency_ms": 276,
+      "content_type": "application/json",
+      "schema_checks": {
+        "is_available_boolean": true,
+        "balance_infos_is_array": true
+      },
+      "is_available": true,
+      "balance_info_count": 1,
+      "monetary_values_published": false,
+      "passed": true
+    },
+    {
+      "case_id": "AUTH-01",
+      "requested_at_utc": "2026-07-27T10:42:24.069Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": null,
+      "auth_variant": "missing",
+      "status": 401,
+      "latency_ms": 313,
+      "content_type": "",
+      "error_message_published": false,
+      "passed": true
+    },
+    {
+      "case_id": "AUTH-02",
+      "requested_at_utc": "2026-07-27T10:42:24.382Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": null,
+      "auth_variant": "empty_bearer",
+      "status": 401,
+      "latency_ms": 300,
+      "content_type": "",
+      "error_message_published": false,
+      "passed": true
+    },
+    {
+      "case_id": "AUTH-03",
+      "requested_at_utc": "2026-07-27T10:42:24.682Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": null,
+      "auth_variant": "wrong_scheme",
+      "status": 401,
+      "latency_ms": 304,
+      "content_type": "",
+      "error_message_published": false,
+      "passed": true
+    },
+    {
+      "case_id": "AUTH-04",
+      "requested_at_utc": "2026-07-27T10:42:24.986Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": null,
+      "auth_variant": "invalid",
+      "status": 401,
+      "latency_ms": 268,
+      "content_type": "application/json",
+      "error_type": "authentication_error",
+      "error_code": "invalid_request_error",
+      "error_message_published": false,
+      "passed": true
+    },
+    {
+      "case_id": "ROT-01",
+      "requested_at_utc": "2026-07-27T10:43:17.574Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "B",
+      "auth_variant": "valid",
+      "status": 200,
+      "latency_ms": 320,
+      "model_ids": ["deepseek-v4-flash", "deepseek-v4-pro"],
+      "model_count": 2,
+      "passed": true
+    },
+    {
+      "case_id": "ROT-02",
+      "requested_at_utc": "2026-07-27T10:43:17.894Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "A",
+      "auth_variant": "valid",
+      "status": 200,
+      "latency_ms": 300,
+      "model_ids": ["deepseek-v4-flash", "deepseek-v4-pro"],
+      "model_count": 2,
+      "passed": true
+    },
+    {
+      "case_id": "ROT-03",
+      "requested_at_utc": "2026-07-27T10:45:25.327Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "A",
+      "auth_variant": "revoked",
+      "status": 401,
+      "revocation_confirmed": true,
+      "propagation_ms": 0,
+      "attempt_count": 1,
+      "poll_statuses": [401],
+      "passed": true
+    },
+    {
+      "case_id": "ROT-04",
+      "requested_at_utc": "2026-07-27T10:45:33.125Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "B",
+      "auth_variant": "valid_after_a_revocation",
+      "status": 200,
+      "latency_ms": 306,
+      "model_ids": ["deepseek-v4-flash", "deepseek-v4-pro"],
+      "model_count": 2,
+      "passed": true
+    },
+    {
+      "case_id": "ROT-05",
+      "requested_at_utc": "2026-07-27T10:46:07.911Z",
+      "method": "GET",
+      "path": "/models",
+      "credential_alias": "B",
+      "auth_variant": "revoked",
+      "status": 401,
+      "revocation_confirmed": true,
+      "propagation_ms": 0,
+      "attempt_count": 1,
+      "poll_statuses": [401],
+      "passed": true
+    }
+  ]
+}

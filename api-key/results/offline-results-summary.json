@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_type": "deterministic_offline_security_checks",
+  "run_date_utc": "2026-07-27",
+  "runtime": "Node.js 20+ compatible, dependency-free",
+  "network_requests": 0,
+  "cases_passed": 10,
+  "cases_total": 10,
+  "failed": 0,
+  "cancelled": 0,
+  "skipped": 0,
+  "duration_ms": 348.9693,
+  "cases": [
+    "environment guard accepts only an explicit in-memory credential",
+    "repository and suite ignore rules cover secret-bearing paths",
+    "redaction removes key strings, headers, raw bodies, account data, and balances",
+    "secret scanner reports likely credentials without returning matched text",
+    "rotation state requires baseline, overlap, rejection, and active continuity",
+    "mock authentication matrix is fixed-origin, serial, and covers five variants",
+    "mock balance output includes availability only and omits amounts",
+    "mock paid completion is limited to one attempt and omits generated text",
+    "mock rotation overlap and post-revocation checks preserve active continuity",
+    "module-wide queue keeps concurrent mock calls at one"
+  ],
+  "privacy": {
+    "credential_values_persisted": false,
+    "authorization_headers_persisted": false,
+    "monetary_values_persisted": false,
+    "account_identifiers_persisted": false
+  }
+}

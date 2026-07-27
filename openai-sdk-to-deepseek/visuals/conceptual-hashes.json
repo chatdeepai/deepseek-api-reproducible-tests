@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.1.0",
+  "evidence_status": "mixed_conceptual_and_sanitized_live_results",
+  "test_date_utc": "2026-07-27",
+  "source_summaries": [
+    {
+      "file": "python-live-summary.json",
+      "sha256": "ff08d01569d1d31d56f43d9227726c8718ab97e26829fc4df1e7cb30cdd9ad36"
+    },
+    {
+      "file": "node-live-summary.json",
+      "sha256": "831bd20eb878f40a8f256979f002988819396626fc24f597001d3c8220f18b9e"
+    }
+  ],
+  "images": [
+    {
+      "file": "01-openai-sdk-deepseek-compatibility-stack.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "acd42d00906bc8e07d90f6e94ab9d8deb6afe0067ef5d0f337a3451f9e0154ab"
+    },
+    {
+      "file": "02-python-vs-node-configuration.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "3833c6d6c27b8a6b156cd2ca8c0d2a2701920129fc81e0b6e5b86fa6e88596bf"
+    },
+    {
+      "file": "03-openai-sdk-live-case-matrix.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_live_summary",
+      "sha256": "537c027d4f23f9b35e4626a01876a07e96bf61832266afc82cfa3905df5e702e"
+    },
+    {
+      "file": "04-thinking-field-serialization.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "da6119ef0a2be549792fb61a51ff3eb3efae9cd5edfd44f01e06d2f1d78408ee"
+    },
+    {
+      "file": "05-streaming-assembly.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "0dc7f0ed560b6d33472fa1d7db7aacbaf18e0332f08465b482cdf9b883c46087"
+    },
+    {
+      "file": "06-tool-round-trip.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "64381ca1ba0c873cc7a900281a865f61096ee7869e489e79e30a3570cdef66b3"
+    },
+    {
+      "file": "07-error-mapping.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "cf550414bcc110df75769002bb6301814528eff330b76b04595d2f78455b5361"
+    },
+    {
+      "file": "08-openai-sdk-methodology-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_live_summary",
+      "sha256": "354a74025c702ceb472f71a4fe8bc382b95ff609516abdbc3e3f698c55a8c408"
+    }
+  ]
+}

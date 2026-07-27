@@ -27,6 +27,14 @@ tool-calls/results/*
 !tool-calls/results/live-followup-summary.json
 !tool-calls/results/live-results-summary.json
 !tool-calls/results/offline-results-summary.json
+!openai-sdk-to-deepseek/results/
+openai-sdk-to-deepseek/results/*
+!openai-sdk-to-deepseek/results/.gitkeep
+!openai-sdk-to-deepseek/results/python-live-summary.json
+!openai-sdk-to-deepseek/results/node-live-summary.json
+!openai-sdk-to-deepseek/results/combined-live-findings.json
+!openai-sdk-to-deepseek/results/live-case-summary.csv
+!openai-sdk-to-deepseek/results/postrun-audit-summary.json
 screenshots/
 private/
 secrets/

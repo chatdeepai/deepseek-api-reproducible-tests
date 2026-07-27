@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07111f"/>
+      <stop offset="100%" stop-color="#0b1b2e"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <marker id="arrowTeal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2dd4bf"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#4ade80"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#fb7185"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bgGradient)"/>
+  <circle cx="1460" cy="-60" r="370" fill="#60a5fa" opacity="0.06"/>
+  <circle cx="30" cy="930" r="340" fill="#2dd4bf" opacity="0.055"/>
+  <rect x="72" y="54" width="500" height="42" rx="21" fill="#0c2b36" stroke="#23606a" stroke-width="1.5" opacity="1"/>
+  <text x="322" y="83" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="760" text-anchor="middle" letter-spacing="0.4" opacity="1">CHAT-DEEP.AI • IMPLEMENTATION EXPLAINER</text>
+  <text x="72" y="152" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="52" font-weight="830" text-anchor="start" letter-spacing="0" opacity="1">OpenAI SDK to DeepSeek Compatibility Stack</text>
+  <text x="72" y="201" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start" letter-spacing="0" opacity="1">A compatible client transport still requires feature-by-feature verification</text>
+  <rect x="72" y="228" width="1456" height="3" rx="1.5" fill="url(#accentGradient)" opacity="0.9"/><rect x="72" y="320" width="252" height="290" rx="24" fill="#10243a" stroke="#60a5fa" stroke-width="2" opacity="1"/>
+  <circle cx="198" cy="372" r="30" fill="#60a5fa" stroke="#07111f" stroke-width="0"/>
+  <text x="198" y="381" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">•</text>
+  <text x="198" y="454" fill="#60a5fa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">APPLICATION</text><text x="198" y="488" fill="#60a5fa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">CODE</text>
+  <text x="198" y="535" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">chat · stream</text><text x="198" y="569" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">tools · errors</text><line x1="328" y1="462" x2="362" y2="462" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="370" y="320" width="252" height="290" rx="24" fill="#10243a" stroke="#a78bfa" stroke-width="2" opacity="1"/>
+  <circle cx="496" cy="372" r="30" fill="#a78bfa" stroke="#07111f" stroke-width="0"/>
+  <text x="496" y="381" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">•</text>
+  <text x="496" y="454" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">OPENAI SDK</text><text x="496" y="488" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">CLIENT</text>
+  <text x="496" y="535" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">request builder</text><text x="496" y="569" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">response parser</text><line x1="626" y1="462" x2="660" y2="462" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="668" y="320" width="252" height="290" rx="24" fill="#10243a" stroke="#2dd4bf" stroke-width="2" opacity="1"/>
+  <circle cx="794" cy="372" r="30" fill="#2dd4bf" stroke="#07111f" stroke-width="0"/>
+  <text x="794" y="381" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">•</text>
+  <text x="794" y="454" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">RUNTIME</text><text x="794" y="488" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">CONFIG</text>
+  <text x="794" y="535" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">environment secret</text><text x="794" y="569" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">API origin · model</text><line x1="924" y1="462" x2="958" y2="462" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="966" y="320" width="252" height="290" rx="24" fill="#10243a" stroke="#4ade80" stroke-width="2" opacity="1"/>
+  <circle cx="1092" cy="372" r="30" fill="#4ade80" stroke="#07111f" stroke-width="0"/>
+  <text x="1092" y="381" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">•</text>
+  <text x="1092" y="454" fill="#4ade80" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">DEEPSEEK</text><text x="1092" y="488" fill="#4ade80" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">API</text>
+  <text x="1092" y="535" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">compatible route</text><text x="1092" y="569" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">provider fields</text><line x1="1222" y1="462" x2="1256" y2="462" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="1264" y="320" width="252" height="290" rx="24" fill="#10243a" stroke="#fbbf24" stroke-width="2" opacity="1"/>
+  <circle cx="1390" cy="372" r="30" fill="#fbbf24" stroke="#07111f" stroke-width="0"/>
+  <text x="1390" y="381" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">•</text>
+  <text x="1390" y="454" fill="#fbbf24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">APPLICATION</text><text x="1390" y="488" fill="#fbbf24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="850" text-anchor="middle" letter-spacing="0" opacity="1">CONTROLS</text>
+  <text x="1390" y="535" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">validate semantics</text><text x="1390" y="569" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="540" text-anchor="middle" letter-spacing="0" opacity="1">privacy · safety</text><rect x="180" y="660" width="1240" height="132" rx="24" fill="#0d2633" stroke="#2b6a73" stroke-width="2" opacity="1"/><text x="800" y="703" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="850" text-anchor="middle" letter-spacing="0.6" opacity="1">VERIFY THE SEAMS</text><text x="800" y="746" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="750" text-anchor="middle" letter-spacing="0" opacity="1">Transport compatibility does not guarantee thinking, streaming, tools, errors, or replay parity.</text><text x="800" y="780" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="560" text-anchor="middle" letter-spacing="0" opacity="1">Test each feature and preserve provider-specific fields deliberately.</text><line x1="72" y1="828" x2="1528" y2="828" stroke="#294864" stroke-width="2" opacity="1"/>
+  <text x="72" y="870" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="500" text-anchor="start" letter-spacing="0" opacity="1">Conceptual implementation flow · no live-result claims · independent diagram · no provider endorsement</text>
+  <text x="1528" y="870" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="760" text-anchor="end" letter-spacing="0" opacity="1">chat-deep.ai</text>
+  </svg>

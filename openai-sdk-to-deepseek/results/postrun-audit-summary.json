@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "audited_at_utc": "2026-07-27",
+  "scope": {
+    "root": "outputs/deepseek-api-live-tests/openai-sdk-to-deepseek",
+    "excluded_directories": [
+      "node_modules",
+      ".python-deps",
+      ".venv",
+      "__pycache__"
+    ],
+    "live_requests_during_audit": 0
+  },
+  "plan_and_results": {
+    "plan_cases": 20,
+    "result_cases": 20,
+    "case_match_errors": 0,
+    "requests_issued": 20,
+    "requests_skipped": 0,
+    "http_200": 18,
+    "http_400": 2
+  },
+  "file_inventory": {
+    "files": 44,
+    "text_files_scanned": 36,
+    "binary_png_files": 8
+  },
+  "integrity": {
+    "json_files": 7,
+    "valid_json_files": 7,
+    "json_parse_errors": 0,
+    "csv_header_columns": 15,
+    "csv_data_rows": 20,
+    "csv_malformed_rows": 0
+  },
+  "content_scans": {
+    "secret_findings": 0,
+    "arabic_script_files": 0,
+    "arabic_script_characters": 0,
+    "mojibake_files": 0,
+    "mojibake_matches": 0
+  },
+  "result_json_tracking": {
+    "sanitized_json_files_allowlisted_by_gitignore": 4
+  }
+}

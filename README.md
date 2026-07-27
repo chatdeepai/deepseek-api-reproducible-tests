@@ -54,6 +54,13 @@ This public evidence repository contains bounded, reproducible live tests used b
   - deterministic offline validation with 20/20 checks and zero network requests;
   - sanitized JSON and CSV summaries with no raw prompts, arguments, reasoning, call IDs, credentials, or account data;
   - eight editable English-only evidence visuals and a publication-ready Gutenberg source.
+- [OpenAI SDK with DeepSeek](./openai-sdk-to-deepseek/)
+  - 20 bounded serial requests split evenly between OpenAI Python 2.48.0 and OpenAI Node 6.49.0;
+  - current-model inventory, ordinary chat, explicit thinking controls, streaming, JSON Output, and one safe tool round trip;
+  - typed invalid-model errors plus dated observations for the legacy `deepseek-chat` and `deepseek-reasoner` aliases;
+  - automatic retries disabled, concurrency one, and eight deterministic offline contract checks;
+  - sanitized JSON and CSV summaries with no prompts, outputs, reasoning, request IDs, tool-call IDs, credentials, balances, or account data;
+  - eight editable English-only evidence visuals and a publication-ready Gutenberg source.
 
 ## Evidence policy
 

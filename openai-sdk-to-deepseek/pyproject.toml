@@ -1,0 +1,14 @@
+[project]
+name = "deepseek-openai-sdk-compatibility-harness"
+version = "1.0.0"
+description = "Offline and bounded-live compatibility checks for the OpenAI Python SDK against DeepSeek."
+requires-python = ">=3.10"
+dependencies = [
+  "openai==2.48.0",
+]
+
+[tool.harness]
+provider_request_cap = 20
+planned_provider_requests = 20
+concurrency = 1
+automatic_retries = 0

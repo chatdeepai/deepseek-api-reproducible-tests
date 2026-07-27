@@ -1,0 +1,497 @@
+<!-- SEO_FIELDS {"page_title_h1":"Use the OpenAI SDK with DeepSeek: Python, Node.js, and Live Compatibility Tests","seo_title":"OpenAI SDK with DeepSeek: Python, Node.js & Live Tests","focus_keyword":"OpenAI SDK with DeepSeek","meta_description":"Use the OpenAI SDK with DeepSeek in Python and Node.js. See live V4 tests for Chat Completions, streaming, thinking, errors, JSON Output, and tools.","slug":"openai-sdk-to-deepseek","canonical":"https://chat-deep.ai/docs/openai-sdk-to-deepseek/","category":"Docs","tags":[],"excerpt":"Configure the official OpenAI Python and JavaScript SDKs for DeepSeek’s Chat Completions API, then review dated live results for V4 Flash and V4 Pro across standard responses, streaming, thinking mode, JSON Output, tool calls, and typed failures."} -->
+<!-- ARTICLE_STATUS measured-draft; WordPress media IDs and URLs pending -->
+
+<!-- wp:paragraph -->
+<p><strong>Live test date: July 27, 2026 (UTC).</strong> You can use the official OpenAI Python or JavaScript SDK as an HTTP client for DeepSeek’s documented OpenAI-format Models and Chat Completions endpoints. The essential changes are the credential, API origin, model name, and any DeepSeek-specific request fields. The SDK remains the client library; DeepSeek remains the API provider.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>We tested that boundary with a preregistered 20-request study: ten requests through OpenAI Python 2.48.0 and ten through OpenAI Node 6.49.0. All 20 planned requests were issued serially, with concurrency one and automatic retries disabled. Eighteen returned HTTP 200. The other two were deliberately invalid-model controls; both returned HTTP 400 and were parsed by their SDK as <code>BadRequestError</code> with the sanitized code <code>invalid_request_error</code>. There were no skipped requests and no unexpected client failures.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The most important nuance appeared when the <code>thinking</code> field was omitted. Both SDKs received HTTP 200 and parsed one choice from <code>deepseek-v4-flash</code>, but both responses ended with <code>finish_reason: "length"</code>, contained nonempty reasoning metadata, and contained no final user-facing content under the deliberately tight 64-token cap. This was successful transport plus an output-budget observation—not a failed API call. If you need fast final text, explicitly disable thinking or provide enough output budget for reasoning and the final answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This article reports feature-by-feature compatibility, not complete OpenAI platform parity. The OpenAI Responses API and all unlisted endpoints were outside this study. Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek or OpenAI. No API key, Authorization header, account identifier, raw prompt, generated answer, hidden reasoning, provider request ID, provider tool-call ID, balance, or raw error body is published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>Models and Chat Completions parsed through both SDKs.</strong> The live models list contained the two documented V4 IDs, and both clients parsed regular and streamed completions.</li><li><strong>DeepSeek-specific fields reached the provider.</strong> Explicit thinking-disabled and thinking-enabled requests produced the expected response-field differences.</li><li><strong>JSON Output and one tool round trip worked in both clients.</strong> The JSON responses parsed, and both validated tool calls completed a safe synthetic continuation.</li><li><strong>Typed errors survived the provider boundary.</strong> Both impossible-model controls became SDK <code>BadRequestError</code> exceptions with their HTTP status intact.</li><li><strong>Compatibility is dated and scoped.</strong> An HTTP 200 on one tested feature says nothing about an untested endpoint or future behavior.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":{{MEDIA_ID__01_OPENAI_SDK_DEEPSEEK_COMPATIBILITY_STACK_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__01_OPENAI_SDK_DEEPSEEK_COMPATIBILITY_STACK_PNG}}" alt="OpenAI SDK to DeepSeek compatibility stack from application code through SDK transport to the DeepSeek API" class="wp-image-{{MEDIA_ID__01_OPENAI_SDK_DEEPSEEK_COMPATIBILITY_STACK_PNG}}"/><figcaption class="wp-element-caption">The OpenAI SDK can act as the client transport for a DeepSeek integration when the application supplies the correct credential, API origin, model, and provider-specific request fields. Compatibility must still be verified feature by feature.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="live-results-at-a-glance">Live results at a glance</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Measure</th><th>Recorded result</th></tr></thead><tbody><tr><td>Provider requests</td><td>20 issued of 20 planned; 0 skipped</td></tr><tr><td>HTTP outcomes</td><td>18 × 200; 2 × 400 expected invalid-model controls</td></tr><tr><td>Unexpected client failures</td><td>0</td></tr><tr><td>SDKs</td><td>OpenAI Python 2.48.0; OpenAI Node 6.49.0</td></tr><tr><td>Runtimes</td><td>Python 3.12.13; Node v24.14.0</td></tr><tr><td>Provider origin</td><td><code>https://api.deepseek.com</code></td></tr><tr><td>Models exercised</td><td><code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code></td></tr><tr><td>Execution controls</td><td>Concurrency 1; automatic retries 0; 30-second client timeout</td></tr><tr><td>Offline verification</td><td>Node 7/7; Python 1/1; localhost only</td></tr><tr><td>Generation caps</td><td>16 to 96 tokens, depending on the preregistered case</td></tr><tr><td>Observed request latency</td><td>Minimum 284 ms; median 1,151 ms; average 1,157.3 ms; nearest-rank p95 1,969 ms; maximum 2,453 ms</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The timing values describe only these 20 serial requests from one environment. They are included for reproducibility, not as a speed ranking, service-level claim, or comparison between Python and Node.js.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="complete-live-case-matrix">Complete 20-request case matrix</h3>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Scenario</th><th>Python result</th><th>Node.js result</th></tr></thead><tbody><tr><td>List models</td><td>200; list parsed; 2 models; Flash and Pro present</td><td>200; list parsed; 2 models; Flash and Pro present</td></tr><tr><td>Basic chat, thinking omitted</td><td>200; <code>length</code>; reasoning nonempty; final content empty</td><td>200; <code>length</code>; reasoning nonempty; final content empty</td></tr><tr><td>Thinking disabled</td><td>200; <code>length</code>; content nonempty; reasoning field absent</td><td>200; <code>stop</code>; content nonempty; reasoning field absent</td></tr><tr><td>Thinking enabled on V4 Pro</td><td>200; <code>stop</code>; content and reasoning nonempty</td><td>200; <code>stop</code>; content and reasoning nonempty</td></tr><tr><td>Streaming, thinking disabled</td><td>200; 4 events; content delta seen; no reasoning delta; terminal <code>stop</code></td><td>200; 4 events; content delta seen; no reasoning delta; terminal <code>stop</code></td></tr><tr><td>JSON Output</td><td>200; content nonempty; valid JSON</td><td>200; content nonempty; valid JSON</td></tr><tr><td>Initial tool call</td><td>200; <code>tool_calls</code>; 1 call; validation passed</td><td>200; <code>tool_calls</code>; 1 call; validation passed</td></tr><tr><td>Tool continuation</td><td>200; <code>stop</code>; final content nonempty; alias T1 matched</td><td>200; <code>stop</code>; final content nonempty; alias T1 matched</td></tr><tr><td>Impossible model control</td><td>400; <code>BadRequestError</code>; <code>invalid_request_error</code></td><td>400; <code>BadRequestError</code>; <code>invalid_request_error</code></td></tr><tr><td>Dated legacy-alias probe</td><td><code>deepseek-chat</code>: 200; returned <code>deepseek-v4-flash</code>; <code>stop</code>; no reasoning field</td><td><code>deepseek-reasoner</code> with thinking enabled: 200; returned <code>deepseek-v4-flash</code>; <code>length</code>; reasoning field present</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":{{MEDIA_ID__03_OPENAI_SDK_LIVE_CASE_MATRIX_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__03_OPENAI_SDK_LIVE_CASE_MATRIX_PNG}}" alt="Live OpenAI SDK with DeepSeek case matrix for models, chat, thinking, streaming, JSON, tool calls, errors, and legacy aliases" class="wp-image-{{MEDIA_ID__03_OPENAI_SDK_LIVE_CASE_MATRIX_PNG}}"/><figcaption class="wp-element-caption">The live matrix separates transport success, SDK parsing, DeepSeek-specific behavior, and whether each dated expectation was met. It should reveal partial compatibility rather than compressing every result into a single pass or fail label.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="what-openai-compatible-means">What “OpenAI-compatible” means here</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s <a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">Create Chat Completion reference</a> documents an OpenAI-format <code>POST /chat/completions</code> request. Its <a href="https://api-docs.deepseek.com/api/list-models/" target="_blank" rel="noopener">List Models reference</a> documents <code>GET /models</code>. The official DeepSeek Python and Node.js samples configure the OpenAI SDK with the DeepSeek API origin and a DeepSeek-issued key.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>That compatibility is a request-and-response contract for specified surfaces. It does not make the providers interchangeable. Model IDs, billing, supported endpoints, defaults, beta features, error bodies, and provider-specific fields can differ. A migration layer should therefore make the provider origin, credential, model, thinking mode, output cap, retry policy, and feature flags explicit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Layer</th><th>What stays</th><th>What changes</th></tr></thead><tbody><tr><td>Client package</td><td>The official <code>openai</code> package</td><td>Use a version tested with your integration</td></tr><tr><td>Credential</td><td>Bearer-style SDK configuration</td><td>Use a DeepSeek-issued key in <code>DEEPSEEK_API_KEY</code></td></tr><tr><td>Origin</td><td>Custom SDK base-URL support</td><td><code>https://api.deepseek.com</code></td></tr><tr><td>Generation method</td><td><code>chat.completions.create()</code></td><td>Use DeepSeek model IDs and documented fields</td></tr><tr><td>Thinking</td><td>Parsed response objects and streaming deltas</td><td>Send DeepSeek’s <code>thinking</code> object deliberately</td></tr><tr><td>Operations</td><td>SDK exceptions, timeouts, and retry controls</td><td>Interpret DeepSeek status behavior and application safety separately</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="install-and-configure">Install and configure the tested clients</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>For an exact reproduction, install the tested package versions. These are snapshots, not a claim that later SDK versions will fail. Keep the credential on a trusted backend and never place it in browser JavaScript, a WordPress block, a mobile bundle, a public repository, a screenshot, or application logs. The <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a> covers key creation, storage, rotation, and revocation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>python -m pip install "openai==2.48.0"</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>npm install openai@6.49.0</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="python-example">Runnable Python example</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Python uses <code>base_url</code>. DeepSeek’s provider-specific <code>thinking</code> object is passed through <code>extra_body</code>. This example disables thinking so a short request prioritizes final content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com",
+    max_retries=0,
+    timeout=30.0,
+)
+
+response = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=[
+        {"role": "system", "content": "You are a concise technical assistant."},
+        {"role": "user", "content": "Give three API migration checks."},
+    ],
+    max_tokens=256,
+    stream=False,
+    extra_body={"thinking": {"type": "disabled"}},
+)
+
+text = response.choices[0].message.content
+if not text:
+    raise RuntimeError("The completion contained no final content.")
+
+print(text)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>For Python-specific async patterns, environment setup, and production structure, use the <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="javascript-example">Runnable JavaScript example</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>JavaScript uses <code>baseURL</code>. It can send the additional <code>thinking</code> property directly in the request object.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com",
+  maxRetries: 0,
+  timeout: 30_000,
+});
+
+const response = await client.chat.completions.create({
+  model: "deepseek-v4-flash",
+  messages: [
+    { role: "system", content: "You are a concise technical assistant." },
+    { role: "user", content: "Give three API migration checks." },
+  ],
+  max_tokens: 256,
+  stream: false,
+  thinking: { type: "disabled" },
+});
+
+const text = response.choices[0]?.message.content;
+if (!text) throw new Error("The completion contained no final content.");
+
+console.log(text);</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="typescript-example">Type-safe TypeScript example without <code>any</code></h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A provider-specific request type keeps the DeepSeek field visible without casting the entire object to <code>any</code>. Passing a named variable also avoids pretending that every OpenAI-oriented type already knows every DeepSeek extension.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+type DeepSeekChatRequest = {
+  model: string;
+  messages: Array&lt;{
+    role: "system" | "user";
+    content: string;
+  }&gt;;
+  max_tokens: number;
+  stream: false;
+  thinking: {
+    type: "enabled" | "disabled";
+  };
+  reasoning_effort?: "high" | "max";
+};
+
+const client = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com",
+  maxRetries: 0,
+  timeout: 30_000,
+});
+
+const request = {
+  model: "deepseek-v4-pro",
+  messages: [
+    { role: "user", content: "List three safe retry rules." },
+  ],
+  max_tokens: 512,
+  stream: false,
+  thinking: { type: "enabled" },
+  reasoning_effort: "high",
+} satisfies DeepSeekChatRequest;
+
+const response = await client.chat.completions.create(request);
+const text = response.choices[0]?.message.content;
+if (!text) throw new Error("No final content was returned.");
+
+console.log(text);</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The dedicated <a href="https://chat-deep.ai/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a> owns ESM, CommonJS, async iteration, deployment, and deeper type-boundary patterns.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__02_PYTHON_VS_NODE_CONFIGURATION_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__02_PYTHON_VS_NODE_CONFIGURATION_PNG}}" alt="Side-by-side Python and Node.js OpenAI SDK configuration for DeepSeek using environment variables and a custom base URL" class="wp-image-{{MEDIA_ID__02_PYTHON_VS_NODE_CONFIGURATION_PNG}}"/><figcaption class="wp-element-caption">Both clients keep the credential outside source code and configure the OpenAI SDK to send requests to the DeepSeek API origin. Exact syntax and package-version notes must match the tested environments.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="thinking-mode-results">Thinking mode: defaults, explicit modes, and output budget</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">official DeepSeek Thinking Mode guide</a> documents thinking as enabled by default and tells Python users to place the <code>thinking</code> object inside <code>extra_body</code>. It documents <code>reasoning_effort</code> values <code>high</code> and <code>max</code>. In thinking mode, <code>temperature</code> and <code>top_p</code> have no effect; <code>presence_penalty</code> and <code>frequency_penalty</code> are deprecated and also have no effect.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Our omitted-thinking request used <code>deepseek-v4-flash</code> with <code>max_tokens: 64</code>. Both SDKs returned 200, exposed nonempty <code>reasoning_content</code>, and stopped for <code>length</code> before final content appeared. The result is consistent with the documented enabled default. It also shows why a very small shared output budget can be misleading: a request may be accepted and parsed correctly while leaving no room for the final answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The explicit controls separated the modes cleanly. With thinking disabled on V4 Flash, both responses contained final content and no reasoning field; Python reached the 32-token cap, while Node finished with <code>stop</code>. With thinking enabled on V4 Pro, <code>reasoning_effort: "high"</code>, and a 96-token cap, both clients returned <code>stop</code> with nonempty reasoning metadata and nonempty final content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Set <code>thinking.type</code> explicitly when mode choice matters to product behavior.</li><li>Inspect <code>finish_reason</code> before treating content as complete.</li><li>Keep <code>reasoning_content</code> separate from the final answer and do not expose it by default.</li><li>Budget for both reasoning and final content when thinking is enabled.</li><li>Use the <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a> for multi-turn and tool-replay rules.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":{{MEDIA_ID__04_THINKING_FIELD_SERIALIZATION_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__04_THINKING_FIELD_SERIALIZATION_PNG}}" alt="OpenAI SDK serialization path for DeepSeek thinking fields in Python and Node.js requests" class="wp-image-{{MEDIA_ID__04_THINKING_FIELD_SERIALIZATION_PNG}}"/><figcaption class="wp-element-caption">Provider-specific thinking fields must survive SDK serialization and reach the DeepSeek request in the intended location. Response handling should record field presence without exposing reasoning text.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="streaming-results">Streaming through both SDKs</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The streaming cases used V4 Flash with thinking disabled and a 32-token cap. Python and Node each parsed four SDK stream events, saw at least one content delta, saw no reasoning delta, and reached terminal <code>finish_reason: "stop"</code>. The harness retained only event counts, field-presence booleans, and the terminal state—not the generated text.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A production consumer should iterate defensively. A chunk may contain no visible text, and a usage-only chunk can have an empty <code>choices</code> array when that option is requested. Tool-call arguments can also arrive over multiple deltas. Accumulate fields by choice and tool index, wait for a terminal state, then parse and validate the completed value before using it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>stream = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=[{"role": "user", "content": "Reply in one sentence."}],
+    max_tokens=128,
+    stream=True,
+    extra_body={"thinking": {"type": "disabled"}},
+)
+
+parts: list[str] = []
+finish_reason = None
+
+for chunk in stream:
+    for choice in getattr(chunk, "choices", []):
+        delta = getattr(choice, "delta", None)
+        text = getattr(delta, "content", None)
+        if isinstance(text, str):
+            parts.append(text)
+        if choice.finish_reason is not None:
+            finish_reason = choice.finish_reason
+
+if finish_reason != "stop":
+    raise RuntimeError(f"Incomplete stream: {finish_reason}")
+
+print("".join(parts))</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:image {"id":{{MEDIA_ID__05_STREAMING_ASSEMBLY_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__05_STREAMING_ASSEMBLY_PNG}}" alt="OpenAI SDK streaming assembly for DeepSeek text, reasoning metadata, tool-call deltas, finish state, and usage" class="wp-image-{{MEDIA_ID__05_STREAMING_ASSEMBLY_PNG}}"/><figcaption class="wp-element-caption">A safe stream consumer assembles deltas by choice and tool index, waits for a terminal state, and validates complete content or arguments before use. Keep-alive events and optional fields must be handled explicitly.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="json-output-result">JSON Output compatibility smoke test</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Both JSON Output cases returned HTTP 200 with nonempty content that parsed as JSON. The requests explicitly disabled thinking, set <code>response_format.type</code> to <code>json_object</code>, included the word “JSON” in the prompt, supplied a compact example, and used a 64-token cap. Those details follow the <a href="https://api-docs.deepseek.com/guides/json_mode/" target="_blank" rel="noopener">official DeepSeek JSON Output guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This two-case smoke test does not prove schema adherence across arbitrary prompts. Never replace empty content with a plausible default object. Check the finish reason, reject empty output, parse inside an exception boundary, and validate required keys and value types. The <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a> owns prompt ablations, truncation, empty-output handling, and application-side validation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="tool-call-round-trip">One safe tool-call round trip</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The tool test used one synthetic, local, side-effect-free function named <code>get_temperature</code>. Its schema defined exactly one required nonempty string field, <code>city</code>, and set <code>additionalProperties</code> to <code>false</code>. Each SDK received one tool call with <code>finish_reason: "tool_calls"</code>. Both calls passed the application allowlist and JSON validation gate, so both continuations were issued.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The application preserved the assistant tool-call message, kept the provider-generated call ID in memory, appended a matching <code>role: "tool"</code> result, and sent the updated conversation back. Both continuations returned 200 with <code>finish_reason: "stop"</code> and nonempty final content. Persisted evidence replaced the call ID with the synthetic alias T1.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Require exactly the expected number of calls.</li><li>Allowlist the function name.</li><li>Parse the argument string as JSON.</li><li>Validate keys, types, ranges, and authorization.</li><li>Execute only an approved adapter.</li><li>Replay the complete assistant message and matching tool result.</li><li>Request and validate the final completion.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>This article intentionally stops at one compact round trip. Use the <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">DeepSeek Tool Calls guide</a> for <code>tool_choice</code>, multiple calls, strict beta schemas, thinking-mode replay, truncation, and security boundaries. DeepSeek’s first-party contract is in the <a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">official Tool Calls guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__06_TOOL_ROUND_TRIP_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__06_TOOL_ROUND_TRIP_PNG}}" alt="OpenAI SDK DeepSeek tool-call round trip from model request through application validation and tool-result replay" class="wp-image-{{MEDIA_ID__06_TOOL_ROUND_TRIP_PNG}}"/><figcaption class="wp-element-caption">The application validates model-produced arguments, executes an approved adapter, preserves the assistant message, matches sanitized tool-call aliases, and requests the final response.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="typed-errors-retries-timeouts">Typed errors, retries, and timeouts</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Each SDK sent one request using the synthetic model name <code>deepseek-does-not-exist</code>. DeepSeek returned HTTP 400 in both cases. OpenAI Python and OpenAI Node each surfaced the response as <code>BadRequestError</code> with the allowlisted error code <code>invalid_request_error</code>. The raw provider message was deliberately discarded.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The official OpenAI SDKs have automatic retry behavior for selected connection, timeout, rate-limit, and server failures. The study disabled those retries so one logical case equaled one provider request. In production, choose retry behavior deliberately. Never automatically repeat a payment, database write, email, file operation, or external tool action merely because an SDK can retry an HTTP request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import openai
+
+try:
+    response = client.chat.completions.create(
+        model="deepseek-v4-flash",
+        messages=[{"role": "user", "content": "Reply briefly."}],
+        max_tokens=128,
+        extra_body={"thinking": {"type": "disabled"}},
+    )
+except openai.BadRequestError as exc:
+    print("Request rejected:", exc.status_code)
+except openai.RateLimitError:
+    print("Rate limited; apply bounded backoff.")
+except openai.APIConnectionError:
+    print("Connection failed; inspect the underlying network cause.")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Log an internal case alias, operation type, status category, retry count, and safe timing metadata. Do not log credentials, Authorization headers, full prompts, generated content, hidden reasoning, raw provider errors, account data, or provider IDs. The <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek Error Codes guide</a> owns the broader status matrix and recovery policy; the first-party categories are listed in DeepSeek’s <a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">official Error Codes page</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__07_ERROR_MAPPING_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__07_ERROR_MAPPING_PNG}}" alt="OpenAI SDK exception mapping for DeepSeek authentication, balance, validation, rate-limit, and availability responses" class="wp-image-{{MEDIA_ID__07_ERROR_MAPPING_PNG}}"/><figcaption class="wp-element-caption">Interpret an SDK exception using the HTTP category, parsed error class, request stage, and retry safety. Retry only explicitly transient conditions and never expose provider messages or credentials in logs.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="legacy-alias-probes">What the legacy-alias probes observed</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The live models list contained two public IDs: <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. New integrations should use those documented names. We nevertheless preregistered one dated observational request for each legacy alias, <code>deepseek-chat</code> and <code>deepseek-reasoner</code>, without assuming that either request would succeed or fail.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>On July 27, both alias requests still returned 200 in this account and test environment. The Python <code>deepseek-chat</code> request explicitly disabled thinking, returned model <code>deepseek-v4-flash</code>, stopped normally, and exposed no reasoning field. The Node <code>deepseek-reasoner</code> request explicitly enabled thinking, returned model <code>deepseek-v4-flash</code>, exposed a reasoning field, and reached its 32-token cap.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>These are observations, not a permanent compatibility promise. They do not override the documented current model list or guarantee that either alias will work for another account, date, SDK, mode, or request. Use V4 Flash or V4 Pro directly and treat any alias dependency as migration debt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="security-boundary">Security boundary for an SDK migration</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Store <code>DEEPSEEK_API_KEY</code> in protected server-side runtime storage or a secret manager.</li><li>Do not reuse an OpenAI credential with the DeepSeek origin or a DeepSeek credential with the OpenAI origin.</li><li>Disable verbose request-body logging when prompts or responses can contain sensitive data.</li><li>Keep raw reasoning out of user interfaces, analytics, screenshots, and public evidence.</li><li>Validate JSON and tool arguments as untrusted input.</li><li>Require authorization and confirmation before any side effect.</li><li>Set explicit timeouts, bounded retries, maximum tool steps, and output caps.</li><li>Rotate a credential immediately if it appears in source control, logs, screenshots, or support material.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="methodology-reproducibility-limitations">Methodology, reproducibility, and limitations</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The research question was narrow: can the pinned OpenAI Python and Node SDKs act as correct clients for DeepSeek’s documented Models and Chat Completions surfaces across basic chat, explicit thinking controls, streaming, JSON Output, one compact tool round trip, and typed invalid-model errors?</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The plan was frozen before the live run. It allowed exactly ten requests per SDK and no more than 20 provider requests. Cases ran serially against <code>https://api.deepseek.com</code>. Python used <code>max_retries=0</code>; Node used <code>maxRetries: 0</code>. There was no generic retry wrapper. The live windows ran from 14:39:35 to 14:39:59 UTC on July 27, 2026. Generation caps ranged from 16 to 96 tokens to bound cost.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Before live execution, the harness ran localhost contract checks for the same request shapes: paths, provider-field serialization, streaming fixtures, JSON parsing, tool-call matching, and typed synthetic errors. Node passed 7/7 offline tests and Python passed 1/1. Localhost checks do not count as provider requests. Persisted live summaries used an allowlist of statuses, timings, exception names, public model strings, counts, booleans, finish states, and the synthetic tool alias. The temporary provider credential was revoked after the run.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>You can audit the frozen request plan, English-only harness, redacted summaries, case-level CSV, security policy, and editable visual sources in the <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/openai-sdk-to-deepseek" target="_blank" rel="noopener">public OpenAI SDK with DeepSeek evidence suite</a>. It contains no credential, account identifier, prompt text, response text, raw reasoning, provider request ID, provider tool-call ID, balance, or raw error body.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="limitations">Limitations</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>This was one bounded run from one environment and account on one date.</li><li>Each live case was issued once; the study does not estimate repeatability or model-output variance.</li><li>Tight generation caps intentionally constrained cost and caused several <code>length</code> finishes.</li><li>The latency sample is too small and uncontrolled for a performance benchmark.</li><li>The tool was synthetic and side-effect free; no database, payment, email, filesystem, or external API was exercised.</li><li>The test did not evaluate long context, high concurrency, cache economics, sustained rate limits, or every possible error.</li><li>The OpenAI Responses API, Assistants, Realtime, Files, Batches, embeddings, fine-tuning, and every unlisted endpoint were not tested.</li><li>An HTTP 200 proves only that the dated request was accepted and parsed. It does not establish semantic quality, complete platform parity, or future availability.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":{{MEDIA_ID__08_OPENAI_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__08_OPENAI_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}}" alt="OpenAI SDK with DeepSeek test methodology and results dashboard covering package versions, request budget, cases, concurrency, retries, and privacy controls" class="wp-image-{{MEDIA_ID__08_OPENAI_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}}"/><figcaption class="wp-element-caption">The dashboard summarizes the bounded dated study, including tested SDK environments, models, request budget, live and offline cases, concurrency, retries, and evidence-redaction rules. It is not a service-level benchmark.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="production-migration-checklist">Production migration checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Pin and record the SDK version you actually deploy.</li><li>Set the DeepSeek origin and credential through environment-specific configuration.</li><li>Use <code>deepseek-v4-flash</code> or <code>deepseek-v4-pro</code>, not a legacy alias.</li><li>Choose thinking mode explicitly and allocate a suitable output budget.</li><li>Check HTTP status, SDK exception, <code>finish_reason</code>, content presence, and feature-specific validation separately.</li><li>Assemble streams before parsing or executing structured output.</li><li>Validate JSON objects and tool arguments in application code.</li><li>Set timeouts and understand the SDK’s retry behavior before enabling retries.</li><li>Make write operations idempotent or require confirmation; never blindly replay side effects.</li><li>Rerun a small compatibility suite whenever the provider contract, model, or SDK version changes.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="faq">FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can I use the official OpenAI SDK with DeepSeek?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes, for the documented OpenAI-format surfaces you test. Configure the client with a DeepSeek API key, <code>https://api.deepseek.com</code>, a current DeepSeek model ID, and the required provider-specific fields. Our dated Models and Chat Completions cases parsed through both tested SDKs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">What is the DeepSeek base URL?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use <code>https://api.deepseek.com</code> for the OpenAI-format origin covered here. Python calls the client option <code>base_url</code>; JavaScript and TypeScript call it <code>baseURL</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why did the default-thinking tests return no final content?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Both omitted-thinking requests used a deliberately small 64-token cap. They returned 200, nonempty reasoning metadata, and <code>finish_reason: "length"</code> before final content appeared. Explicitly disable thinking for a short direct answer or provide enough output budget for both reasoning and final content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I send DeepSeek’s thinking field in Python?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Pass <code>{"thinking":{"type":"enabled"}}</code> or <code>{"thinking":{"type":"disabled"}}</code> through the OpenAI Python SDK’s <code>extra_body</code> argument. Thinking-enabled requests can also include the documented <code>reasoning_effort</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does an HTTP 200 mean JSON or tool arguments are safe?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. Check the finish reason, reject empty or truncated values, parse the complete string, validate it against application rules, and authorize any action. The model proposes structured data; your application decides whether it is usable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does the OpenAI SDK retry DeepSeek requests automatically?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The official SDKs document automatic retries for selected failure categories. This study disabled them so request accounting remained exact. Review your installed SDK version and set retry behavior explicitly, especially around operations with side effects.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I use <code>deepseek-chat</code> or <code>deepseek-reasoner</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No for new integrations. Both aliases returned 200 in our July 27 probes, but the current models list contained V4 Flash and V4 Pro. Use the current documented IDs and treat the alias probes as dated observations only.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does this prove that every OpenAI API feature works with DeepSeek?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. It proves only the recorded behavior of the 20 listed Models and Chat Completions requests. The Responses API and all other unlisted surfaces were outside scope.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="first-party-sources">First-party sources</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek Models and Pricing</a></li><li><a href="https://api-docs.deepseek.com/api/list-models/" target="_blank" rel="noopener">DeepSeek List Models API reference</a></li><li><a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">DeepSeek Create Chat Completion API reference</a></li><li><a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">DeepSeek Thinking Mode guide</a></li><li><a href="https://api-docs.deepseek.com/guides/json_mode/" target="_blank" rel="noopener">DeepSeek JSON Output guide</a></li><li><a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">DeepSeek Tool Calls guide</a></li><li><a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">DeepSeek Error Codes</a></li><li><a href="https://api-docs.deepseek.com/api_samples/chat_python/" target="_blank" rel="noopener">DeepSeek Python OpenAI SDK sample</a></li><li><a href="https://api-docs.deepseek.com/api_samples/chat_nodejs/" target="_blank" rel="noopener">DeepSeek Node.js OpenAI SDK sample</a></li><li><a href="https://github.com/openai/openai-python" target="_blank" rel="noopener">Official OpenAI Python SDK repository</a></li><li><a href="https://github.com/openai/openai-node" target="_blank" rel="noopener">Official OpenAI JavaScript and TypeScript SDK repository</a></li><li><a href="https://platform.openai.com/docs/api-reference/chat/create" target="_blank" rel="noopener">OpenAI Chat Completions API reference</a></li></ul>
+<!-- /wp:list -->

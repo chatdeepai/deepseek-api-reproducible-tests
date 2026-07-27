@@ -1,0 +1,21 @@
+{
+  "name": "deepseek-openai-sdk-compatibility-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded reproducibility harness for OpenAI Python and Node SDK compatibility with the DeepSeek Chat Completions API.",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "openai": "6.49.0"
+  },
+  "scripts": {
+    "plan": "node bin/print-plan.mjs",
+    "test:contract": "node --test tests/contract.test.mjs",
+    "test:node-sdk": "node --test tests/node-sdk-offline.test.mjs",
+    "test:python-sdk": "python -m unittest discover -s tests -p \"test_python_sdk_offline.py\"",
+    "test:offline": "node --test tests/contract.test.mjs tests/node-sdk-offline.test.mjs",
+    "live:node": "node bin/run-node-live.mjs"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "status": "completed",
+  "evidence_date_utc": "2026-07-27",
+  "source_plan": "../fixtures/request-plan.json",
+  "source_summaries": [
+    "python-live-summary.json",
+    "node-live-summary.json"
+  ],
+  "plan_validation": {
+    "case_ids_match_in_order": true,
+    "sdk_assignments_match": true,
+    "scenario_assignments_match": true,
+    "requested_models_match": true,
+    "source_plan_cases": 20,
+    "result_cases": 20,
+    "unexpected_cases": 0,
+    "missing_cases": 0
+  },
+  "environments": {
+    "python": {
+      "openai_sdk_version": "2.48.0",
+      "runtime_version": "3.12.13",
+      "started_at": "2026-07-27T14:39:35.771177+00:00",
+      "completed_at": "2026-07-27T14:39:48.343998+00:00",
+      "wall_ms": 12572.821
+    },
+    "node": {
+      "openai_sdk_version": "6.49.0",
+      "runtime_version": "v24.14.0",
+      "started_at": "2026-07-27T14:39:48.985Z",
+      "completed_at": "2026-07-27T14:39:59.575Z",
+      "wall_ms": 10590
+    }
+  },
+  "request_accounting": {
+    "provider_request_cap": 20,
+    "planned": 20,
+    "issued": 20,
+    "skipped": 0,
+    "concurrency": 1,
+    "automatic_retries": 0,
+    "python_issued": 10,
+    "node_issued": 10
+  },
+  "http_status_counts": {
+    "200": 18,
+    "400": 2
+  },
+  "sdk_status_counts": {
+    "python": {
+      "200": 9,
+      "400": 1
+    },
+    "node": {
+      "200": 9,
+      "400": 1
+    }
+  },
+  "latency_ms": {
+    "all": {
+      "n": 20,
+      "sum": 23146,
+      "average": 1157.3,
+      "minimum": 284,
+      "median": 1151,
+      "p95_nearest_rank": 1969,
+      "maximum": 2453
+    },
+    "python": {
+      "n": 10,
+      "sum": 12563,
+      "average": 1256.3,
+      "minimum": 297,
+      "median": 1203,
+      "p95_nearest_rank": 2453,
+      "maximum": 2453
+    },
+    "node": {
+      "n": 10,
+      "sum": 10583,
+      "average": 1058.3,
+      "minimum": 284,
+      "median": 1083,
+      "p95_nearest_rank": 1693,
+      "maximum": 1693
+    }
+  },
+  "outcome_counts": {
+    "parsed_model_lists": 2,
+    "default_thinking_reasoning_only_under_cap": 2,
+    "explicit_non_thinking_responses": 2,
+    "explicit_thinking_responses": 2,
+    "completed_streams": 2,
+    "valid_json_outputs": 2,
+    "valid_initial_tool_calls": 2,
+    "completed_tool_round_trips": 2,
+    "typed_invalid_model_errors": 2,
+    "accepted_alias_probes": 2,
+    "unexpected_client_failures": 0
+  },
+  "finish_reason_counts": {
+    "non_streaming_stop": 6,
+    "non_streaming_length": 4,
+    "non_streaming_tool_calls": 2,
+    "streaming_terminal_stop": 2
+  },
+  "feature_findings": {
+    "models_list": {
+      "cases": 2,
+      "http_200": 2,
+      "list_parsed": 2,
+      "deepseek_v4_flash_present": 2,
+      "deepseek_v4_pro_present": 2
+    },
+    "basic_thinking_omitted": {
+      "cases": 2,
+      "http_200": 2,
+      "finish_reason_length": 2,
+      "content_nonempty": 0,
+      "reasoning_field_present": 2,
+      "reasoning_nonempty": 2,
+      "interpretation": "Both SDKs parsed successful responses. With thinking omitted, DeepSeek's documented default thinking behavior used the 64-token cap for reasoning and reached length before final content. This is a low-cap output-shape observation, not a transport failure."
+    },
+    "thinking_disabled": {
+      "cases": 2,
+      "http_200": 2,
+      "content_nonempty": 2,
+      "reasoning_field_present": 0
+    },
+    "thinking_enabled": {
+      "cases": 2,
+      "http_200": 2,
+      "finish_reason_stop": 2,
+      "content_nonempty": 2,
+      "reasoning_field_present": 2,
+      "reasoning_nonempty": 2
+    },
+    "streaming": {
+      "cases": 2,
+      "http_200": 2,
+      "event_count_total": 8,
+      "content_delta_seen": 2,
+      "reasoning_delta_seen": 0,
+      "terminal_finish_stop": 2
+    },
+    "json_output": {
+      "cases": 2,
+      "http_200": 2,
+      "content_nonempty": 2,
+      "json_valid": 2
+    },
+    "tool_round_trip": {
+      "initial_cases": 2,
+      "initial_http_200": 2,
+      "single_valid_tool_call": 2,
+      "continuation_cases": 2,
+      "continuation_http_200": 2,
+      "final_content_nonempty": 2,
+      "safety_skips": 0
+    },
+    "invalid_model": {
+      "cases": 2,
+      "http_400": 2,
+      "bad_request_error": 2,
+      "invalid_request_error_code": 2
+    }
+  },
+  "alias_observations": [
+    {
+      "case_id": "py-deepseek-chat-alias",
+      "sdk": "python",
+      "requested_model": "deepseek-chat",
+      "status": 200,
+      "returned_model": "deepseek-v4-flash",
+      "finish_reason": "stop",
+      "reasoning_field_present": false
+    },
+    {
+      "case_id": "node-deepseek-reasoner-alias",
+      "sdk": "node",
+      "requested_model": "deepseek-reasoner",
+      "status": 200,
+      "returned_model": "deepseek-v4-flash",
+      "finish_reason": "length",
+      "reasoning_field_present": true
+    }
+  ],
+  "scope_note": "These are dated observations from one authorized account and one serial run. They establish tested Chat Completions transport and feature behavior only; they do not establish permanent alias policy, model equivalence, service-level performance, or OpenAI Responses API compatibility."
+}
+

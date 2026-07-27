@@ -1,0 +1,12 @@
+.env
+.venv/
+.python-deps/
+__pycache__/
+node_modules/
+results/*.json
+!results/.gitkeep
+!results/python-live-summary.json
+!results/node-live-summary.json
+!results/combined-live-findings.json
+!results/postrun-audit-summary.json
+!results/live-case-summary.csv

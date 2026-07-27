@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek JSON Output edge-case live results</title>
+  <desc id="desc">Dated live observations for truncation, escaping, one synthetic prompt-injection fixture, and missing facts represented as null, with explicit denominators and no raw output.</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#0b1f3a" flood-opacity=".10"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="#f6f9fd"/>
+  <rect x="0" y="0" width="1600" height="14" fill="#06b6d4"/>
+  <rect x="88" y="58" width="250" height="42" rx="21" fill="#06b6d4"/>
+  <text x="213" y="86" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" letter-spacing="1.4" fill="#06243a">LIVE OBSERVATION</text>
+  <text x="88" y="164" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="55" font-weight="850" fill="#0b1f3a">Four passed; one was intentionally truncated</text>
+  <text x="88" y="207" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" fill="#41536b">Sequential calls · synthetic English inputs · automatic retries disabled</text>
+
+  <g filter="url(#shadow)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="88" y="258" width="430" height="210" rx="28" fill="#ffffff" stroke="#fecdd3" stroke-width="2"/>
+    <rect x="548" y="258" width="444" height="210" rx="28" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+    <rect x="1022" y="258" width="490" height="210" rx="28" fill="#ffffff" stroke="#a5f3fc" stroke-width="2"/>
+    <rect x="88" y="500" width="674" height="210" rx="28" fill="#ffffff" stroke="#cbd5e1" stroke-width="2"/>
+    <rect x="792" y="500" width="720" height="210" rx="28" fill="#ffffff" stroke="#bbf7d0" stroke-width="2"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="118" y="286" width="70" height="34" rx="17" fill="#be123c"/>
+    <text x="153" y="309" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff">1 RUN</text>
+    <text x="118" y="356" font-size="26" font-weight="900" fill="#0b1f3a">Truncation control</text>
+    <text x="118" y="393" font-size="19" fill="#41536b">200 · finish length · 8 output tokens</text>
+    <text x="118" y="427" font-size="17" font-weight="800" fill="#9f1239">parse 0/1 · schema 0/1 · facts 0/1</text>
+    <text x="118" y="452" font-size="16" fill="#64748b">21 characters · 1,069 ms</text>
+
+    <rect x="578" y="286" width="94" height="34" rx="17" fill="#1d4ed8"/>
+    <text x="625" y="309" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff">2 RUNS</text>
+    <text x="578" y="356" font-size="26" font-weight="900" fill="#0b1f3a">Escaping · Flash + Pro</text>
+    <text x="578" y="393" font-size="19" fill="#41536b">HTTP 200 + stop: 2/2</text>
+    <text x="578" y="427" font-size="17" font-weight="800" fill="#047857">parse/schema/facts: 2/2</text>
+    <text x="578" y="452" font-size="16" fill="#64748b">913 ms · 1,240 ms · 33 tokens each</text>
+
+    <rect x="1052" y="286" width="70" height="34" rx="17" fill="#0e7490"/>
+    <text x="1087" y="309" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff">1 RUN</text>
+    <text x="1052" y="356" font-size="26" font-weight="900" fill="#0b1f3a">Synthetic injection</text>
+    <text x="1052" y="393" font-size="19" fill="#41536b">200 · stop · no Markdown fence</text>
+    <text x="1052" y="427" font-size="17" font-weight="800" fill="#047857">parse/schema/facts: 1/1</text>
+    <text x="1052" y="452" font-size="16" fill="#64748b">31 output tokens · 1,044 ms</text>
+
+    <rect x="118" y="528" width="70" height="34" rx="17" fill="#475569"/>
+    <text x="153" y="551" text-anchor="middle" font-size="14" font-weight="900" fill="#ffffff">1 RUN</text>
+    <text x="118" y="598" font-size="26" font-weight="900" fill="#0b1f3a">Missing facts → null</text>
+    <text x="118" y="635" font-size="19" fill="#41536b">200 · stop · 31 output tokens</text>
+    <text x="118" y="669" font-size="17" font-weight="800" fill="#047857">parse/schema/facts: 1/1</text>
+    <text x="118" y="694" font-size="16" fill="#64748b">99 characters · 1,425 ms</text>
+
+    <rect x="822" y="528" width="164" height="34" rx="17" fill="#047857"/>
+    <text x="904" y="551" text-anchor="middle" font-size="16" font-weight="900" fill="#ffffff">OVERALL</text>
+    <text x="822" y="600" font-size="24" font-weight="900" fill="#0b1f3a">5/5 HTTP 200</text>
+    <text x="822" y="637" font-size="21" font-weight="800" fill="#047857">4/5 parse · 4/5 schema · 4/5 facts</text>
+    <text x="822" y="674" font-size="19" font-weight="750" fill="#41536b">4/5 stop · 1/5 length</text>
+    <text x="822" y="700" font-size="16" fill="#64748b">Raw output and raw reasoning are not shown.</text>
+  </g>
+
+  <rect x="88" y="754" width="1424" height="74" rx="18" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+  <text x="126" y="785" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="850" fill="#9a3412">The deliberate 8-token control accounts for the only parse/schema failure.</text>
+  <text x="126" y="812" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" fill="#7c2d12">The single synthetic injection fixture is a dated observation, not a security benchmark.</text>
+  <text x="88" y="879" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#41536b">Tested July 27, 2026 UTC</text>
+  <text x="1512" y="879" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="750" fill="#1d4ed8">LIVE OBSERVATION · 5 SEQUENTIAL CALLS</text>
+</svg>

@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek JSON Output reproducibility guardrails</title>
+  <desc id="desc">Local test-plan safety contract showing a ceiling of 20 Chat Completions, one model inventory request, sequential concurrency, zero automatic retries, V4-only models, and strict redaction.</desc>
+  <defs>
+    <linearGradient id="page" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#edf6ff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#0b1f3a" flood-opacity=".10"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#page)"/>
+  <rect x="0" y="0" width="1600" height="14" fill="#2563eb"/>
+  <rect x="88" y="58" width="300" height="42" rx="21" fill="#475569"/>
+  <text x="238" y="86" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="900" letter-spacing="1.4" fill="#ffffff">LOCAL PLAN VALIDATION</text>
+  <text x="88" y="164" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="55" font-weight="850" fill="#0b1f3a">A hard safety boundary for the live run</text>
+  <text x="88" y="207" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" fill="#41536b">The harness rejects unapproved models, endpoints, concurrency, and sensitive artifacts.</text>
+
+  <g filter="url(#shadow)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="88" y="258" width="1424" height="276" rx="30" fill="#ffffff" stroke="#dbe7f3" stroke-width="2"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g transform="translate(126 302)">
+      <rect width="244" height="182" rx="24" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+      <text x="30" y="43" font-size="17" font-weight="850" letter-spacing="1.3" fill="#1d4ed8">CHAT CEILING</text>
+      <text x="30" y="112" font-size="64" font-weight="900" fill="#0b1f3a">20</text>
+      <text x="30" y="151" font-size="18" fill="#41536b">completion requests</text>
+    </g>
+    <g transform="translate(394 302)">
+      <rect width="244" height="182" rx="24" fill="#ecfeff" stroke="#a5f3fc" stroke-width="2"/>
+      <text x="30" y="43" font-size="17" font-weight="850" letter-spacing="1.3" fill="#0e7490">INVENTORY</text>
+      <text x="30" y="112" font-size="64" font-weight="900" fill="#0b1f3a">1</text>
+      <text x="30" y="151" font-size="18" fill="#41536b">GET /models request</text>
+    </g>
+    <g transform="translate(662 302)">
+      <rect width="244" height="182" rx="24" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+      <text x="30" y="43" font-size="17" font-weight="850" letter-spacing="1.3" fill="#475569">CONCURRENCY</text>
+      <text x="30" y="112" font-size="64" font-weight="900" fill="#0b1f3a">1</text>
+      <text x="30" y="151" font-size="18" fill="#41536b">strictly sequential</text>
+    </g>
+    <g transform="translate(930 302)">
+      <rect width="244" height="182" rx="24" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"/>
+      <text x="30" y="43" font-size="17" font-weight="850" letter-spacing="1.3" fill="#c2410c">AUTO-RETRIES</text>
+      <text x="30" y="112" font-size="64" font-weight="900" fill="#0b1f3a">0</text>
+      <text x="30" y="151" font-size="17" fill="#41536b">stop on unexpected failure</text>
+    </g>
+    <g transform="translate(1198 302)">
+      <rect width="276" height="182" rx="24" fill="#ecfdf5" stroke="#bbf7d0" stroke-width="2"/>
+      <text x="30" y="43" font-size="17" font-weight="850" letter-spacing="1.3" fill="#047857">OUTPUT CAP</text>
+      <text x="30" y="112" font-size="64" font-weight="900" fill="#0b1f3a">512</text>
+      <text x="30" y="151" font-size="18" fill="#41536b">max tokens per request</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="88" y="576" width="684" height="208" rx="28" fill="#0b1f3a"/>
+    <rect x="812" y="576" width="700" height="208" rx="28" fill="#ffffff" stroke="#fecdd3" stroke-width="2"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="126" y="620" font-size="18" font-weight="850" letter-spacing="1.7" fill="#7dd3fc">ALLOW-LIST</text>
+    <text x="126" y="667" font-size="22" font-weight="850" fill="#ffffff">deepseek-v4-flash</text>
+    <text x="126" y="704" font-size="22" font-weight="850" fill="#ffffff">deepseek-v4-pro</text>
+    <text x="126" y="752" font-size="18" fill="#cbd5e1">Fixed origin · fixed endpoint · English synthetic inputs</text>
+
+    <text x="850" y="620" font-size="18" font-weight="850" letter-spacing="1.7" fill="#9f1239">NEVER PERSIST OR PUBLISH</text>
+    <text x="850" y="663" font-size="19" font-weight="750" fill="#0b1f3a">Credentials · account data · provider IDs · raw headers</text>
+    <text x="850" y="699" font-size="19" font-weight="750" fill="#0b1f3a">Raw reasoning · private prompts · arbitrary failure bodies</text>
+    <text x="850" y="744" font-size="17" fill="#64748b">No legacy aliases, balance endpoints, billing, or load tests.</text>
+  </g>
+  <text x="88" y="846" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="650" fill="#41536b">Plan validated July 27, 2026 UTC · Live execution remains explicit and opt-in</text>
+  <text x="1512" y="846" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="750" fill="#1d4ed8">SAFE BY DEFAULT</text>
+</svg>

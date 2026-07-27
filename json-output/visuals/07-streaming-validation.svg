@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek JSON streaming live observations and validation flow</title>
+  <desc id="desc">Dated live observations for Flash and Pro streaming JSON alongside the local assembly flow, with headers, first body chunk, total duration, event counts, DONE, parse, schema, and facts results.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071426"/>
+      <stop offset="1" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#020617" flood-opacity=".36"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="88" y="52" width="250" height="42" rx="21" fill="#06b6d4"/>
+  <text x="213" y="80" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" letter-spacing="1.5" fill="#06243a">LIVE OBSERVATION</text>
+  <text x="88" y="157" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="55" font-weight="850" fill="#ffffff">Validate only after the stream is complete</text>
+  <text x="88" y="201" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" fill="#cbd5e1">Assemble final content across events, require DONE, then parse and validate.</text>
+
+  <g filter="url(#shadow)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="88" y="252" width="1424" height="176" rx="28" fill="#ffffff"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g transform="translate(122 292)">
+      <circle cx="30" cy="30" r="30" fill="#2563eb"/>
+      <text x="30" y="40" text-anchor="middle" font-size="25" font-weight="900" fill="#ffffff">1</text>
+      <text x="76" y="26" font-size="20" font-weight="850" fill="#0b1f3a">Response headers</text>
+      <text x="76" y="55" font-size="17" fill="#64748b">Start timing</text>
+    </g>
+    <path d="M348 322h78" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M414 311l14 11-14 11" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+    <g transform="translate(444 292)">
+      <circle cx="30" cy="30" r="30" fill="#1d76c7"/>
+      <text x="30" y="40" text-anchor="middle" font-size="25" font-weight="900" fill="#ffffff">2</text>
+      <text x="76" y="26" font-size="20" font-weight="850" fill="#0b1f3a">SSE data events</text>
+      <text x="76" y="55" font-size="17" fill="#64748b">Buffer content deltas</text>
+    </g>
+    <path d="M680 322h78" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M746 311l14 11-14 11" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+    <g transform="translate(776 292)">
+      <circle cx="30" cy="30" r="30" fill="#0e7490"/>
+      <text x="30" y="40" text-anchor="middle" font-size="25" font-weight="900" fill="#ffffff">3</text>
+      <text x="76" y="26" font-size="20" font-weight="850" fill="#0b1f3a">Usage + DONE</text>
+      <text x="76" y="55" font-size="17" fill="#64748b">Finish assembly</text>
+    </g>
+    <path d="M1004 322h78" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M1070 311l14 11-14 11" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+    <g transform="translate(1100 292)">
+      <circle cx="30" cy="30" r="30" fill="#047857"/>
+      <text x="30" y="40" text-anchor="middle" font-size="25" font-weight="900" fill="#ffffff">4</text>
+      <text x="76" y="26" font-size="20" font-weight="850" fill="#0b1f3a">Parse + validate</text>
+      <text x="76" y="55" font-size="17" fill="#64748b">One complete string</text>
+    </g>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="88" y="476" width="886" height="300" rx="28" fill="#ffffff"/>
+    <rect x="1012" y="476" width="500" height="300" rx="28" fill="#ffffff" stroke="#a5f3fc" stroke-width="2"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="122" y="510" width="232" height="36" rx="18" fill="#475569"/>
+    <text x="238" y="535" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="1.3" fill="#ffffff">LOCAL PARSER RULES</text>
+    <text x="122" y="592" font-size="21" font-weight="750" fill="#0b1f3a">• Handle arbitrary chunk boundaries</text>
+    <text x="122" y="630" font-size="21" font-weight="750" fill="#0b1f3a">• Ignore colon-prefixed keep-alive comments</text>
+    <text x="122" y="668" font-size="21" font-weight="750" fill="#0b1f3a">• Keep reasoning separate from final content</text>
+    <text x="122" y="706" font-size="21" font-weight="750" fill="#0b1f3a">• Accept an empty choices array on the usage event</text>
+
+    <rect x="1046" y="510" width="226" height="36" rx="18" fill="#0e7490"/>
+    <text x="1159" y="535" text-anchor="middle" font-size="16" font-weight="900" letter-spacing="1.2" fill="#ffffff">LIVE OBSERVATION</text>
+    <text x="1046" y="582" font-size="18" font-weight="900" fill="#0b1f3a">FLASH · THINKING DISABLED</text>
+    <text x="1046" y="611" font-size="17" fill="#41536b">281 ms headers · 312 ms first chunk</text>
+    <text x="1046" y="638" font-size="17" fill="#41536b">993 ms total · 34 data · 1 usage</text>
+    <text x="1046" y="665" font-size="17" font-weight="800" fill="#047857">DONE · parse/schema/facts 1/1</text>
+    <path d="M1046 686h432" stroke="#dbe7f3" stroke-width="2"/>
+    <text x="1046" y="716" font-size="18" font-weight="900" fill="#0b1f3a">PRO · THINKING ENABLED / HIGH</text>
+    <text x="1046" y="743" font-size="17" fill="#41536b">337 ms headers · 340 ms first chunk</text>
+    <text x="1046" y="768" font-size="16" fill="#41536b">2,992 ms total · 214 data · 1 usage · DONE</text>
+  </g>
+  <text x="88" y="824" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="650" fill="#cbd5e1">2/2 HTTP 200 · DONE 2/2 · parse/schema/facts 2/2 · keep-alive comments: 0 in both</text>
+  <text x="1512" y="824" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" fill="#7dd3fc">TESTED JULY 27, 2026 UTC</text>
+</svg>

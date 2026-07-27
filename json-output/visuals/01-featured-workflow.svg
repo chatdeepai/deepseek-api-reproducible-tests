@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek JSON Output validation workflow</title>
+  <desc id="desc">Editorial workflow showing a DeepSeek JSON Output request, final content, JSON parsing, and local schema and business-rule validation.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071426"/>
+      <stop offset=".58" stop-color="#12305b"/>
+      <stop offset="1" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#020617" flood-opacity=".44"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1480" cy="60" r="280" fill="#38bdf8" opacity=".08"/>
+  <circle cx="80" cy="900" r="300" fill="#2563eb" opacity=".09"/>
+  <text x="96" y="105" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" letter-spacing="4" fill="#7dd3fc">CHAT-DEEP.AI IMPLEMENTATION GUIDE</text>
+  <text x="96" y="193" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="70" font-weight="850" fill="#ffffff">DeepSeek JSON Output</text>
+  <text x="96" y="250" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" fill="#cbd5e1">Valid JSON is the start of validation—not the finish line</text>
+
+  <g filter="url(#shadow)">
+    <rect x="96" y="322" width="1408" height="390" rx="34" fill="#ffffff"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g transform="translate(136 373)">
+      <rect width="288" height="248" rx="26" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+      <rect x="28" y="26" width="112" height="34" rx="17" fill="#1d4ed8"/>
+      <text x="84" y="49" text-anchor="middle" font-size="15" font-weight="900" letter-spacing="1.4" fill="#ffffff">REQUEST</text>
+      <text x="28" y="103" font-size="24" font-weight="850" fill="#0b1f3a">response_format</text>
+      <rect x="28" y="126" width="232" height="50" rx="15" fill="#0b1f3a"/>
+      <text x="144" y="158" text-anchor="middle" font-size="17" font-weight="700" fill="#7dd3fc">type: json_object</text>
+      <text x="28" y="212" font-size="18" fill="#41536b">Prompt says json</text>
+      <text x="28" y="238" font-size="18" fill="#41536b">and shows an example</text>
+    </g>
+    <path d="M438 497h70" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M496 485l15 12-15 12" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+
+    <g transform="translate(524 373)">
+      <rect width="288" height="248" rx="26" fill="#ecfeff" stroke="#a5f3fc" stroke-width="2"/>
+      <rect x="28" y="26" width="126" height="34" rx="17" fill="#0e7490"/>
+      <text x="91" y="49" text-anchor="middle" font-size="15" font-weight="900" letter-spacing="1.3" fill="#ffffff">CONTENT</text>
+      <text x="28" y="103" font-size="24" font-weight="850" fill="#0b1f3a">Final answer only</text>
+      <rect x="28" y="126" width="232" height="88" rx="15" fill="#0b1f3a"/>
+      <text x="48" y="160" font-size="16" fill="#e2e8f0">{ "ticket_id":</text>
+      <text x="48" y="190" font-size="16" fill="#e2e8f0">  "T-204", ... }</text>
+      <text x="28" y="238" font-size="17" fill="#41536b">Read assistant content</text>
+    </g>
+    <path d="M826 497h70" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M884 485l15 12-15 12" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+
+    <g transform="translate(912 373)">
+      <rect width="236" height="248" rx="26" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+      <rect x="28" y="26" width="112" height="34" rx="17" fill="#475569"/>
+      <text x="84" y="49" text-anchor="middle" font-size="15" font-weight="900" letter-spacing="1.3" fill="#ffffff">PARSE</text>
+      <text x="28" y="112" font-size="27" font-weight="900" fill="#0b1f3a">JSON.parse</text>
+      <circle cx="52" cy="164" r="17" fill="#047857"/>
+      <path d="M43 164l6 6 12-15" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="80" y="171" font-size="19" font-weight="750" fill="#0b1f3a">Syntax valid</text>
+      <text x="28" y="219" font-size="17" fill="#64748b">Necessary, not enough</text>
+    </g>
+    <path d="M1162 497h70" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M1220 485l15 12-15 12" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linejoin="round"/>
+
+    <g transform="translate(1248 373)">
+      <rect width="216" height="248" rx="26" fill="#ecfdf5" stroke="#bbf7d0" stroke-width="2"/>
+      <rect x="24" y="26" width="112" height="34" rx="17" fill="#047857"/>
+      <text x="80" y="49" text-anchor="middle" font-size="15" font-weight="900" letter-spacing="1.2" fill="#ffffff">VALIDATE</text>
+      <text x="24" y="105" font-size="21" font-weight="850" fill="#0b1f3a">Exact keys</text>
+      <text x="24" y="139" font-size="21" font-weight="850" fill="#0b1f3a">Types + enum</text>
+      <text x="24" y="173" font-size="21" font-weight="850" fill="#0b1f3a">Null behavior</text>
+      <text x="24" y="207" font-size="21" font-weight="850" fill="#0b1f3a">Business rules</text>
+      <text x="24" y="235" font-size="16" fill="#047857">Local application gate</text>
+    </g>
+  </g>
+  <rect x="136" y="658" width="1328" height="8" rx="4" fill="url(#accent)"/>
+  <text x="96" y="810" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="650" fill="#cbd5e1">Official API control + local validation workflow · Documentation reviewed July 27, 2026 UTC</text>
+  <text x="1504" y="810" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#7dd3fc">OFFICIAL + LOCAL</text>
+</svg>

@@ -48,6 +48,15 @@ langchain-integration/results/*
 !langchain-integration/results/js-partial.json
 !langchain-integration/results/live-summary.json
 !langchain-integration/results/privacy-audit.json
+!llamaindex-integration/results/
+llamaindex-integration/results/*
+!llamaindex-integration/results/.gitkeep
+!llamaindex-integration/results/live-summary.json
+!llamaindex-integration/results/live-summary.template.json
+!llamaindex-integration/results/privacy-audit.json
+!llamaindex-integration/results/privacy-audit.template.json
+!llamaindex-integration/results/run-ledger.json
+!llamaindex-integration/results/run-ledger.template.json
 screenshots/
 private/
 secrets/

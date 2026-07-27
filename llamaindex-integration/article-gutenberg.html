@@ -1,0 +1,647 @@
+<!-- wp:paragraph -->
+<p><strong>Last verified: July 27, 2026.</strong> A current DeepSeek LlamaIndex integration uses the Python package <code>llama-index-llms-deepseek</code> and the class <code>DeepSeek</code>. Keep <code>DEEPSEEK_API_KEY</code> on the server, use a current DeepSeek V4 model ID, set thinking mode explicitly, set the documented context window deliberately, and configure a separate embedding model for retrieval.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide is specifically about LlamaIndex: standalone LLM calls, document ingestion, indexing, retrieval, query engines, response synthesis, and source review. If your route needs only a direct model call, use the <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>. For LangChain runnables and agents, use the <a href="https://chat-deep.ai/docs/deepseek-langchain-integration/">DeepSeek LangChain integration guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Evidence status:</strong> package names, constructor behavior, inherited methods, metadata defaults, and framework architecture below come from current official LlamaIndex documentation and source. Provider model and feature statements come from current official DeepSeek documentation. A 22-check localhost suite passed. We then completed a preregistered 16-request provider study on July 27, 2026 with concurrency one, zero automatic retries, and a passing publication privacy audit. Dated observations are separated from documented contracts, and the evidence contains no prompts, outputs, reasoning text, credentials, account data, or provider identifiers.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Install <code>llama-index-core</code> and <code>llama-index-llms-deepseek</code>.</li><li>Use <code>deepseek-v4-flash</code> or <code>deepseek-v4-pro</code> for new work, subject to your own evaluation.</li><li>Set <code>context_window=1_000_000</code> because the reviewed wrapper falls back to 64,000 for model names absent from its legacy lookup table.</li><li>Disable thinking explicitly for ordinary RAG and schema-controlled flows; enable it deliberately for reasoning tasks.</li><li>Configure embeddings separately. DeepSeek supplies generation in this architecture, not the vectors used by the example index.</li><li>Test retrieval before testing the answer, and validate source nodes before showing citations.</li><li>Pin versions, bound retries and concurrency, and keep prompts, retrieved text, reasoning, credentials, and identifiers out of logs.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7664,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/01-deepseek-llamaindex-integration-architecture.png" alt="DeepSeek LlamaIndex integration architecture from documents and application input through indexing, retrieval, response synthesis, and the DeepSeek API boundary" class="wp-image-7664"/><figcaption class="wp-element-caption">LlamaIndex owns ingestion, indexing, retrieval, and response orchestration; DeepSeek supplies model generation; the application still owns data approval, validation, resource limits, and safe observability.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="what-the-integration-means">What DeepSeek plus LlamaIndex actually means</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek is the model provider. LlamaIndex is the data and orchestration framework. The dedicated adapter converts LlamaIndex chat or completion inputs into an OpenAI-compatible request sent to the DeepSeek API, then converts the response into LlamaIndex response objects. The adapter inherits its transport behavior from LlamaIndex's <code>OpenAILike</code> and OpenAI integrations.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Layer</th><th>What it owns</th><th>What it does not guarantee</th></tr></thead><tbody><tr><td>DeepSeek API</td><td>Model IDs, provider request fields, generated output, errors, usage, billing, and account limits</td><td>Correct retrieval, application authorization, or safe use of an answer</td></tr><tr><td><code>DeepSeek</code> LlamaIndex adapter</td><td>Credential lookup, API origin, request conversion, response conversion, sync and async methods, and metadata</td><td>That every new provider field is modeled correctly by the installed wrapper</td></tr><tr><td>LlamaIndex</td><td>Documents, nodes, embeddings interfaces, indexes, retrievers, query engines, response synthesis, tools, and instrumentation</td><td>That the retrieved chunks are relevant, current, approved, or resistant to injection</td></tr><tr><td>Your application</td><td>Data approval, configuration, validation, tenancy, authorization, retries, logging policy, and user experience</td><td>Nothing: this is the final control boundary</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Use this stack when document grounding is central to the application. It is a good fit for knowledge-base search, policy Q&amp;A, support material, research collections, and source-aware synthesis. It is usually unnecessary for a single prompt with no retrieval. A framework adds useful boundaries, but it also adds dependencies and another compatibility surface.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="current-package-model-metadata">Current package, model IDs, and wrapper metadata drift</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The dated audit environment used Python 3.12.13, <code>llama-index-core</code> 0.14.23, <code>llama-index-llms-deepseek</code> 0.3.0, <code>llama-index-llms-openai-like</code> 0.5.3, <code>llama-index-llms-openai</code> 0.6.26, <code>openai</code> 2.48.0, and <code>pydantic</code> 2.13.4. These are reproducibility facts for this review, not a permanent recommendation to install the newest release without testing.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Item</th><th>Official source says</th><th>Implementation consequence</th></tr></thead><tbody><tr><td>Package and import</td><td><code>llama-index-llms-deepseek</code> and <code>from llama_index.llms.deepseek import DeepSeek</code></td><td>Use the provider-specific adapter rather than a generic wrapper by default</td></tr><tr><td>Current model IDs</td><td>DeepSeek lists <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code></td><td>Use current IDs in new examples and evaluate both on your workload</td></tr><tr><td>Provider context length</td><td>DeepSeek lists 1M for both current V4 models</td><td>Set <code>context_window=1_000_000</code> in this wrapper version</td></tr><tr><td>Wrapper context lookup</td><td>The source contains only the two older aliases and otherwise returns 64,000</td><td>Do not mistake adapter metadata for the provider's documented limit</td></tr><tr><td>Provider tool support</td><td>DeepSeek lists Tool Calls for both current V4 models</td><td>Provider capability still needs wrapper-specific verification</td></tr><tr><td>Wrapper function metadata</td><td>The source marks only <code>deepseek-chat</code> as function-calling by default</td><td>A current-ID tool test must opt in deliberately and validate the result</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The official LlamaIndex integration page still shows <code>deepseek-chat</code> and <code>deepseek-reasoner</code>. DeepSeek assigned those aliases a retirement deadline of July 24, 2026, which has passed. Both aliases returned HTTP 200 in our July 27 probes, but this does not restore them to the recommended model set or guarantee future routing. <code>deepseek-chat</code> returned non-empty final content and a <code>stop</code> finish. <code>deepseek-reasoner</code> exposed non-empty reasoning, but its final content was empty and it ended with <code>length</code> at the test's output cap.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official model table also includes pricing, but prices are intentionally not copied here. Consult the official table or the site's <a href="https://chat-deep.ai/pricing/">DeepSeek pricing page</a> at decision time. Package versions, model routing, prices, and feature combinations can change independently.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="installation-and-api-key">Install the integration and protect the API key</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Create an isolated environment and install explicit dependencies. A lockfile should hold the exact versions released to production. The commands below are convenient for a fresh development environment; they are not a substitute for a reviewed dependency update.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>python -m venv .venv
+
+# macOS or Linux
+source .venv/bin/activate
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+python -m pip install -U llama-index-core llama-index-llms-deepseek pydantic</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Set <code>DEEPSEEK_API_KEY</code> in a protected server environment or secrets manager. Never place a real value in source code, a browser bundle, a mobile app, a notebook output, a screenshot, a Git commit, a trace, or an exception message. The <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API Key guide</a> owns creation, rotation, revocation, and secret-storage details.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code># Variable name only. Store the real value outside the repository.
+DEEPSEEK_API_KEY=replace_in_your_secret_store</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The adapter reads this variable when no key is passed directly. Its reviewed source also defaults <code>api_base</code> to <code>https://api.deepseek.com</code>. Set that origin explicitly in production configuration so a code review can see which provider receives retrieved content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="explicit-deepseek-factory">Build an explicit <code>DeepSeek</code> factory</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Current DeepSeek documentation says thinking is enabled by default. It also says <code>temperature</code>, <code>top_p</code>, <code>presence_penalty</code>, and <code>frequency_penalty</code> do not affect thinking mode. Select the mode first. The inherited LlamaIndex wrapper merges <code>additional_kwargs</code> into OpenAI-client call parameters. In the pinned stack, the DeepSeek <code>thinking</code> object must be nested under the client's <code>extra_body</code> parameter so it is merged into the top-level HTTP body.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import os
+from typing import Literal
+
+from llama_index.llms.deepseek import DeepSeek
+
+
+def build_deepseek_llm(
+    model_id: Literal[
+        "deepseek-v4-flash",
+        "deepseek-v4-pro",
+    ] = "deepseek-v4-flash",
+    *,
+    thinking: bool = False,
+    max_retries: int = 2,
+) -&gt; DeepSeek:
+    if not os.getenv("DEEPSEEK_API_KEY"):
+        raise RuntimeError("DEEPSEEK_API_KEY is not configured")
+
+    provider_fields = {
+        "extra_body": {
+            "thinking": {
+                "type": "enabled" if thinking else "disabled"
+            }
+        }
+    }
+    if thinking:
+        provider_fields["reasoning_effort"] = "high"
+
+    return DeepSeek(
+        model=model_id,
+        api_base="https://api.deepseek.com",
+        context_window=1_000_000,
+        api_key=os.environ["DEEPSEEK_API_KEY"],
+        additional_kwargs=provider_fields,
+        temperature=0.0,
+        max_tokens=1_200,
+        timeout=30.0,
+        max_retries=max_retries,
+        reuse_client=True,
+    )</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The 1M value is provider documentation, not proof that every request can or should approach that size. Reserve room for output, account for the text LlamaIndex adds during response synthesis, and test realistic document sets. Large prompts can increase cost, delay, truncation risk, and the amount of sensitive material sent to the provider.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Serialization trap:</strong> do not place <code>thinking</code> directly beside <code>model</code> in <code>additional_kwargs</code> for this pinned stack. The underlying OpenAI client rejects that unknown direct keyword with <code>TypeError</code>. A local request-capture fixture confirmed that <code>additional_kwargs={"extra_body":{"thinking":...}}</code> produces a top-level <code>thinking</code> field in the outgoing JSON body. This is a localhost wrapper-contract result, not a provider-support result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The example accepts only two model IDs so a misspelling fails locally. If your organization uses a configuration service, validate the same allowlist at startup. Choose Flash or Pro through a task-specific evaluation rather than a generic quality label. The <a href="https://chat-deep.ai/models/">DeepSeek models page</a> owns the broader comparison.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7665,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/02-llamaindex-dependency-configuration-boundary.png" alt="LlamaIndex DeepSeek dependency and configuration boundary separating packages, credentials, model metadata, clients, and application ownership" class="wp-image-7665"/><figcaption class="wp-element-caption">Pin the integration stack, read the credential at runtime, choose provider mode explicitly, correct stale wrapper metadata deliberately, and inject the configured LLM at a clear owner boundary.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="completion-chat-streaming-async">Completion, chat, streaming, and async methods</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The adapter exposes completion and chat interfaces because it inherits from <code>OpenAILike</code>. For a chat model, <code>complete</code> is still adapted through chat-completion behavior; it is useful for a single prompt but should not be confused with a separate provider text-completions product.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Synchronous completion and chat</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>from llama_index.core.llms import ChatMessage
+
+llm = build_deepseek_llm(thinking=False)
+
+completion = llm.complete(
+    "Define retrieval-augmented generation in two sentences."
+)
+if not str(completion).strip():
+    raise RuntimeError("Empty completion")
+
+messages = [
+    ChatMessage(
+        role="system",
+        content="Answer only from approved context.",
+    ),
+    ChatMessage(
+        role="user",
+        content="List three checks for retrieved evidence.",
+    ),
+]
+chat_response = llm.chat(messages)
+if not str(chat_response).strip():
+    raise RuntimeError("Empty chat response")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not print the full response in production. A raw response may include generated text, usage data, reasoning blocks, tool payloads, and provider identifiers. Validate only the fields the route needs and record a redacted summary.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Synchronous streaming</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>parts: list[str] = []
+
+for event in llm.stream_chat(messages):
+    if event.delta:
+        parts.append(event.delta)
+
+final_text = "".join(parts).strip()
+if not final_text:
+    raise RuntimeError("Stream ended without final text")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Streaming improves perceived responsiveness; it does not reduce the need for a timeout, a cancellation path, terminal-state checks, or final validation. Do not persist each raw chunk. If the application must moderate or validate the complete answer, buffer it server-side before releasing a consequential result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Asynchronous chat and streaming</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>async def run_async_examples() -&gt; tuple[str, str]:
+    chat_response = await llm.achat(messages)
+    chat_text = str(chat_response).strip()
+    if not chat_text:
+        raise RuntimeError("Empty async chat response")
+
+    stream = await llm.astream_chat(messages)
+    chunks: list[str] = []
+    async for event in stream:
+        if event.delta:
+            chunks.append(event.delta)
+
+    stream_text = "".join(chunks).strip()
+    if not stream_text:
+        raise RuntimeError("Async stream ended without final text")
+
+    return chat_text, stream_text</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Use a semaphore or worker pool to bound concurrent async calls. Cancellation should propagate through the task; do not catch a cancellation exception and turn it into an automatic retry. If several layers each retry, one user action can multiply into many provider requests.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7666,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/03-llamaindex-chat-complete-stream-lifecycle.png" alt="LlamaIndex DeepSeek completion, chat, synchronous streaming, and asynchronous lifecycle with validation, cancellation, and cleanup" class="wp-image-7666"/><figcaption class="wp-element-caption">Completion and chat share an adapter but return different LlamaIndex response types; streaming must be consumed to a terminal state, and async work needs bounded concurrency and cancellation propagation.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="settings-versus-injection"><code>Settings</code> versus explicit dependency injection</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>LlamaIndex documents <code>Settings</code> as a singleton bundle of defaults. A component uses it when an LLM, embedding model, splitter, or other resource is not passed locally. This is concise in a notebook:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>from llama_index.core import Settings
+
+Settings.llm = build_deepseek_llm(thinking=False)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Global state can surprise tests, multi-tenant services, notebooks, and workers. One test may leave a model or embedding behind for the next. Prefer passing <code>llm=...</code> and <code>embed_model=...</code> directly at construction boundaries when different routes or tenants need different behavior. If you use <code>Settings</code>, initialize it once at process startup and prohibit request-level mutation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="reproducible-rag-pipeline">A reproducible DeepSeek LlamaIndex RAG pipeline</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>RAG has two model roles. An embedding model converts documents and queries into vectors for retrieval. DeepSeek then reads selected text and generates the answer. The following is a smoke-test fixture, not a production semantic-search recipe: <code>MockEmbedding</code> keeps the indexing path local and deterministic enough to exercise the framework boundary, while <code>similarity_top_k=1</code> and a one-record corpus make the expected source explicit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>from llama_index.core import Document, VectorStoreIndex
+from llama_index.core.embeddings import MockEmbedding
+
+documents = [
+    Document(
+        text=(
+            "Project Atlas requires human approval before any "
+            "production database change."
+        ),
+        metadata={
+            "record_id": "policy-001",
+            "title": "Project Atlas change policy",
+        },
+    )
+]
+
+embed_model = MockEmbedding(embed_dim=32)
+llm = build_deepseek_llm(thinking=False, max_retries=0)
+
+index = VectorStoreIndex.from_documents(
+    documents,
+    embed_model=embed_model,
+)
+
+retriever = index.as_retriever(similarity_top_k=1)
+nodes = retriever.retrieve(
+    "What approval is required for a production database change?"
+)
+
+if len(nodes) != 1:
+    raise RuntimeError("Unexpected retrieval count")
+if nodes[0].node.metadata.get("record_id") != "policy-001":
+    raise RuntimeError("Unexpected source selected")
+
+query_engine = index.as_query_engine(
+    llm=llm,
+    similarity_top_k=1,
+)
+response = query_engine.query(
+    "What approval is required for a production database change? "
+    "Answer only from the indexed policy and name its record ID."
+)
+
+source_ids = {
+    node.node.metadata.get("record_id")
+    for node in response.source_nodes
+}
+if "policy-001" not in source_ids:
+    raise RuntimeError("Expected source node is missing")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Replace <code>MockEmbedding</code> in production with an approved embedding integration selected for your language, domain, privacy constraints, and retrieval evaluation. Do not use the smoke fixture to claim semantic quality. LlamaIndex's <code>VectorStoreIndex</code> uses in-memory storage by default; choose a persistent vector store, access controls, deletion workflow, and backup policy for a real system.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7668,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/05-llamaindex-rag-index-query-pipeline.png" alt="LlamaIndex RAG pipeline for DeepSeek from approved documents through nodes, embeddings, vector index, retrieval, response synthesis, and source review" class="wp-image-7668"/><figcaption class="wp-element-caption">Evaluate the pipeline in layers: document approval, chunking, embedding, retrieval, context assembly, DeepSeek generation, and source attribution can each fail independently.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="retrieval-quality-source-attribution">Evaluate retrieval before evaluating the answer</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A fluent answer can hide a retrieval failure. Build a labelled question set with expected record IDs, relevant passages, and acceptable abstentions. Measure whether the retriever found the right source before asking whether the generator wrote a good answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Checkpoint</th><th>What to inspect</th><th>Typical failure</th></tr></thead><tbody><tr><td>Data approval</td><td>Ownership, retention, sensitivity, and provider permission</td><td>Unapproved private text reaches the generation API</td></tr><tr><td>Parsing and chunking</td><td>Headings, tables, boundaries, overlap, and metadata</td><td>The evidence is split away from its qualifier</td></tr><tr><td>Embedding</td><td>Domain and language fit</td><td>Related wording receives a weak similarity score</td></tr><tr><td>Retrieval</td><td>Recall, precision, top-k, filters, and source IDs</td><td>An irrelevant but similar chunk wins</td></tr><tr><td>Context assembly</td><td>Ordering, delimiters, duplicates, and token budget</td><td>Instructions inside a document are treated as application commands</td></tr><tr><td>Generation</td><td>Grounding, abstention, completeness, and contradictions</td><td>The answer extends beyond the supplied evidence</td></tr><tr><td>Attribution</td><td>Whether displayed sources actually support each claim</td><td>A retrieved source is shown even though it does not support the sentence</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Treat retrieved documents as untrusted data. Delimit them, instruct the model not to follow commands found inside them, filter by authorization before retrieval, and never let a retrieved chunk change tool permissions. Source metadata is useful for attribution, but it is not proof that the answer is supported. The <a href="https://chat-deep.ai/docs/deepseek-evaluation-framework/">DeepSeek evaluation framework</a> owns the larger test and release-gate design.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="thinking-mode-reasoning-boundary">Thinking mode and reasoning-field boundaries</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use explicit non-thinking mode for ordinary retrieval answers, extraction, and schema-controlled routes when that configuration meets your quality target. Use thinking mode for tasks that genuinely benefit from additional reasoning, then allow enough output budget for both reasoning and final content. A low output cap can end before final text appears.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>non_thinking_llm = build_deepseek_llm(
+    "deepseek-v4-flash",
+    thinking=False,
+)
+
+thinking_llm = build_deepseek_llm(
+    "deepseek-v4-pro",
+    thinking=True,
+)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The inherited current OpenAI wrapper contains logic for reasoning content and converts it into LlamaIndex thinking blocks. In the dated V4 Pro thinking case, the request returned HTTP 200 with non-empty final content, a <code>stop</code> finish, and a present, non-empty reasoning field. The audit recorded only structural booleans and did not retain or publish the reasoning text.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For ordinary multi-turn thinking conversations, DeepSeek says prior reasoning is ignored by the API. Tool-call turns are different: the provider says the relevant <code>reasoning_content</code> must be replayed in subsequent requests or a 400 error can result. Do not build a thinking tool loop until the exact installed wrapper preserves the required fields. See the <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a> for the full protocol.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="structured-output-validation">Structured output requires application validation</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>LlamaIndex offers structured prediction and Pydantic-based abstractions. DeepSeek separately offers JSON Output. These layers solve different problems: a request can ask for JSON, a parser can create an object, Pydantic can validate types, and business rules can reject an otherwise valid object. None proves that the fields are factually correct.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>from typing import Literal
+
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class PolicyAnswer(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    record_id: str = Field(min_length=1)
+    approval_required: Literal["yes", "no", "unclear"]
+
+
+json_llm = DeepSeek(
+    model="deepseek-v4-flash",
+    api_base="https://api.deepseek.com",
+    context_window=1_000_000,
+    additional_kwargs={
+        "extra_body": {
+            "thinking": {"type": "disabled"},
+        },
+        "response_format": {"type": "json_object"},
+    },
+    timeout=30.0,
+    max_retries=0,
+)
+
+prompt = PromptTemplate(
+    "Return valid json matching this example: "
+    '{{"record_id":"policy-001","approval_required":"yes"}}. '
+    "Use only this source text: {source_text}"
+)
+
+result = json_llm.structured_predict(
+    PolicyAnswer,
+    prompt,
+    source_text=documents[0].text,
+)
+
+if result.record_id != "policy-001":
+    raise RuntimeError("Unexpected source attribution")</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's JSON guide requires the prompt to mention JSON and recommends showing the desired shape. It also warns that JSON mode can return empty content and that insufficient output budget can truncate the object. In our pinned live <code>structured_predict</code> case, a provider request was issued, but the wrapper path ended with <code>ValueError</code>, recorded no HTTP status in the sanitized result, and produced no validated Pydantic object. Do not treat that result as a provider-wide JSON failure: it is an exact-version LlamaIndex structured-prediction observation. Catch validation failures, retain a safe error category, and use the <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a> when evaluating a direct JSON fallback.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="tool-calling-wrapper-metadata">Tool calling: provider support is not wrapper readiness</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents Tool Calls for both V4 models. The reviewed LlamaIndex adapter's function-calling set, however, contains only <code>deepseek-chat</code>. For a current ID, LlamaIndex therefore does not advertise function calling by default. The constructor accepts an explicit <code>is_function_calling_model</code> override, but enabling metadata is not proof that the whole request and continuation path works.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>tool_llm = DeepSeek(
+    model="deepseek-v4-flash",
+    api_base="https://api.deepseek.com",
+    context_window=1_000_000,
+    is_function_calling_model=True,
+    additional_kwargs={
+        "extra_body": {
+            "thinking": {"type": "disabled"},
+        },
+    },
+    timeout=30.0,
+    max_retries=0,
+)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Our initial V4 Flash tool request returned HTTP 200 with exactly one call and the expected tool name, but the returned arguments did not meet the test fixture's exact argument contract. This is a narrow fixture assertion, not a claim that the arguments were broadly schema-invalid. The continuation case replayed the matching identifier in memory, returned HTTP 200, and produced non-empty content. Even with that successful continuation, the application must enforce an allowlisted tool name, schema validation, tenant authorization, side-effect policy, timeouts, and output validation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>The model proposes a call; it does not execute the function.</li><li>Reject unknown names and extra arguments.</li><li>Authorize the operation against the current user and resource.</li><li>Keep financial, destructive, security-sensitive, and external-message actions behind human approval.</li><li>Make retries safe for any operation that could be repeated.</li><li>Store only sanitized aliases in public evidence, never provider tool-call IDs.</li><li>Preserve required reasoning fields when thinking-mode tools are used.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7667,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/04-llamaindex-structured-output-tool-validation.png" alt="LlamaIndex DeepSeek structured output and tool validation pipeline from provider response through parsing, schema checks, authorization, execution, and safe continuation" class="wp-image-7667"/><figcaption class="wp-element-caption">Provider JSON and tool capabilities do not remove application controls: parse defensively, validate schemas and business rules, authorize every action, and preserve the protocol fields required for continuation.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="errors-retries-cancellation-observability">Errors, retries, cancellation, concurrency, and observability</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The inherited wrapper defaults to three retries. That may be reasonable for some transient, idempotent reads, but it is not a universal production policy. The examples use zero retries in the live harness so request accounting is exact. In an application, choose one retry owner, cap attempts and elapsed time, add jitter, and never retry deterministic configuration, schema, authentication, permission, or invalid-model failures without a change.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Failure layer</th><th>Examples</th><th>Safe first action</th></tr></thead><tbody><tr><td>Configuration</td><td>Missing key, invalid model allowlist, wrong context metadata</td><td>Fail before issuing a request</td></tr><tr><td>Ingestion</td><td>Unreadable file, parser error, missing metadata</td><td>Quarantine the document and report its sanitized record ID</td></tr><tr><td>Retrieval</td><td>No nodes, wrong source, access-filter failure</td><td>Abstain; do not ask the model to invent missing evidence</td></tr><tr><td>Provider</td><td>Authentication, balance, invalid request, server, or capacity error</td><td>Classify the status and follow a bounded policy</td></tr><tr><td>Parser</td><td>Empty JSON, truncation, Pydantic failure</td><td>Reject the object; optionally use one controlled repair path</td></tr><tr><td>Tool</td><td>Unknown name, invalid arguments, unauthorized resource</td><td>Do not execute; return a safe application error</td></tr><tr><td>Cancellation</td><td>User disconnect, deadline, shutdown</td><td>Propagate cancellation and stop issuing work</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Use bounded concurrency even when provider limits are higher. Account-level capacity is shared with other services, and a burst of expensive RAG prompts can affect latency and budget. The <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API Rate Limits guide</a> owns provider-level capacity behavior; the <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek Error Codes guide</a> owns the full status catalog.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>LlamaIndex instrumentation can expose events and spans across the stack. Official examples show that events may contain messages, model settings, deltas, full responses, timestamps, and identifiers. Do not attach a generic serializer to production traces. Create an allowlist that keeps operation name, sanitized model alias, status category, duration bucket, token counts when trustworthy, retrieval count, and validation booleans. Drop prompts, retrieved text, output, reasoning, headers, keys, tool data, document contents, account data, and provider identifiers. The <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek Observability guide</a> owns the complete telemetry policy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7669,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/06-llamaindex-error-retry-cancellation-tree.png" alt="LlamaIndex DeepSeek error, retry, and cancellation decision tree separating configuration, retrieval, provider, parser, tool, timeout, and cancelled states" class="wp-image-7669"/><figcaption class="wp-element-caption">Classify the failing layer before acting, retry only bounded transient and idempotent work, and propagate cancellation instead of converting it into another request.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="testing-reproducibility">Test the integration in layers</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Most LlamaIndex behavior can be tested without spending provider requests. Use synthetic documents, a deterministic embedding fixture, fake LLM responses, Pydantic unit tests, tool authorization tests, and local request-capture fixtures. Reserve live calls for the small compatibility surface that a local double cannot prove.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li><strong>Schema tests:</strong> valid, missing, extra, and wrong-type fields.</li><li><strong>Ingestion tests:</strong> expected nodes, metadata, chunk boundaries, and deletion behavior.</li><li><strong>Retrieval tests:</strong> labelled questions, expected source IDs, access filters, recall, and abstention.</li><li><strong>Adapter tests:</strong> API origin, model, context metadata, thinking body, retry count, timeout, and secret redaction.</li><li><strong>Stream tests:</strong> delta aggregation, empty chunks, terminal state, cancellation, and cleanup.</li><li><strong>Tool tests:</strong> allowlist, schema, authorization, matching identifier, side-effect guard, and stop bound.</li><li><strong>Bounded live tests:</strong> only the preregistered cases, with serial execution and zero automatic retries.</li><li><strong>Publication audit:</strong> allowlisted structural fields only, followed by secret, raw-output, identifier, non-ASCII, and mojibake scans.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The frozen plan, localhost tests, sanitized live summaries, privacy audit, and image sources are available in the <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/llamaindex-integration" target="_blank" rel="noopener">DeepSeek LlamaIndex reproducibility package on GitHub</a>. The repository contains no API key, prompts, generated text, hidden reasoning, account data, or provider identifiers.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7670,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/07-llamaindex-test-methodology-ladder.png" alt="LlamaIndex DeepSeek test methodology ladder from offline schemas and retrieval fixtures through wrapper serialization, bounded live cases, and privacy audit" class="wp-image-7670"/><figcaption class="wp-element-caption">Build confidence in layers: verify schemas and retrieval offline, inspect wrapper serialization against local fixtures, run a bounded serial provider suite, then audit the sanitized evidence before publication.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="live-llamaindex-evidence">Live LlamaIndex evidence: July 27, 2026</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><strong>Method:</strong> the preregistered study issued all 16 planned provider requests, stayed within its 16-request cap, ran serially with concurrency one, disabled automatic retries, and used a 30-second default timeout. The suite used synthetic English inputs and low output caps. Its 21.992-second total elapsed time is a study-level reproducibility fact, not a latency benchmark or service-level result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Case ID</th><th>Dated sanitized observation</th></tr></thead><tbody><tr><td><code>py-chat-sync-v4-flash</code></td><td>Success; HTTP 200; <code>ChatResponse</code>; non-empty content; <code>stop</code>.</td></tr><tr><td><code>py-chat-async-v4-flash</code></td><td>Success; HTTP 200; <code>ChatResponse</code>; non-empty content; <code>stop</code>.</td></tr><tr><td><code>py-complete-sync-v4-flash</code></td><td>Success; HTTP 200; <code>CompletionResponse</code>; non-empty content; <code>stop</code>.</td></tr><tr><td><code>py-complete-async-v4-flash</code></td><td>Success; HTTP 200; <code>CompletionResponse</code>; non-empty content; <code>stop</code>.</td></tr><tr><td><code>py-chat-stream-sync-v4-flash</code></td><td>Success; HTTP 200; 19 chunks; content deltas observed; terminal finish <code>stop</code>.</td></tr><tr><td><code>py-chat-stream-async-v4-flash</code></td><td>Success; HTTP 200; 23 chunks; content deltas observed; terminal finish <code>stop</code>.</td></tr><tr><td><code>py-complete-stream-sync-v4-flash</code></td><td>Success; HTTP 200; 16 chunks; content deltas observed; terminal finish <code>stop</code>.</td></tr><tr><td><code>py-complete-stream-async-v4-flash</code></td><td>Success; HTTP 200; 17 chunks; content deltas observed; terminal finish <code>stop</code>.</td></tr><tr><td><code>py-chat-v4-pro-thinking</code></td><td>Success; HTTP 200; <code>ChatResponse</code>; non-empty final content; <code>stop</code>; reasoning field present and non-empty.</td></tr><tr><td><code>py-structured-predict-v4-flash</code></td><td>Unexpected error after a request was issued; <code>ValueError</code>; HTTP status not recorded; no validated Pydantic object.</td></tr><tr><td><code>py-tool-call-initial-v4-flash</code></td><td>Success; HTTP 200; exactly one tool call; expected tool name; the exact fixture argument contract was not met.</td></tr><tr><td><code>py-tool-call-continuation-v4-flash</code></td><td>Success; HTTP 200; matching identifier replayed in memory; non-empty final content.</td></tr><tr><td><code>py-local-rag-query-engine-v4-flash</code></td><td>Success; HTTP 200; deterministic local mock embedding; one selected record; one source node; non-empty final content.</td></tr><tr><td><code>py-alias-deepseek-chat-probe</code></td><td>Alias accepted; HTTP 200; <code>ChatResponse</code>; non-empty content; <code>stop</code>; no reasoning field.</td></tr><tr><td><code>py-alias-deepseek-reasoner-probe</code></td><td>Alias accepted; HTTP 200; <code>ChatResponse</code>; final content empty; <code>length</code>; reasoning field present and non-empty.</td></tr><tr><td><code>py-invalid-model-error</code></td><td>Expected provider error; HTTP 400; <code>BadRequestError</code>; code <code>invalid_request_error</code>.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p><strong>Run summary:</strong> tested July 27, 2026 at 17:57 UTC; 16 of 16 requests issued; 12 successful cases, two accepted dated-alias probes, one expected provider error, and one unexpected structured-prediction error; 22 of 22 offline checks passed. The privacy audit passed with all 16 results in plan order, zero forbidden result fields, zero secret findings, zero non-ASCII characters, and zero mojibake matches.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7671,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/08-llamaindex-live-results-dashboard.png" alt="DeepSeek LlamaIndex integration live results dashboard covering pinned versions, chat and completion, streaming, JSON, tools, RAG, errors, controls, and privacy audit" class="wp-image-7671"/><figcaption class="wp-element-caption">The dashboard summarizes the bounded July 27, 2026 UTC LlamaIndex study: 16 of 16 planned serial requests, zero automatic retries, 22 of 22 offline checks, one unexpected structured-prediction error, mixed tool-argument assertions, and a passing privacy audit. It is not a service-level benchmark.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="production-checklist">Production checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Pin Python, LlamaIndex core, the DeepSeek integration, OpenAI-compatible dependencies, and Pydantic.</li><li>Keep <code>DEEPSEEK_API_KEY</code> in a server-side secret store and test rotation.</li><li>Allowlist model IDs and set the API origin explicitly.</li><li>Set the documented context window deliberately; do not rely on the current wrapper's legacy fallback.</li><li>Select thinking mode explicitly and budget enough output for the chosen mode.</li><li>Configure a separate, approved embedding model and persistent vector store.</li><li>Apply tenant and document authorization before retrieval.</li><li>Evaluate chunking, retrieval, answer grounding, abstention, and attribution independently.</li><li>Validate empty responses, finish reasons, streams, JSON, source nodes, and tool arguments.</li><li>Opt into function-calling metadata only after an exact-version test.</li><li>Use one bounded retry layer, bounded concurrency, timeouts, cancellation, and idempotency controls.</li><li>Redact prompts, documents, output, reasoning, keys, tool payloads, and provider identifiers from telemetry.</li><li>Run offline tests on every change and a small opt-in live suite before a release.</li><li>Recheck official DeepSeek and LlamaIndex sources when upgrading or changing model IDs.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="limitations">Limitations of this guide and its tests</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The smoke-test corpus is synthetic and tiny. It proves neither semantic retrieval quality nor production scalability. The completed live study tested one pinned environment, one account, low output caps, serial requests, and a small set of prompts. It did not measure uptime, comparative model quality, maximum context, sustained throughput, enterprise privacy, or every LlamaIndex component.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A successful provider response does not prove that the answer is correct. Schema validity does not prove factual accuracy. A tool-call object does not authorize execution. A source node does not prove that a displayed claim is supported. A successful alias probe would be a dated observation only, not a recommendation or availability guarantee.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The wrapper and provider can change on different schedules. Re-run the same bounded integration suite after dependency upgrades, model migrations, material prompt changes, retrieval changes, or provider documentation changes. Keep direct DeepSeek SDK access as an architectural option when a required provider feature cannot be represented safely by the installed LlamaIndex adapter.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="faq">Frequently asked questions</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can I use DeepSeek with LlamaIndex?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. LlamaIndex publishes the Python package <code>llama-index-llms-deepseek</code> and the <code>DeepSeek</code> class. It can serve as the generation model in standalone calls, query engines, and RAG workflows.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">What should I install?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Install <code>llama-index-core</code>, <code>llama-index-llms-deepseek</code>, and the separate integration required by your chosen embedding model or vector store. Pin the exact versions you test.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does DeepSeek create embeddings for this RAG example?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. DeepSeek is the generation model in this architecture. The example uses a local mock embedding only to exercise the pipeline. A production system needs a separately approved embedding model selected through retrieval evaluation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I use <code>Settings.llm</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>It is convenient for a notebook or one-model process. It is global singleton state, so explicit injection is clearer for tests, multi-tenant services, and applications with several model configurations.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why set <code>context_window=1_000_000</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek currently documents a 1M context length for both V4 models, while the reviewed LlamaIndex wrapper returns a 64,000 fallback for names absent from its older lookup table. Setting it explicitly aligns framework metadata with the provider documentation. It is not advice to send million-token prompts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does tool calling work with the current V4 model IDs?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents tool support, but the reviewed LlamaIndex wrapper does not mark the V4 IDs as function-calling models by default. With an explicit metadata override, our V4 Flash initial request returned one call with the expected name, although its arguments did not meet the fixture's exact contract. The controlled continuation succeeded. Treat those as dated observations for the pinned stack and keep application-side validation mandatory.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can LlamaIndex guarantee valid JSON?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. Use the provider request field, a prompt that clearly requests JSON and shows the shape, defensive parsing, Pydantic validation, business validation, empty-content handling, and a safe failure path.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I use <code>deepseek-chat</code> or <code>deepseek-reasoner</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the current V4 IDs for new work. The older names appear in current LlamaIndex examples, but their published DeepSeek retirement deadline has passed. Any live response from an alias is only a dated compatibility observation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Where should I check current pricing?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Check DeepSeek's official Models &amp; Pricing page at decision time. This integration guide intentionally avoids static prices.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="official-sources">Official sources</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><a href="https://developers.llamaindex.ai/python/framework/integrations/llm/deepseek/" target="_blank" rel="noopener">LlamaIndex DeepSeek integration guide</a></li><li><a href="https://developers.llamaindex.ai/python/framework-api-reference/llms/deepseek/" target="_blank" rel="noopener">LlamaIndex DeepSeek API reference</a></li><li><a href="https://github.com/run-llama/llama_index/tree/main/llama-index-integrations/llms/llama-index-llms-deepseek" target="_blank" rel="noopener">Official LlamaIndex DeepSeek integration source</a></li><li><a href="https://developers.llamaindex.ai/python/framework-api-reference/llms/openai_like/" target="_blank" rel="noopener">LlamaIndex OpenAILike API reference</a></li><li><a href="https://developers.llamaindex.ai/python/framework/module_guides/supporting_modules/settings/" target="_blank" rel="noopener">LlamaIndex Settings guide</a></li><li><a href="https://developers.llamaindex.ai/python/framework/module_guides/indexing/vector_store_index/" target="_blank" rel="noopener">LlamaIndex VectorStoreIndex guide</a></li><li><a href="https://developers.llamaindex.ai/python/framework/module_guides/querying/structured_outputs/" target="_blank" rel="noopener">LlamaIndex structured outputs guide</a></li><li><a href="https://developers.llamaindex.ai/python/framework/module_guides/observability/instrumentation/" target="_blank" rel="noopener">LlamaIndex instrumentation guide</a></li><li><a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">DeepSeek Models &amp; Pricing</a></li><li><a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">DeepSeek Thinking Mode</a></li><li><a href="https://api-docs.deepseek.com/guides/json_mode/" target="_blank" rel="noopener">DeepSeek JSON Output</a></li><li><a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">DeepSeek Tool Calls</a></li><li><a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">DeepSeek Error Codes</a></li><li><a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">DeepSeek Rate Limit &amp; Isolation</a></li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Chat-Deep.ai is an independent guide and is not affiliated with DeepSeek or LlamaIndex. Verify sensitive, regulated, or high-impact uses against your organization's security, legal, privacy, and compliance requirements before sending documents or acting on generated output.</p>
+<!-- /wp:paragraph -->

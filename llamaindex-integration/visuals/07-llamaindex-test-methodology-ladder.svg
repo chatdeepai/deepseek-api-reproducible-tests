@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+<linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#2dd4c6"/>
+<stop offset="100%" stop-color="#5ea8ff"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="700" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  LLAMAINDEX INTEGRATION GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">LlamaIndex Test Methodology Ladder</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Build evidence in layers and unlock dated publication only after a sanitized privacy audit</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="90" y="278" width="1040" height="118" fill="#0d2633" rx="22" stroke="#284d68" stroke-width="2"/>
+<text x="120" y="324" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">EVIDENCE GATES</text>
+<text x="120" y="367" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="500" text-anchor="start">schema  -&gt;  retrieval  -&gt;  serialization  -&gt;  transport  -&gt;  semantics  -&gt;  privacy</text>
+<rect x="90" y="612" width="310" height="138" fill="#10283f" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="245" cy="658" r="23" fill="#5ea8ff"/>
+<text x="245" y="664" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">1</text>
+<text x="245" y="710" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">SCHEMA + POLICY</text>
+<text x="245" y="743" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">validators + synthetic fixtures</text>
+<rect x="380" y="532" width="310" height="218" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="535" cy="578" r="23" fill="#a78bfa"/>
+<text x="535" y="584" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">2</text>
+<text x="535" y="630" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">LOCAL RAG FIXTURES</text>
+<text x="535" y="663" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">nodes + embeddings</text>
+<text x="535" y="690" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">retrieval controls</text>
+<rect x="670" y="452" width="310" height="298" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="825" cy="498" r="23" fill="#2dd4c6"/>
+<text x="825" y="504" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">3</text>
+<text x="825" y="550" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">WRAPPER CONTRACT</text>
+<text x="825" y="583" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">request serialization</text>
+<text x="825" y="610" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">typed responses</text>
+<rect x="960" y="372" width="310" height="378" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="1115" cy="418" r="23" fill="#43df88"/>
+<text x="1115" y="424" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">4</text>
+<text x="1115" y="470" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">BOUNDED LIVE PLAN</text>
+<text x="1115" y="503" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">serial provider cases</text>
+<text x="1115" y="530" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">explicit request budget</text>
+<rect x="1250" y="292" width="260" height="458" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="1380" cy="338" r="23" fill="#ffbd22"/>
+<text x="1380" y="344" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">5</text>
+<text x="1380" y="390" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">PRIVACY AUDIT</text>
+<text x="1380" y="423" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">allowlisted evidence</text>
+<text x="1380" y="450" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">secret + payload scan</text>
+<rect x="1274" y="532" width="212" height="48" fill="#0b2034" rx="24" stroke="#ff6b81" stroke-width="2"/>
+<text x="1380" y="561" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">DASHBOARD LOCKED</text>
+<text x="1380" y="628" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">Unlock only after</text>
+<text x="1380" y="658" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">sanitized evidence</text>
+<rect x="230" y="772" width="1140" height="40" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="800" y="798" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">No result is publishable until measured values and saved evidence pass the redaction audit.</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual LlamaIndex method diagram  |  no live-result claims  |  results dashboard remains locked</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

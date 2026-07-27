@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+<linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#2dd4c6"/>
+<stop offset="100%" stop-color="#5ea8ff"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="700" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  LLAMAINDEX INTEGRATION GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">DeepSeek LlamaIndex Live Results Dashboard</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Dated observation  |  2026-07-27 UTC  |  bounded Python wrapper study  |  sanitized evidence</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="276" width="280" height="108" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="92" y="307" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">REQUESTS</text>
+<text x="212" y="347" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" text-anchor="middle">16 / 16</text>
+<text x="212" y="371" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">issued / fixed cap</text>
+<rect x="366" y="276" width="280" height="108" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="386" y="307" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">CONCURRENCY</text>
+<text x="506" y="347" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" text-anchor="middle">1</text>
+<text x="506" y="371" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">serial execution</text>
+<rect x="660" y="276" width="280" height="108" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="680" y="307" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">AUTO RETRIES</text>
+<text x="800" y="347" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" text-anchor="middle">0</text>
+<text x="800" y="371" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">disabled for study</text>
+<rect x="954" y="276" width="280" height="108" fill="#10283f" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="974" y="307" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">ELAPSED</text>
+<text x="1094" y="347" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" text-anchor="middle">21.992s</text>
+<text x="1094" y="371" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">study duration only</text>
+<rect x="1248" y="276" width="280" height="108" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="1268" y="307" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">PRIVACY AUDIT</text>
+<text x="1388" y="347" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" text-anchor="middle">PASS</text>
+<text x="1388" y="371" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">zero secret findings</text>
+<rect x="72" y="402" width="1456" height="66" fill="#0d2633" rx="18" stroke="#284d68" stroke-width="2"/>
+<text x="98" y="428" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">PRIMARY: deepseek-v4-flash + deepseek-v4-pro   |   DATED ALIASES: deepseek-chat + deepseek-reasoner</text>
+<text x="98" y="454" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Python 3.12.13  |  core 0.14.23  |  DeepSeek adapter 0.3.0  |  OpenAI-like 0.5.3  |  OpenAI 2.48.0  |  Pydantic 2.13.4</text>
+<rect x="72" y="486" width="710" height="318" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<text x="98" y="524" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="start">EXERCISED PATHS</text>
+<rect x="98" y="542" width="318" height="72" fill="#0b2034" rx="16" stroke="#43df88" stroke-width="2"/>
+<text x="116" y="568" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">CHAT + COMPLETE</text>
+<text x="116" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">sync + async: 4 / 4 success</text>
+<rect x="438" y="542" width="318" height="72" fill="#0b2034" rx="16" stroke="#43df88" stroke-width="2"/>
+<text x="456" y="568" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">SYNC + ASYNC STREAMS</text>
+<text x="456" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">chat + complete: 4 / 4 success</text>
+<rect x="98" y="626" width="318" height="72" fill="#0b2034" rx="16" stroke="#43df88" stroke-width="2"/>
+<text x="116" y="652" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">THINKING PATH</text>
+<text x="116" y="675" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">content and reasoning field present</text>
+<rect x="438" y="626" width="318" height="72" fill="#0b2034" rx="16" stroke="#43df88" stroke-width="2"/>
+<text x="456" y="652" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">LOCAL RAG QUERY ENGINE</text>
+<text x="456" y="675" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">1 selected record  |  1 source node</text>
+<rect x="98" y="710" width="318" height="72" fill="#0b2034" rx="16" stroke="#5ea8ff" stroke-width="2"/>
+<text x="116" y="736" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">INVALID MODEL</text>
+<text x="116" y="759" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">expected 400  |  BadRequestError</text>
+<rect x="438" y="710" width="318" height="72" fill="#0b2034" rx="16" stroke="#a78bfa" stroke-width="2"/>
+<text x="456" y="736" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">OFFLINE CONTRACT SUITE</text>
+<text x="456" y="759" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">22 / 22 passed</text>
+<rect x="818" y="486" width="710" height="318" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<text x="844" y="524" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="start">LIMITS AND CAVEATS OBSERVED</text>
+<rect x="844" y="542" width="658" height="64" fill="#0b2034" rx="16" stroke="#ff6b81" stroke-width="2"/>
+<text x="862" y="568" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">STRUCTURED PREDICT  |  UNEXPECTED ERROR</text>
+<text x="862" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">ValueError; no validated object returned</text>
+<rect x="844" y="616" width="658" height="76" fill="#0b2034" rx="16" stroke="#ffbd22" stroke-width="2"/>
+<text x="862" y="642" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">TOOL PATH  |  MIXED ASSERTIONS</text>
+<text x="862" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">1 call + correct name; exact fixture argument contract not met</text>
+<text x="862" y="684" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">controlled continuation succeeded</text>
+<rect x="844" y="702" width="658" height="76" fill="#0b2034" rx="16" stroke="#ffbd22" stroke-width="2"/>
+<text x="862" y="728" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">DATED ALIAS PROBES  |  ACCEPTED WITH CAVEAT</text>
+<text x="862" y="751" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">chat: final content present</text>
+<text x="862" y="770" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">reasoner: reasoning present; final content empty; finish reason length</text>
+<line x1="844" y1="786" x2="1502" y2="786" stroke="#284d68" stroke-width="1" stroke-linecap="round"/>
+<text x="1173" y="800" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">12 success  |  2 aliases accepted  |  1 expected error  |  1 unexpected error</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Dated LlamaIndex observation  |  sanitized evidence  |  not a service-level benchmark</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

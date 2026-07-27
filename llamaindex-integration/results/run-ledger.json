@@ -1,0 +1,23 @@
+{
+  "cap": 16,
+  "case_ids": [
+    "py-chat-sync-v4-flash",
+    "py-chat-async-v4-flash",
+    "py-complete-sync-v4-flash",
+    "py-complete-async-v4-flash",
+    "py-chat-stream-sync-v4-flash",
+    "py-chat-stream-async-v4-flash",
+    "py-complete-stream-sync-v4-flash",
+    "py-complete-stream-async-v4-flash",
+    "py-chat-v4-pro-thinking",
+    "py-structured-predict-v4-flash",
+    "py-tool-call-initial-v4-flash",
+    "py-tool-call-continuation-v4-flash",
+    "py-local-rag-query-engine-v4-flash",
+    "py-alias-deepseek-chat-probe",
+    "py-alias-deepseek-reasoner-probe",
+    "py-invalid-model-error"
+  ],
+  "issued": 16,
+  "schema_version": 1
+}

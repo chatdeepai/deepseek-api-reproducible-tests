@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "audited_at_utc": null,
+  "summary_status": "not_run",
+  "planned_case_count": 16,
+  "result_count": 0,
+  "provider_request_cap": 16,
+  "provider_requests_issued": 0,
+  "forbidden_result_field_findings": 0,
+  "secret_findings": 0,
+  "non_ascii_characters": 0,
+  "mojibake_matches": 0,
+  "checks": {}
+}

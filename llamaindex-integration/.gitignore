@@ -1,0 +1,13 @@
+.python-deps/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+results/*.json
+!results/.gitkeep
+!results/live-summary.json
+!results/live-summary.template.json
+!results/privacy-audit.json
+!results/privacy-audit.template.json
+!results/run-ledger.json
+!results/run-ledger.template.json

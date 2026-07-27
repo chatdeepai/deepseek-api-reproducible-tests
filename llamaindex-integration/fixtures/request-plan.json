@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "study": "DeepSeek LlamaIndex integration bounded live study",
+  "provider_origin": "https://api.deepseek.com",
+  "provider_request_cap": 16,
+  "planned_provider_requests": 16,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "default_timeout_seconds": 30,
+  "cases": [
+    {
+      "case_id": "py-chat-sync-v4-flash",
+      "runtime": "python",
+      "scenario": "chat",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason", "reasoning_field_present", "reasoning_nonempty"]
+    },
+    {
+      "case_id": "py-chat-async-v4-flash",
+      "runtime": "python",
+      "scenario": "chat",
+      "execution": "async",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason", "reasoning_field_present", "reasoning_nonempty"]
+    },
+    {
+      "case_id": "py-complete-sync-v4-flash",
+      "runtime": "python",
+      "scenario": "complete",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason"]
+    },
+    {
+      "case_id": "py-complete-async-v4-flash",
+      "runtime": "python",
+      "scenario": "complete",
+      "execution": "async",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason"]
+    },
+    {
+      "case_id": "py-chat-stream-sync-v4-flash",
+      "runtime": "python",
+      "scenario": "chat_stream",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["chunk_count", "content_delta_seen", "reasoning_delta_seen", "terminal_finish_reason"]
+    },
+    {
+      "case_id": "py-chat-stream-async-v4-flash",
+      "runtime": "python",
+      "scenario": "chat_stream",
+      "execution": "async",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["chunk_count", "content_delta_seen", "reasoning_delta_seen", "terminal_finish_reason"]
+    },
+    {
+      "case_id": "py-complete-stream-sync-v4-flash",
+      "runtime": "python",
+      "scenario": "complete_stream",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["chunk_count", "content_delta_seen", "terminal_finish_reason"]
+    },
+    {
+      "case_id": "py-complete-stream-async-v4-flash",
+      "runtime": "python",
+      "scenario": "complete_stream",
+      "execution": "async",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["chunk_count", "content_delta_seen", "terminal_finish_reason"]
+    },
+    {
+      "case_id": "py-chat-v4-pro-thinking",
+      "runtime": "python",
+      "scenario": "thinking_chat",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-pro",
+      "thinking": "enabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason", "reasoning_field_present", "reasoning_nonempty"]
+    },
+    {
+      "case_id": "py-structured-predict-v4-flash",
+      "runtime": "python",
+      "scenario": "structured_predict",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["schema_valid", "validated_field_count", "steering_method"]
+    },
+    {
+      "case_id": "py-tool-call-initial-v4-flash",
+      "runtime": "python",
+      "scenario": "tool_initial",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["tool_call_count", "tool_name_valid", "arguments_schema_valid"]
+    },
+    {
+      "case_id": "py-tool-call-continuation-v4-flash",
+      "runtime": "python",
+      "scenario": "tool_continuation",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["matching_identifier_replayed_in_memory", "content_nonempty"]
+    },
+    {
+      "case_id": "py-local-rag-query-engine-v4-flash",
+      "runtime": "python",
+      "scenario": "local_rag_query_engine",
+      "execution": "sync",
+      "requested_model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["retriever_type", "selected_record_count", "source_node_count", "content_nonempty"]
+    },
+    {
+      "case_id": "py-alias-deepseek-chat-probe",
+      "runtime": "python",
+      "scenario": "alias_probe",
+      "execution": "sync",
+      "requested_model": "deepseek-chat",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason", "reasoning_field_present", "reasoning_nonempty"]
+    },
+    {
+      "case_id": "py-alias-deepseek-reasoner-probe",
+      "runtime": "python",
+      "scenario": "alias_probe",
+      "execution": "sync",
+      "requested_model": "deepseek-reasoner",
+      "thinking": "enabled",
+      "expected_evidence_fields": ["response_class", "content_nonempty", "finish_reason", "reasoning_field_present", "reasoning_nonempty"]
+    },
+    {
+      "case_id": "py-invalid-model-error",
+      "runtime": "python",
+      "scenario": "invalid_model",
+      "execution": "sync",
+      "requested_model": "deepseek-does-not-exist",
+      "thinking": "disabled",
+      "expected_evidence_fields": ["exception_class", "error_code", "expected_error_observed"]
+    }
+  ]
+}

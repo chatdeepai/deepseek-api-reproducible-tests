@@ -1,0 +1,20 @@
+[project]
+name = "deepseek-llamaindex-integration-reproducibility-harness"
+version = "1.0.0"
+description = "A bounded LlamaIndex integration harness for DeepSeek."
+requires-python = ">=3.10,<4"
+dependencies = [
+  "llama-index-core==0.14.23",
+  "llama-index-llms-deepseek==0.3.0",
+  "llama-index-llms-openai-like==0.5.3",
+  "llama-index-llms-openai==0.6.26",
+  "openai==2.48.0",
+  "pydantic==2.13.4",
+]
+
+[tool.harness]
+provider_request_cap = 16
+planned_provider_requests = 16
+concurrency = 1
+automatic_retries = 0
+default_timeout_seconds = 30

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "not_run",
+  "study": "DeepSeek LlamaIndex integration bounded live study",
+  "tested_at_utc": null,
+  "provider_origin": "https://api.deepseek.com",
+  "python_version": null,
+  "python_packages": {},
+  "planned_provider_requests": 16,
+  "provider_request_cap": 16,
+  "provider_requests_issued": 0,
+  "concurrency": 1,
+  "automatic_retries": 0,
+  "elapsed_ms": null,
+  "results": []
+}

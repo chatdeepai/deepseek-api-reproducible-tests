@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+<linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#2dd4c6"/>
+<stop offset="100%" stop-color="#5ea8ff"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="700" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  LLAMAINDEX INTEGRATION GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">Structured Output &amp; Tool Validation Pipeline</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Provider capabilities narrow a response shape; application policy decides whether data or actions are safe</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="286" width="1456" height="226" fill="#10283f" rx="24" stroke="#a78bfa" stroke-width="2"/>
+<text x="102" y="333" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="800" text-anchor="start">STRUCTURED DATA PATH</text>
+<rect x="102" y="374" width="236" height="76" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="220" y="419" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">PROVIDER RESPONSE</text>
+<line x1="338" y1="412" x2="368" y2="412" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="376,412 363.9,419.0 363.9,405.0" fill="#2dd4c6"/>
+<rect x="388" y="374" width="236" height="76" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="506" y="419" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">DEFENSIVE PARSE</text>
+<line x1="624" y1="412" x2="654" y2="412" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="662,412 649.9,419.0 649.9,405.0" fill="#2dd4c6"/>
+<rect x="674" y="374" width="236" height="76" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="792" y="419" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">SCHEMA CHECK</text>
+<line x1="910" y1="412" x2="940" y2="412" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="948,412 935.9,419.0 935.9,405.0" fill="#2dd4c6"/>
+<rect x="960" y="374" width="236" height="76" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="1078" y="419" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">BUSINESS RULES</text>
+<line x1="1196" y1="412" x2="1226" y2="412" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1234,412 1221.9,419.0 1221.9,405.0" fill="#2dd4c6"/>
+<rect x="1246" y="374" width="236" height="76" fill="#0b2034" rx="18" stroke="#43df88" stroke-width="2"/>
+<text x="1364" y="419" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">ACCEPT / REJECT</text>
+<rect x="72" y="542" width="1456" height="226" fill="#10283f" rx="24" stroke="#ffbd22" stroke-width="2"/>
+<text x="102" y="589" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="800" text-anchor="start">TOOL ACTION PATH</text>
+<rect x="102" y="630" width="236" height="76" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="220" y="675" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">TOOL SELECTION</text>
+<line x1="338" y1="668" x2="368" y2="668" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="376,668 363.9,675.0 363.9,661.0" fill="#2dd4c6"/>
+<rect x="388" y="630" width="236" height="76" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="506" y="675" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">ARGUMENT PARSE</text>
+<line x1="624" y1="668" x2="654" y2="668" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="662,668 649.9,675.0 649.9,661.0" fill="#2dd4c6"/>
+<rect x="674" y="630" width="236" height="76" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="792" y="675" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">SCHEMA CHECK</text>
+<line x1="910" y1="668" x2="940" y2="668" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="948,668 935.9,675.0 935.9,661.0" fill="#2dd4c6"/>
+<rect x="960" y="630" width="236" height="76" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="1078" y="675" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">AUTHORIZE</text>
+<line x1="1196" y1="668" x2="1226" y2="668" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1234,668 1221.9,675.0 1221.9,661.0" fill="#2dd4c6"/>
+<rect x="1246" y="630" width="236" height="76" fill="#0b2034" rx="18" stroke="#43df88" stroke-width="2"/>
+<text x="1364" y="675" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">APPROVED ADAPTER</text>
+<text x="800" y="801" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">Parser success is not factual correctness. Provider tool support is not application authorization.</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual LlamaIndex method diagram  |  no live-result claims  |  validation boundaries only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

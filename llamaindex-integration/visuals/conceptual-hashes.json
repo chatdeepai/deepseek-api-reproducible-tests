@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_status": "conceptual_visuals_plus_sanitized_dated_dashboard",
+  "images": [
+    {
+      "file": "01-deepseek-llamaindex-integration-architecture.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "9cf401f42ec426243d078008c7dea9173dcb88ce9821aa659fa6864b6e34df7f"
+    },
+    {
+      "file": "02-llamaindex-dependency-configuration-boundary.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "1f0a1471fecd14559067aa598e37381417310bbf21b84a416f5348569f4f42fa"
+    },
+    {
+      "file": "03-llamaindex-chat-complete-stream-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "f2dae2da7d59b81d79a655c84481bd11e4a15fb5e0f8d5ddd4eb7c3c4329d706"
+    },
+    {
+      "file": "04-llamaindex-structured-output-tool-validation.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "b029328bbfe2d75c30779901fdf48ccfe7fae6a5602e9f1aa26e3ca06dbeafcc"
+    },
+    {
+      "file": "05-llamaindex-rag-index-query-pipeline.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "1e76410d859deb12fe6fb86cfed3c3b5d3d55dbda61e8d70987465e7bb540d05"
+    },
+    {
+      "file": "06-llamaindex-error-retry-cancellation-tree.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "a41fb1dcfa2b6f52cffa4a19ccabac53044ced6ca8c205e19ca8a8cb621031ef"
+    },
+    {
+      "file": "07-llamaindex-test-methodology-ladder.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "4f825ec3197eac12ba59db50c973515b4fa4b6dac888c8be73170dd98e4173c0"
+    },
+    {
+      "file": "08-llamaindex-live-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_dated_observation_2026-07-27_utc",
+      "sha256": "db3ca64be4ad5eb9af0c749506f600e49b3bc81b911b3fa1d088a90b157341b9"
+    }
+  ]
+}

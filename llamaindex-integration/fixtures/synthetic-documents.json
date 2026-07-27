@@ -1,0 +1,8 @@
+[
+  {
+    "record_id": "policy-retention",
+    "title": "Synthetic retention policy",
+    "text": "Synthetic records are retained for 30 days and then deleted after review.",
+    "tenant": "tenant-alpha"
+  }
+]

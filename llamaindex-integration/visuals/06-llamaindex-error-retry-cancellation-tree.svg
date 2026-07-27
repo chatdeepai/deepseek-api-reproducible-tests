@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+<linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#2dd4c6"/>
+<stop offset="100%" stop-color="#5ea8ff"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="700" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  LLAMAINDEX INTEGRATION GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">LlamaIndex Error, Retry &amp; Cancellation Tree</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Classify the failing layer before fixing, retrying, rejecting, or propagating cancellation</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="210" y="280" width="1180" height="126" fill="#10283f" rx="24" stroke="#5ea8ff" stroke-width="2"/>
+<text x="800" y="327" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="800" text-anchor="middle">FAILURE CONTEXT</text>
+<rect x="242" y="350" width="196" height="40" fill="#0b2034" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="340" y="375" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">WHICH LAYER?</text>
+<rect x="472" y="350" width="196" height="40" fill="#0b2034" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="570" y="375" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">REQUEST SENT?</text>
+<rect x="702" y="350" width="196" height="40" fill="#0b2034" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="800" y="375" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">SIDE EFFECT?</text>
+<rect x="932" y="350" width="196" height="40" fill="#0b2034" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="1030" y="375" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">IDEMPOTENT?</text>
+<rect x="1162" y="350" width="196" height="40" fill="#0b2034" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="1260" y="375" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">CANCELLED?</text>
+<line x1="800" y1="408" x2="800" y2="458" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="800,466 793.0,453.9 807.0,453.9" fill="#2dd4c6"/>
+<rect x="72" y="476" width="276" height="250" fill="#10283f" rx="22" stroke="#ff6b81" stroke-width="2"/>
+<text x="210" y="525" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">CONFIGURATION</text>
+<rect x="100" y="548" width="220" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="210" y="574" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">FIX &amp; STOP</text>
+<text x="210" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">package</text>
+<text x="210" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">option</text>
+<text x="210" y="692" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">credential</text>
+<rect x="370" y="476" width="276" height="250" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<text x="508" y="525" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">RETRIEVAL</text>
+<rect x="398" y="548" width="220" height="42" fill="#0b2034" rx="21" stroke="#a78bfa" stroke-width="2"/>
+<text x="508" y="574" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">INSPECT LAYER</text>
+<text x="508" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">corpus</text>
+<text x="508" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">index</text>
+<text x="508" y="692" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">metadata</text>
+<rect x="668" y="476" width="276" height="250" fill="#10283f" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<text x="806" y="525" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle">PROVIDER / TRANSPORT</text>
+<rect x="696" y="548" width="220" height="42" fill="#0b2034" rx="21" stroke="#5ea8ff" stroke-width="2"/>
+<text x="806" y="574" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">RETRY IF SAFE</text>
+<text x="806" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">transient only</text>
+<text x="806" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">bounded</text>
+<text x="806" y="692" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">idempotent</text>
+<rect x="966" y="476" width="276" height="250" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<text x="1104" y="525" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">PARSER / TOOL</text>
+<rect x="994" y="548" width="220" height="42" fill="#0b2034" rx="21" stroke="#ffbd22" stroke-width="2"/>
+<text x="1104" y="574" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">REJECT / GATE</text>
+<text x="1104" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">schema</text>
+<text x="1104" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">business rule</text>
+<text x="1104" y="692" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">authorization</text>
+<rect x="1264" y="476" width="276" height="250" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<text x="1402" y="525" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">TIMEOUT / CANCEL</text>
+<rect x="1292" y="548" width="220" height="42" fill="#0b2034" rx="21" stroke="#43df88" stroke-width="2"/>
+<text x="1402" y="574" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">PROPAGATE</text>
+<text x="1402" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">deadline reached</text>
+<text x="1402" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">stop + close</text>
+<text x="1402" y="692" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">never retry</text>
+<rect x="230" y="752" width="1140" height="56" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="800" y="786" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">Safe observability keeps allowlisted states and discards prompts, payloads, credentials, identifiers, and raw errors.</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual LlamaIndex method diagram  |  no live-result claims  |  classification and safe-action guidance</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

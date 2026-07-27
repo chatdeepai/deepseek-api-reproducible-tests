@@ -1,0 +1,894 @@
+<!-- wp:paragraph -->
+<p><strong>Quick answer:</strong> a DeepSeek Node.js TypeScript integration should use the official <code>openai</code> JavaScript client, a server-side DeepSeek API key, <code>baseURL: "https://api.deepseek.com"</code>, and the Chat Completions API. Use <code>deepseek-v4-flash</code> or <code>deepseek-v4-pro</code>, set thinking mode explicitly, and isolate DeepSeek-only fields behind a small TypeScript type extension.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This is an independent implementation guide. Chat-Deep.ai is not DeepSeek, does not operate the DeepSeek API, and is not affiliated with DeepSeek or OpenAI. Use the official DeepSeek Platform for keys, billing, and account support. This page covers the OpenAI-format Chat Completions interface; it does not claim that DeepSeek supports every OpenAI endpoint or the Responses API.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Evidence status:</strong> On July 27, 2026, a preregistered Node.js and TypeScript study issued all 9 planned DeepSeek requests serially, with concurrency set to 1 and automatic retries set to 0. The run started at 18:59:14 UTC and completed at 18:59:23 UTC; its 9.029-second total is study duration, not a latency benchmark. A separate localhost SDK matrix passed 14/14 tests, and the sanitized evidence passed its privacy audit with zero findings.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}}" alt="DeepSeek Node.js and TypeScript production architecture from browser or application input through a server boundary, validation, OpenAI JavaScript client, DeepSeek API, and safe response handling" class="wp-image-{{MEDIA_ID__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}}"/><figcaption class="wp-element-caption">Keep the credential and provider client on the server. Browser requests should cross an authenticated application route where input, resource limits, provider output, and user-visible errors remain under application control.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"what-deepseek-node-sdk-means"} -->
+<h2 class="wp-block-heading" id="what-deepseek-node-sdk-means">What "DeepSeek Node.js SDK" Means</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official quick start shows Node.js developers using the official OpenAI JavaScript and TypeScript package as an HTTP client configured for DeepSeek. The package is the client transport; DeepSeek remains the model provider. That distinction matters because a compatible Chat Completions request does not prove compatibility with every OpenAI API, helper, role, field, or product.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Install the package named <code>openai</code>.</li><li>Use a DeepSeek API key, not an OpenAI API key.</li><li>Set the Node option <code>baseURL</code>, not Python's <code>base_url</code>.</li><li>Set the Node option <code>apiKey</code>, not Python's <code>api_key</code>.</li><li>Call <code>client.chat.completions.create()</code>.</li><li>Use DeepSeek's documented <code>system</code>, <code>user</code>, <code>assistant</code>, and <code>tool</code> roles.</li><li>Use <code>max_tokens</code> for the DeepSeek Chat Completions request.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>If you are migrating both Python and JavaScript code, use the broader <a href="https://chat-deep.ai/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a>. This page stays focused on Node.js and TypeScript behavior.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"install-and-configure"} -->
+<h2 class="wp-block-heading" id="install-and-configure">Install and Configure the Client</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The OpenAI Node repository currently documents Node.js 20 LTS or later and TypeScript 4.9 or later. The bounded study for this page pins an exact package set before running so a future package change cannot silently rewrite the result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>npm install openai
+npm install -D typescript @types/node tsx</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Keep the key outside source code. A local environment file can be convenient for development, but it must be excluded from Git and must never be exposed through a public browser bundle, a client-visible framework variable, analytics, or an error response. See the dedicated <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a> for rotation and leak-response guidance.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+function requireEnv(name: "DEEPSEEK_API_KEY"): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+}
+
+export const deepseek = new OpenAI({
+  apiKey: requireEnv("DEEPSEEK_API_KEY"),
+  baseURL: "https://api.deepseek.com",
+  timeout: 30_000,
+  maxRetries: 2,
+});</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The 30-second timeout and two retries above are an example application policy, not a universal recommendation. The original test harness uses <code>maxRetries: 0</code> so its provider request ledger remains exact. In production, one layer should own a bounded retry policy, and only retry work that is safe to repeat.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"typescript-provider-fields"} -->
+<h2 class="wp-block-heading" id="typescript-provider-fields">Type DeepSeek-Specific Request and Response Fields</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The current DeepSeek Node example sends <code>thinking</code> as a top-level request field. The OpenAI Node client is typed for OpenAI's documented surface, but its official README states that unknown top-level request parameters are passed through at runtime and unknown response properties are not stripped. The clean TypeScript pattern is therefore a narrow provider extension.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+type DeepSeekFields = {
+  thinking?: {
+    type: "enabled" | "disabled";
+  };
+  user_id?: string;
+};
+
+export type DeepSeekNonStreamingParams =
+  OpenAI.ChatCompletionCreateParamsNonStreaming &amp; DeepSeekFields;
+
+export type DeepSeekStreamingParams =
+  OpenAI.ChatCompletionCreateParamsStreaming &amp; DeepSeekFields;
+
+export type DeepSeekMessage = OpenAI.ChatCompletionMessage &amp; {
+  reasoning_content?: string | null;
+};
+
+export type DeepSeekUsage =
+  NonNullable&lt;OpenAI.ChatCompletion["usage"]&gt; &amp; {
+    prompt_cache_hit_tokens?: number;
+    prompt_cache_miss_tokens?: number;
+    completion_tokens_details?: {
+      reasoning_tokens?: number;
+    };
+  };</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not copy Python's <code>extra_body</code> syntax into this Node request. Do not place a partial request under the second argument's <code>body</code> option either; the resource source builds the POST body from the first argument, and an options-level body can replace it. Avoid broad <code>any</code> or <code>as never</code> casts because they hide mistakes in standard message and tool fields.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Compile and serialization observation:</strong> Strict TypeScript typechecking passed, and the independently rerun offline suite passed 14/14 tests. Against localhost fixtures, the full OpenAI Node SDK serialized DeepSeek's <code>thinking</code> object at the request top level and correctly exposed the final usage-only streaming chunk with an empty <code>choices</code> array.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}}" alt="Node.js TypeScript DeepSeek client configuration boundary separating packages, compile-time types, runtime environment values, provider-specific request fields, and application ownership" class="wp-image-{{MEDIA_ID__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}}"/><figcaption class="wp-element-caption">Pin the runtime and client, load the credential only on the server, set the provider origin and resource policy explicitly, and isolate DeepSeek-specific fields behind a small typed boundary that is compiled and tested.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"models-and-aliases"} -->
+<h2 class="wp-block-heading" id="models-and-aliases">Choose a Current DeepSeek V4 Model</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>API model ID</th><th>Practical starting point</th><th>Mode selection</th></tr></thead><tbody><tr><td><code>deepseek-v4-flash</code></td><td>Routine chat, extraction, classification, JSON, summaries, and higher-volume application work</td><td>Use explicit non-thinking mode for simple work; enable thinking only when needed</td></tr><tr><td><code>deepseek-v4-pro</code></td><td>Harder reasoning, coding, long-context analysis, planning, and agent workflows</td><td>Use thinking mode with <code>high</code> or <code>max</code> effort when the task justifies it</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek currently documents both models with thinking and non-thinking modes, a 1M context length, a maximum output of 384K, JSON Output, and Tool Calls. Thinking is documented as the default, so every example on this page selects the mode explicitly. Check the <a href="https://api-docs.deepseek.com/quick_start/pricing/">official Models and Pricing page</a> for current rates instead of copying a static price table.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek announced that <code>deepseek-chat</code> and <code>deepseek-reasoner</code> would become inaccessible after July 24, 2026 at 15:59 UTC. That cutoff has passed. New code should use a current V4 ID and an explicit thinking setting. See the <a href="https://chat-deep.ai/docs/migrate-deepseek-chat-reasoner-to-v4/">migration guide</a> for site-wide replacement guidance.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Dated alias probes:</strong> On July 27, 2026, one bounded request to each legacy alias returned HTTP 200. Both <code>deepseek-chat</code> and <code>deepseek-reasoner</code> returned the model ID <code>deepseek-v4-flash</code>, and both stopped with <code>finish_reason: "length"</code>. This records behavior at the test time only; it does not establish permanent support or future availability.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"minimal-request"} -->
+<h2 class="wp-block-heading" id="minimal-request">Minimal Compile-Safe TypeScript Request</h2>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import { deepseek } from "./client.js";
+import type { DeepSeekNonStreamingParams } from "./deepseek-types.js";
+
+const request: DeepSeekNonStreamingParams = {
+  model: "deepseek-v4-flash",
+  messages: [
+    {
+      role: "system",
+      content: "Answer concisely. Return only the final answer.",
+    },
+    {
+      role: "user",
+      content: "Give one practical TypeScript API reliability rule.",
+    },
+  ],
+  thinking: { type: "disabled" },
+  max_tokens: 128,
+  stream: false,
+};
+
+const completion = await deepseek.chat.completions.create(request);
+const choice = completion.choices[0];
+
+if (!choice) {
+  throw new Error("DeepSeek returned no choice.");
+}
+if (choice.finish_reason !== "stop") {
+  throw new Error(`Incomplete completion: ${String(choice.finish_reason)}`);
+}
+if (!choice.message.content) {
+  throw new Error("DeepSeek returned empty final content.");
+}
+
+const finalAnswer = choice.message.content;
+// Pass finalAnswer to the application layer; do not write it to telemetry.</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Production code should decide which finish states are acceptable. DeepSeek documents <code>stop</code>, <code>length</code>, <code>content_filter</code>, <code>tool_calls</code>, and the provider-specific <code>insufficient_system_resource</code>. Do not treat partial output as complete merely because the HTTP request succeeded.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Ordinary chat observation:</strong> The bounded <code>deepseek-v4-flash</code> case returned HTTP 200 with one choice, nonempty final content, and <code>finish_reason: "stop"</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"thinking-mode"} -->
+<h2 class="wp-block-heading" id="thinking-mode">Use Thinking Mode Without Mixing Reasoning Into Final Content</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek exposes the final answer in <code>content</code> and thinking metadata in the separate <code>reasoning_content</code> field. Most applications should display and persist the final answer, not hidden reasoning. DeepSeek documents <code>high</code> and <code>max</code> reasoning effort. In thinking mode, <code>temperature</code>, <code>top_p</code>, <code>presence_penalty</code>, and <code>frequency_penalty</code> have no effect.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import type {
+  DeepSeekMessage,
+  DeepSeekNonStreamingParams,
+} from "./deepseek-types.js";
+
+const request: DeepSeekNonStreamingParams = {
+  model: "deepseek-v4-pro",
+  messages: [
+    {
+      role: "user",
+      content: "Design a failure-safe queue for an idempotent API job.",
+    },
+  ],
+  thinking: { type: "enabled" },
+  reasoning_effort: "high",
+  max_tokens: 512,
+  stream: false,
+};
+
+const completion = await deepseek.chat.completions.create(request);
+const choice = completion.choices[0];
+const message = choice?.message as
+  | DeepSeekMessage
+  | undefined;
+
+if (!choice || choice.finish_reason !== "stop" || !message?.content) {
+  throw new Error("Missing or incomplete final answer.");
+}
+
+const reasoningWasReturned =
+  typeof message.reasoning_content === "string" &amp;&amp;
+  message.reasoning_content.length &gt; 0;
+
+console.log({
+  finalAnswerPresent: true,
+  reasoningWasReturned,
+  finishReason: choice.finish_reason,
+});</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The boolean above is suitable for a sanitized test result. The reasoning text itself is not. For ordinary multi-turn chat, DeepSeek says previous reasoning does not need to be replayed. An active thinking-mode tool loop is different and is covered below. For the complete behavior, see the <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Thinking field observation:</strong> The bounded <code>deepseek-v4-pro</code> thinking request returned HTTP 200. The <code>reasoning_content</code> field was present and nonempty, but the response ended with <code>finish_reason: "length"</code> and empty final <code>content</code>. Under this guide's terminal checks, that is an incomplete answer, not a successful final result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"streaming"} -->
+<h2 class="wp-block-heading" id="streaming">Stream Content, Capture Usage, and Support Cancellation</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Set <code>stream: true</code> and consume the SDK's async iterable with <code>for await...of</code>. When <code>stream_options.include_usage</code> is enabled, DeepSeek documents an additional usage chunk before <code>[DONE]</code>. Its <code>choices</code> array is empty, so a consumer must not assume every chunk has <code>choices[0]</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import type {
+  DeepSeekStreamingParams,
+  DeepSeekUsage,
+} from "./deepseek-types.js";
+
+type DeepSeekDelta = {
+  content?: string | null;
+  reasoning_content?: string | null;
+};
+
+const controller = new AbortController();
+
+const request: DeepSeekStreamingParams = {
+  model: "deepseek-v4-pro",
+  messages: [
+    { role: "user", content: "Explain one safe retry boundary." },
+  ],
+  thinking: { type: "enabled" },
+  reasoning_effort: "high",
+  max_tokens: 256,
+  stream: true,
+  stream_options: { include_usage: true },
+};
+
+const stream = await deepseek.chat.completions.create(request, {
+  signal: controller.signal,
+  timeout: 30_000,
+  maxRetries: 0,
+});
+
+let finalText = "";
+let reasoningObserved = false;
+let usage: DeepSeekUsage | undefined;
+let terminalFinish: string | undefined;
+
+for await (const chunk of stream) {
+  if (chunk.usage) {
+    usage = chunk.usage as DeepSeekUsage;
+  }
+
+  const choice = chunk.choices[0];
+  if (!choice) continue;
+
+  const delta = choice.delta as DeepSeekDelta;
+  if (delta.reasoning_content) reasoningObserved = true;
+  if (delta.content) finalText += delta.content;
+  if (choice.finish_reason) terminalFinish = choice.finish_reason;
+}
+
+if (terminalFinish !== "stop" || !finalText) {
+  throw new Error("Rejecting an incomplete stream.");
+}
+
+console.log({
+  finalTextPresent: finalText.length &gt; 0,
+  reasoningObserved,
+  usageObserved: Boolean(usage),
+  terminalFinish,
+});</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Pass an <code>AbortSignal</code> in the second request-options argument. A UI or route can call <code>controller.abort()</code> when the user cancels or the caller disconnects. Do not save partial JSON, partial tool arguments, or an incomplete final answer as a successful result. Consuming the async iterable sequentially also gives the application a natural place to honor downstream backpressure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Streaming observation:</strong> The <code>deepseek-v4-flash</code> stream returned HTTP 200 across seven events. It included a content delta, a separate usage chunk, and a terminal <code>finish_reason: "stop"</code>. No reasoning delta was observed in this non-thinking case.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Local cancellation control:</strong> In the offline localhost matrix, <code>AbortController</code> cancelled a controlled slow request after one attempt with no retry. This was an SDK behavior check and did not contact DeepSeek.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}}" alt="DeepSeek Node.js streaming lifecycle using an async iterable with content and reasoning routing, backpressure, terminal validation, AbortSignal cancellation, usage handling, and cleanup" class="wp-image-{{MEDIA_ID__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}}"/><figcaption class="wp-element-caption">Consume the async iterable at the application's pace, route final content separately from reasoning metadata, require a valid terminal state, propagate aborts, and discard partial state when a stream does not finish cleanly.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"json-output"} -->
+<h2 class="wp-block-heading" id="json-output">Return JSON and Validate It at Runtime</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>TypeScript types disappear at runtime. A cast cannot prove that model-produced JSON has the required keys, enum values, ranges, or business meaning. DeepSeek's JSON Output contract requires <code>response_format: { type: "json_object" }</code>, the word "json" in the prompt, a clear target shape, and a reasonable output limit. The official guide also warns that content can occasionally be empty.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>type TicketRoute = {
+  queue: "billing" | "technical" | "account";
+  urgency: "low" | "high";
+};
+
+function isTicketRoute(value: unknown): value is TicketRoute {
+  if (!value || typeof value !== "object") return false;
+  const item = value as Record&lt;string, unknown&gt;;
+
+  return (
+    ["billing", "technical", "account"].includes(String(item.queue)) &amp;&amp;
+    ["low", "high"].includes(String(item.urgency)) &amp;&amp;
+    Object.keys(item).every((key) =&gt;
+      ["queue", "urgency"].includes(key),
+    )
+  );
+}
+
+const request: DeepSeekNonStreamingParams = {
+  model: "deepseek-v4-flash",
+  messages: [
+    {
+      role: "system",
+      content:
+        'Return only valid json matching {"queue":"billing|technical|account","urgency":"low|high"}.',
+    },
+    {
+      role: "user",
+      content: "Route this synthetic ticket: password reset failed.",
+    },
+  ],
+  response_format: { type: "json_object" },
+  thinking: { type: "disabled" },
+  max_tokens: 128,
+  stream: false,
+};
+
+const completion = await deepseek.chat.completions.create(request);
+const choice = completion.choices[0];
+
+if (!choice || choice.finish_reason !== "stop") {
+  throw new Error("JSON was missing or incomplete.");
+}
+
+const raw = choice.message.content;
+if (!raw) throw new Error("JSON Output was empty.");
+
+const parsed: unknown = JSON.parse(raw);
+if (!isTicketRoute(parsed)) {
+  throw new Error("JSON did not match the runtime contract.");
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>After schema validation, apply authorization and business rules before taking action. Valid JSON is not automatically accurate or safe. See the full <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a> for prompt controls and edge cases.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>JSON Output observation:</strong> The bounded <code>deepseek-v4-flash</code> request returned HTTP 200 with nonempty content. The content parsed as valid JSON, passed the preregistered runtime schema, and contained the two validated fields.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}}" alt="TypeScript JSON runtime validation pipeline from an unknown provider string through empty and finish checks, JSON parsing, schema validation, business rules, and a typed domain object" class="wp-image-{{MEDIA_ID__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}}"/><figcaption class="wp-element-caption">TypeScript annotations disappear at runtime. Treat provider content as unknown, reject empty or truncated output, parse defensively, validate the schema and business rules, and accept only a trusted domain object.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"tool-calls"} -->
+<h2 class="wp-block-heading" id="tool-calls">Run Tool Calls Through an Application Safety Gate</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek can request a function call, but it does not execute your function. Your Node.js application owns parsing, validation, authorization, side effects, the tool result, and continuation. A schema constrains shape; it does not grant permission.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>type LookupArgs = { key: string };
+
+function parseLookupArgs(raw: string): LookupArgs {
+  const parsed: unknown = JSON.parse(raw);
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("Tool arguments must be an object.");
+  }
+
+  const value = parsed as Record&lt;string, unknown&gt;;
+  if (
+    typeof value.key !== "string" ||
+    !/^[A-Z0-9_-]{1,32}$/.test(value.key) ||
+    Object.keys(value).some((key) =&gt; key !== "key")
+  ) {
+    throw new Error("Tool arguments failed validation.");
+  }
+
+  return { key: value.key };
+}
+
+const tools: OpenAI.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "lookup_synthetic_record",
+      description: "Return one fixed synthetic record.",
+      parameters: {
+        type: "object",
+        properties: {
+          key: { type: "string" },
+        },
+        required: ["key"],
+        additionalProperties: false,
+      },
+    },
+  },
+];
+
+const messages: OpenAI.ChatCompletionMessageParam[] = [
+  {
+    role: "user",
+    content: "Use the approved tool for synthetic key DEMO_1.",
+  },
+];
+
+const firstRequest: DeepSeekNonStreamingParams = {
+  model: "deepseek-v4-pro",
+  messages,
+  tools,
+  thinking: { type: "enabled" },
+  reasoning_effort: "high",
+  max_tokens: 256,
+  stream: false,
+};
+
+const first = await deepseek.chat.completions.create(firstRequest);
+const firstChoice = first.choices[0];
+const assistant = firstChoice?.message as
+  | DeepSeekMessage
+  | undefined;
+const calls = assistant?.tool_calls;
+
+if (
+  !assistant ||
+  firstChoice?.finish_reason !== "tool_calls" ||
+  calls?.length !== 1
+) {
+  throw new Error("Expected one function tool call.");
+}
+
+const call = calls[0];
+if (call.type !== "function") {
+  throw new Error("Rejected a non-function tool call.");
+}
+if (call.function.name !== "lookup_synthetic_record") {
+  throw new Error("Rejected an unapproved tool.");
+}
+
+const args = parseLookupArgs(call.function.arguments);
+const safeResult = { key: args.key, value: "synthetic" };
+
+type ReplayMessage =
+  OpenAI.ChatCompletionAssistantMessageParam &amp; {
+    reasoning_content?: string | null;
+  };
+
+const replay: ReplayMessage = {
+  role: "assistant",
+  content: assistant.content,
+  tool_calls: assistant.tool_calls,
+  reasoning_content: assistant.reasoning_content ?? null,
+};
+
+messages.push(replay);
+messages.push({
+  role: "tool",
+  tool_call_id: call.id,
+  content: JSON.stringify(safeResult),
+});
+
+const finalRequest: DeepSeekNonStreamingParams = {
+  model: "deepseek-v4-pro",
+  messages,
+  tools,
+  thinking: { type: "enabled" },
+  reasoning_effort: "high",
+  max_tokens: 128,
+  stream: false,
+};
+
+const final = await deepseek.chat.completions.create(finalRequest);
+const finalChoice = final.choices[0];
+
+if (
+  !finalChoice ||
+  finalChoice.finish_reason !== "stop" ||
+  !finalChoice.message.content
+) {
+  throw new Error("Tool continuation was incomplete.");
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>In a thinking-mode tool loop, replay the assistant message with its <code>reasoning_content</code> and <code>tool_calls</code>, then add the matching <code>tool_call_id</code>. Never expose or log those raw values. For multiple calls, validate and answer each call separately. DeepSeek Strict Tool Calls are beta and use the beta base URL; keep them isolated from the normal client until separately tested. See the dedicated <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">Tool Calls guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Tool round-trip observation:</strong> The initial <code>deepseek-v4-flash</code> request returned HTTP 200 with <code>finish_reason: "tool_calls"</code> and exactly one call. Its tool name was allowlisted and its arguments passed the local schema before execution. The conditional continuation then returned HTTP 200 with nonempty content, <code>finish_reason: "stop"</code>, and the sanitized replay alias <code>T1</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}}" alt="Node.js DeepSeek thinking-mode tool-call safety loop from tool schema and assistant protocol fields through argument validation, authorization, bounded execution, tool-message replay, and continuation" class="wp-image-{{MEDIA_ID__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}}"/><figcaption class="wp-element-caption">The model requests a tool; the application parses and validates arguments, authorizes the operation, executes an approved adapter, and replays the required assistant and tool protocol fields before a controlled continuation.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"timeouts-retries-errors"} -->
+<h2 class="wp-block-heading" id="timeouts-retries-errors">Handle Aborts, Timeouts, Retries, and Provider Errors Separately</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The current OpenAI Node client documents a ten-minute default timeout and two automatic retries. It retries connection failures, HTTP 408, 409, 429, and status 500 or higher. A timeout can therefore be retried unless you disable or override retries. The per-request options object accepts <code>signal</code>, <code>timeout</code>, and <code>maxRetries</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Failure</th><th>SDK or provider signal</th><th>Application response</th></tr></thead><tbody><tr><td>User cancellation</td><td><code>OpenAI.APIUserAbortError</code></td><td>Stop and propagate cancellation; do not retry</td></tr><tr><td>Client timeout after attempts</td><td><code>OpenAI.APIConnectionTimeoutError</code></td><td>Record a timeout category and retry only if work is safe and policy allows</td></tr><tr><td>Network failure</td><td><code>OpenAI.APIConnectionError</code></td><td>Use one bounded retry owner for idempotent work</td></tr><tr><td>HTTP failure</td><td><code>OpenAI.APIError</code> or subclass with <code>status</code></td><td>Classify the status before retrying or asking the user to fix input or account state</td></tr><tr><td>Parser or schema failure</td><td>Local validation error</td><td>Reject output or use a bounded repair policy; do not treat it as a network retry</td></tr><tr><td>Tool-side uncertainty</td><td>Application adapter error</td><td>Stop and reconcile possible side effects before another attempt</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents 400 for invalid format, 401 for authentication, 402 for insufficient balance, 422 for invalid parameters, 429 for rate limits, 500 for server errors, and 503 for overload. The OpenAI Node client has named classes for several common statuses; a DeepSeek 402 may remain a generic <code>APIError</code>, so always inspect <code>error.status</code> as well as the class.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>type SafeErrorLog = {
+  category: string;
+  status: number | null;
+  name: string;
+};
+
+function classifyError(error: unknown): SafeErrorLog {
+  if (error instanceof OpenAI.APIUserAbortError) {
+    return {
+      category: "user_abort",
+      status: null,
+      name: error.name,
+    };
+  }
+
+  if (error instanceof OpenAI.APIConnectionTimeoutError) {
+    return {
+      category: "timeout",
+      status: null,
+      name: error.name,
+    };
+  }
+
+  if (error instanceof OpenAI.APIConnectionError) {
+    return {
+      category: "connection",
+      status: null,
+      name: error.name,
+    };
+  }
+
+  if (error instanceof OpenAI.APIError) {
+    return {
+      category: "provider_status",
+      status: error.status ?? null,
+      name: error.name,
+    };
+  }
+
+  return {
+    category: "unexpected_local_error",
+    status: null,
+    name: "UnknownError",
+  };
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Log only allowlisted metadata. Do not log the key, Authorization header, raw prompts, final answers, reasoning, tool arguments, tool results, response headers, account data, or raw provider messages. For deeper diagnosis, use the <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek Error Codes guide</a> and the <a href="https://chat-deep.ai/docs/api-rate-limits/">rate-limits guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Local retry control:</strong> With <code>maxRetries: 0</code>, a controlled HTTP 500 fixture produced one total attempt. In a separate test-only client with <code>maxRetries: 1</code>, the HTTP 429 fixture received two total attempts, while the HTTP 400 fixture received one. These were localhost classification tests, not DeepSeek availability measurements.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Local timeout control:</strong> With <code>maxRetries: 0</code>, a controlled timeout produced one localhost request attempt. This verifies the configured SDK boundary only; it is not a provider latency result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Invalid-model provider control:</strong> The synthetic impossible model ID produced the expected HTTP 400 provider response. The SDK mapped it to <code>BadRequestError</code> with code <code>invalid_request_error</code>; no raw provider message or response body is published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{MEDIA_ID__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}}" alt="Node.js DeepSeek error retry timeout and cancellation decision tree separating compile and configuration defects, transport and provider failures, parser and tool failures, timeouts, user aborts, retries, and safe observability" class="wp-image-{{MEDIA_ID__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}}"/><figcaption class="wp-element-caption">Classify the failing layer before acting. Fix deterministic defects, retry only bounded transient and idempotent work through one owner, propagate user aborts, and record only allowlisted diagnostic metadata.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"usage-and-cache"} -->
+<h2 class="wp-block-heading" id="usage-and-cache">Read Token Usage and Context Cache Fields</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the usage object returned by DeepSeek rather than estimating tokens from characters. DeepSeek's response schema includes prompt, completion, and total tokens, plus cache-hit, cache-miss, and reasoning-token details where applicable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>const usage = completion.usage as DeepSeekUsage | undefined;
+
+const safeUsageSummary = usage
+  ? {
+      promptTokens: usage.prompt_tokens,
+      completionTokens: usage.completion_tokens,
+      totalTokens: usage.total_tokens,
+      cacheHitTokens: usage.prompt_cache_hit_tokens ?? 0,
+      cacheMissTokens: usage.prompt_cache_miss_tokens ?? 0,
+      reasoningTokens:
+        usage.completion_tokens_details?.reasoning_tokens ?? 0,
+    }
+  : null;</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek context caching is enabled by default. It is prefix based and best effort, so a repeated request does not guarantee a hit. Report returned hit and miss fields; do not infer cache behavior from latency alone. Read the <a href="https://chat-deep.ai/docs/deepseek-context-caching/">context caching guide</a> for prefix design and tests. For current cost planning, use the site's <a href="https://chat-deep.ai/pricing/">pricing page</a> and recheck the official rates.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"server-route"} -->
+<h2 class="wp-block-heading" id="server-route">Use a Server Route, Not Browser-Side Credentials</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A Next.js, Express, Fastify, serverless, or other Node application should expose its own authenticated route. Validate the incoming JSON and length, call DeepSeek on the server, return only the application result, and convert provider failures into safe user-facing errors.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>export async function POST(request: Request): Promise&lt;Response&gt; {
+  let body: unknown;
+
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  if (
+    !body ||
+    typeof body !== "object" ||
+    typeof (body as { message?: unknown }).message !== "string"
+  ) {
+    return Response.json({ error: "A message is required." }, { status: 400 });
+  }
+
+  const message = (body as { message: string }).message.trim();
+  if (!message || message.length &gt; 4_000) {
+    return Response.json({ error: "Message length is invalid." }, { status: 400 });
+  }
+
+  try {
+    const params: DeepSeekNonStreamingParams = {
+      model: "deepseek-v4-flash",
+      messages: [{ role: "user", content: message }],
+      thinking: { type: "disabled" },
+      max_tokens: 512,
+      stream: false,
+    };
+
+    const result = await deepseek.chat.completions.create(params, {
+      signal: request.signal,
+      timeout: 30_000,
+      maxRetries: 0,
+    });
+
+    const choice = result.choices[0];
+    const answer = choice?.message.content;
+    if (!choice || choice.finish_reason !== "stop" || !answer) {
+      throw new Error("Empty or incomplete answer.");
+    }
+
+    return Response.json({ answer });
+  } catch (error) {
+    console.warn("DeepSeek request failed", classifyError(error));
+    return Response.json(
+      { error: "The assistant is temporarily unavailable." },
+      { status: 503 },
+    );
+  }
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>A real route also needs user authentication, abuse controls, tenant isolation, a privacy policy, input and output limits, tool permissions, and spend monitoring. Do not send raw provider usage, exception objects, or debugging headers to the browser.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"original-tests"} -->
+<h2 class="wp-block-heading" id="original-tests">Original DeepSeek Node.js TypeScript Test Methodology</h2>
+<!-- /wp:heading -->
+
+<!-- wp:image {"id":{{MEDIA_ID__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}}" alt="Node.js TypeScript DeepSeek test methodology ladder from TypeScript compile checks through local HTTP fixtures, bounded live cases, and privacy audit" class="wp-image-{{MEDIA_ID__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}}"/><figcaption class="wp-element-caption">Build confidence in layers: compile the exact TypeScript surface, inspect serialized requests against local fixtures, run only the frozen serial provider plan, and audit the sanitized evidence before publishing a result.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>The study was preregistered before provider requests. It pins the OpenAI Node client, TypeScript compiler, Node declarations, API origin, request order, generation caps, timeout, concurrency, and retry count. Provider calls run serially. The only tool is synthetic, local, allowlisted, and side-effect free. A continuation is sent only after every tool-call safety gate passes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Position</th><th>Case</th><th>Planned model</th><th>Sanitized result</th></tr></thead><tbody><tr><td>1</td><td>Ordinary chat</td><td><code>deepseek-v4-flash</code></td><td>HTTP 200; one choice; nonempty content; <code>stop</code></td></tr><tr><td>2</td><td>Streaming</td><td><code>deepseek-v4-flash</code></td><td>HTTP 200; seven events; content delta and usage chunk observed; <code>stop</code></td></tr><tr><td>3</td><td>JSON Output</td><td><code>deepseek-v4-flash</code></td><td>HTTP 200; nonempty content; valid JSON; two-field schema passed</td></tr><tr><td>4</td><td>Tool call, initial</td><td><code>deepseek-v4-flash</code></td><td>HTTP 200; <code>tool_calls</code>; one allowlisted call; argument schema passed</td></tr><tr><td>5</td><td>Conditional tool continuation</td><td><code>deepseek-v4-flash</code></td><td>HTTP 200; nonempty content; <code>stop</code>; replay alias <code>T1</code></td></tr><tr><td>6</td><td>Thinking metadata</td><td><code>deepseek-v4-pro</code></td><td>HTTP 200; reasoning present and nonempty; empty final content; <code>length</code></td></tr><tr><td>7</td><td>Legacy alias probe</td><td><code>deepseek-chat</code></td><td>HTTP 200; returned <code>deepseek-v4-flash</code>; <code>length</code>; dated observation</td></tr><tr><td>8</td><td>Legacy alias probe</td><td><code>deepseek-reasoner</code></td><td>HTTP 200; returned <code>deepseek-v4-flash</code>; <code>length</code>; dated observation</td></tr><tr><td>9</td><td>Invalid-model control</td><td>Synthetic impossible ID</td><td>Expected HTTP 400; <code>BadRequestError</code>; <code>invalid_request_error</code></td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p><strong>Environment and offline test summary:</strong> Node.js <code>v24.14.0</code>, <code>openai</code> <code>6.49.0</code>, and TypeScript <code>7.0.2</code> were recorded. Strict typechecking passed, and the independently rerun offline suite passed 14/14 tests. The full SDK localhost matrix covered top-level thinking serialization, the usage-only stream chunk, retry classification, timeout behavior, cancellation, and the frozen request order without provider traffic.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Live request accounting:</strong> The run started on July 27, 2026 at 18:59:14 UTC and completed at 18:59:23 UTC. It issued 9/9 planned requests, skipped none, stayed within the nine-request cap, used concurrency 1, and enabled zero automatic retries. The 9.029-second total is the duration of this small serial study, not a latency, throughput, or service-level benchmark.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The published result artifacts contain only versions, public model names, case aliases, status classes, exception class names, counts, booleans, finish states, and validation outcomes. They exclude credentials, account data, prompts, generated answers, hidden reasoning, raw JSON, tool data, provider IDs, headers, and raw error text. The public harness source necessarily includes transparent synthetic test prompts and fixtures, never private or user-supplied prompts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Reproducibility files:</strong> the sanitized harness, frozen plan, localhost tests, result schema, and privacy checks are available in the <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/nodejs-typescript">public GitHub evidence repository</a>. It contains only synthetic test inputs and must contain no credential, account data, private or user-supplied prompt, provider output, hidden reasoning, provider ID, or local path.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"results-limitations"} -->
+<h2 class="wp-block-heading" id="results-limitations">How to Read the Results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The dated run verified the planned ordinary chat, streaming, JSON validation, tool-call, continuation, error-control, and response-field paths in one bounded environment. The thinking request demonstrated why HTTP 200 alone is insufficient: reasoning was present, but the generation ended at <code>length</code> with no final content. Both legacy aliases happened to resolve to <code>deepseek-v4-flash</code> during this run, but that observation is not a support promise. The sanitized evidence audit passed with zero forbidden-field or secret findings. These results do not measure answer quality, comparative performance, throughput, uptime, or untested OpenAI endpoints.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>A parsed HTTP success is not automatically a complete answer.</li><li>Valid JSON is not automatically schema-valid or business-valid.</li><li>A tool request is not automatically authorized or safe to execute.</li><li>A typed SDK error proves client mapping, not the permanent behavior of the provider.</li><li>An alias result is a dated observation, not a future compatibility promise.</li><li>This is one bounded environment, not a latency, throughput, quality, or service-level benchmark.</li><li>Untested OpenAI endpoints remain untested.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":{{MEDIA_ID__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}}" alt="DeepSeek Node.js TypeScript live results dashboard covering pinned runtimes, compile checks, chat, thinking, streaming, JSON, tools, errors, controls, and privacy audit" class="wp-image-{{MEDIA_ID__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}}"/><figcaption class="wp-element-caption">Sanitized results from the July 27, 2026 Node.js and TypeScript study. Provider observations, localhost SDK checks, and the privacy audit are reported separately; the 9.029-second serial run duration is not a latency or service-level benchmark.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"common-mistakes"} -->
+<h2 class="wp-block-heading" id="common-mistakes">Common DeepSeek Node.js TypeScript Mistakes</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Using <code>base_url</code> or <code>api_key</code> in JavaScript.</li><li>Leaving the client at the default OpenAI origin.</li><li>Exposing a DeepSeek key in browser code.</li><li>Copying Python <code>extra_body</code> into a Node request.</li><li>Using old model aliases in new code.</li><li>Omitting an explicit thinking setting even though thinking defaults to enabled.</li><li>Using <code>developer</code> or <code>max_completion_tokens</code> from an OpenAI-only example.</li><li>Assuming every stream chunk has a choice.</li><li>Mixing <code>reasoning_content</code> into the final answer.</li><li>Parsing JSON without runtime validation.</li><li>Executing a tool before allowlisting, validation, authorization, and side-effect review.</li><li>Dropping reasoning protocol fields during a thinking tool loop.</li><li>Stacking SDK retries and application retries without one bounded owner.</li><li>Logging raw exceptions, prompts, outputs, reasoning, tool data, or identifiers.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"anchor":"faq"} -->
+<h2 class="wp-block-heading" id="faq">FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does DeepSeek have an official Node.js SDK?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's official quick start documents Node.js usage through the official OpenAI JavaScript and TypeScript package configured with DeepSeek's API origin. This guide uses "DeepSeek Node.js SDK" as a search-friendly description of that documented client setup, not as the name of a separate DeepSeek-owned npm package.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">What package should I install?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Install <code>openai</code> on the server with <code>npm install openai</code>. Pin and test the exact version used by your application.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">What DeepSeek baseURL should Node.js use?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use <code>baseURL: "https://api.deepseek.com"</code> in the client constructor. That is the current value in DeepSeek's official quick start.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should I append /v1?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the exact current documented base URL without <code>/v1</code> in the primary Node setup. The SDK appends the Chat Completions resource path. Do not treat <code>/v1</code> as a model version.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I type thinking in TypeScript?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Intersect the SDK's exported streaming or non-streaming Chat Completion parameter type with a small provider type containing <code>thinking?: { type: "enabled" | "disabled" }</code>. Keep the field at the top level of the Node request object.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Should Node.js use extra_body?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. <code>extra_body</code> is the pattern shown in DeepSeek's Python SDK examples. DeepSeek's current Node example sends <code>thinking</code> directly in the request object, and the OpenAI Node client documents pass-through behavior for unknown top-level parameters.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I stream DeepSeek in TypeScript?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Set <code>stream: true</code>, await <code>client.chat.completions.create()</code>, and consume the returned async iterable with <code>for await...of</code>. Guard empty-choice usage chunks and route <code>reasoning_content</code> separately from final <code>content</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I cancel a DeepSeek request?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Create an <code>AbortController</code> and pass its <code>signal</code> in the second request-options argument. Treat <code>APIUserAbortError</code> as cancellation, not as a retryable provider failure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why did a streamed chunk have no choices?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>With <code>stream_options.include_usage</code>, DeepSeek documents a final usage chunk whose <code>choices</code> array is empty. Read its usage object and continue without indexing a choice.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Are deepseek-chat and deepseek-reasoner still usable?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The announced retirement cutoff has passed. Use <code>deepseek-v4-flash</code> or <code>deepseek-v4-pro</code> in new code. Both old aliases responded during the bounded July 27, 2026 probes, as reported above, but that dated observation is not a future compatibility promise.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does this test prove DeepSeek supports the OpenAI Responses API?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. This page and its harness test OpenAI-format Chat Completions through the Node client. Responses API compatibility is a separate question and requires its own endpoint-level test.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"official-sources"} -->
+<h2 class="wp-block-heading" id="official-sources">Official Sources and Last Verified</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Documentation reviewed: July 27, 2026. Live test date: July 27, 2026. Model IDs, aliases, package versions, schemas, limits, and prices can change; recheck the official sources before a production release.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><a href="https://api-docs.deepseek.com/">DeepSeek Your First API Call</a></li><li><a href="https://api-docs.deepseek.com/quick_start/pricing/">DeepSeek Models and Pricing</a></li><li><a href="https://api-docs.deepseek.com/api/create-chat-completion/">DeepSeek Create Chat Completion reference</a></li><li><a href="https://api-docs.deepseek.com/guides/thinking_mode/">DeepSeek Thinking Mode</a></li><li><a href="https://api-docs.deepseek.com/guides/json_mode/">DeepSeek JSON Output</a></li><li><a href="https://api-docs.deepseek.com/guides/tool_calls/">DeepSeek Tool Calls</a></li><li><a href="https://api-docs.deepseek.com/quick_start/error_codes/">DeepSeek Error Codes</a></li><li><a href="https://api-docs.deepseek.com/quick_start/rate_limit/">DeepSeek Rate Limit and Isolation</a></li><li><a href="https://api-docs.deepseek.com/guides/kv_cache/">DeepSeek Context Caching</a></li><li><a href="https://api-docs.deepseek.com/news/news260424/">DeepSeek V4 Preview Release</a></li><li><a href="https://github.com/openai/openai-node">Official OpenAI Node repository</a></li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>For the broad developer overview, return to the <a href="https://chat-deep.ai/docs/api/">DeepSeek API documentation hub</a>.</p>
+<!-- /wp:paragraph -->

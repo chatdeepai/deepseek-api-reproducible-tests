@@ -1,0 +1,25 @@
+{
+  "name": "deepseek-nodejs-typescript-reproducibility-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A bounded Node.js and TypeScript harness for DeepSeek's OpenAI-compatible Chat Completions API.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsc -p tsconfig.json && node --test tests/*.test.mjs",
+    "test:offline": "tsc -p tsconfig.json && node --test tests/*.test.mjs",
+    "audit": "tsc -p tsconfig.json && node dist/src/audit-cli.js",
+    "live": "tsc -p tsconfig.json && node dist/src/cli.js"
+  },
+  "dependencies": {
+    "openai": "6.49.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "typescript": "7.0.2"
+  }
+}

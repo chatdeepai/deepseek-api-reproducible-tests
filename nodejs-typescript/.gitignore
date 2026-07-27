@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+results/*
+!results/.gitkeep
+!results/live-summary.json
+!results/offline-summary.json
+!results/privacy-audit.json
+!results/run-ledger.json
+*.log
+*.tmp

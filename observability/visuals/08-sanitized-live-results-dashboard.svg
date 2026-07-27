@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">Sanitized DeepSeek Observability: Live Results</title>
+<desc id="visual-description">Sanitized results dashboard generated from the passing live summary and privacy audit, with exact case, token, cost, streaming, cache, contract, and method values.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="710" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK OBSERVABILITY</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="49" font-weight="800" text-anchor="start">Sanitized DeepSeek Observability: Live Results</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Eight bounded cases connect lifecycle health, usage, cache evidence, contract checks, and privacy controls</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="260" width="340" height="144" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="94" y="295" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">PLANNED CASES</text>
+<text x="94" y="350" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">8</text>
+<text x="94" y="384" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">7 HTTP 200 + 1 expected 400</text>
+<rect x="444" y="260" width="340" height="144" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="466" y="295" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">TOTAL TOKENS</text>
+<text x="466" y="350" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">10,134</text>
+<text x="466" y="384" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">10,036 prompt + 98 completion</text>
+<rect x="816" y="260" width="340" height="144" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="838" y="295" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">ESTIMATED COST</text>
+<text x="838" y="350" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">$0.000808071</text>
+<text x="838" y="384" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">dated official price snapshot</text>
+<rect x="1188" y="260" width="340" height="144" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="1210" y="295" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">PRIVACY AUDIT</text>
+<text x="1210" y="350" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">PASS</text>
+<text x="1210" y="384" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">required evidence gate</text>
+<rect x="72" y="430" width="468" height="304" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<rect x="94" y="450" width="424" height="34" fill="#0b2034" rx="17" stroke="#ffbd22" stroke-width="2"/>
+<text x="306" y="472" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">STREAMING OBSERVATION</text>
+<text x="104" y="539" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">331 ms</text>
+<text x="302" y="532" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">first parsed JSON event</text>
+<text x="104" y="592" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" text-anchor="start">740 ms</text>
+<text x="302" y="585" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">first visible content</text>
+<text x="104" y="633" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">9 JSON events  |  terminal usage YES</text>
+<rect x="96" y="657" width="420" height="54" fill="#351a25" rx="16" stroke="#ff6b81" stroke-width="2"/>
+<text x="306" y="689" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">QUALITY MISS DETECTED  |  5 words returned</text>
+<rect x="566" y="430" width="468" height="304" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<rect x="588" y="450" width="424" height="34" fill="#0b2034" rx="17" stroke="#2dd4c6" stroke-width="2"/>
+<text x="800" y="472" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">REPEATED-PREFIX CACHE EVIDENCE</text>
+<text x="600" y="529" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">FIRST REQUEST</text>
+<text x="1000" y="530" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">4,810 input</text>
+<text x="1000" y="562" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="end">0 cache-hit tokens</text>
+<line x1="600" y1="584" x2="1000" y2="584" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="600" y="623" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">IMMEDIATE REPEAT</text>
+<text x="1000" y="624" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">4,810 input</text>
+<text x="600" y="676" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="32" font-weight="800" text-anchor="start">4,736</text>
+<text x="718" y="671" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="start">hits</text>
+<text x="850" y="676" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="32" font-weight="800" text-anchor="start">74</text>
+<text x="956" y="671" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="start">misses</text>
+<text x="800" y="711" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">dated observation; no cache-persistence promise</text>
+<rect x="1060" y="430" width="468" height="304" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<rect x="1082" y="450" width="424" height="34" fill="#0b2034" rx="17" stroke="#a78bfa" stroke-width="2"/>
+<text x="1294" y="472" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">CONTRACTS + CONTROL</text>
+<text x="1092" y="528" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">JSON MODE</text>
+<text x="1498" y="528" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="end">PASS  |  2 fields</text>
+<line x1="1092" y1="547" x2="1498" y2="547" stroke="#284d68" stroke-width="1" stroke-linecap="round"/>
+<text x="1092" y="577" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">TOOL SCHEMA</text>
+<text x="1498" y="577" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="end">PASS  |  1 call  |  executed NO</text>
+<line x1="1092" y1="596" x2="1498" y2="596" stroke="#284d68" stroke-width="1" stroke-linecap="round"/>
+<text x="1092" y="626" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">V4 PRO THINKING</text>
+<text x="1498" y="625" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="end">30 reasoning tokens  |  final CORRECT</text>
+<line x1="1092" y1="645" x2="1498" y2="645" stroke="#284d68" stroke-width="1" stroke-linecap="round"/>
+<text x="1092" y="675" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">INVALID MODEL</text>
+<text x="1498" y="674" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="end">expected 400  |  invalid_request_error</text>
+<rect x="72" y="758" width="1456" height="48" fill="#0d2633" rx="18" stroke="#284d68" stroke-width="2"/>
+<text x="800" y="788" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">SERIAL METHOD  |  concurrency 1  |  retries 0  |  timeout 30000 ms  |  no raw content, provider IDs, or API key stored</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">2026-07-27 UTC  |  sanitized live evidence  |  individual observations, not a benchmark or SLA</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">Dashboard and Alert Topology</title>
+<desc id="visual-description">Dashboard panels for reliability, streaming, usage and cost, contracts, tools, and telemetry health feeding an application-owned alert pipeline and a privacy-safe trace.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="710" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK OBSERVABILITY</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="49" font-weight="800" text-anchor="start">Dashboard and Alert Topology</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Bound label cardinality, keep targets application-owned, and use safe exemplars to reach the right trace</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="180" y="334" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">RELIABILITY</text>
+<text x="180" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">status class</text>
+<text x="180" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">finish state</text>
+<line x1="114" y1="444" x2="144" y2="425" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<line x1="144" y1="425" x2="184" y2="436" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<line x1="184" y1="436" x2="238" y2="406" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<rect x="320" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="428" y="334" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">STREAMING</text>
+<text x="428" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">first event</text>
+<text x="428" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">first content</text>
+<line x1="362" y1="444" x2="392" y2="425" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<line x1="392" y1="425" x2="432" y2="436" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<line x1="432" y1="436" x2="486" y2="406" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<rect x="568" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="676" y="334" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">TOKENS / CACHE</text>
+<text x="676" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">usage mix</text>
+<text x="676" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">cost estimate</text>
+<line x1="610" y1="444" x2="640" y2="425" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<line x1="640" y1="425" x2="680" y2="436" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<line x1="680" y1="436" x2="734" y2="406" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<rect x="816" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="924" y="334" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">CONTRACTS</text>
+<text x="924" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">schema</text>
+<text x="924" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">quality checks</text>
+<line x1="858" y1="444" x2="888" y2="425" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<line x1="888" y1="425" x2="928" y2="436" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<line x1="928" y1="436" x2="982" y2="406" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<rect x="1064" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="1172" y="334" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">TOOL HEALTH</text>
+<text x="1172" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">proposal</text>
+<text x="1172" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">policy outcome</text>
+<line x1="1106" y1="444" x2="1136" y2="425" stroke="#ffbd22" stroke-width="3" stroke-linecap="round"/>
+<line x1="1136" y1="425" x2="1176" y2="436" stroke="#ffbd22" stroke-width="3" stroke-linecap="round"/>
+<line x1="1176" y1="436" x2="1230" y2="406" stroke="#ffbd22" stroke-width="3" stroke-linecap="round"/>
+<rect x="1312" y="286" width="216" height="186" fill="#10283f" rx="20" stroke="#ff6b81" stroke-width="2"/>
+<text x="1420" y="334" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">TELEMETRY</text>
+<text x="1420" y="391" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">drop rate</text>
+<text x="1420" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">exporter health</text>
+<line x1="1354" y1="444" x2="1384" y2="425" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<line x1="1384" y1="425" x2="1424" y2="436" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<line x1="1424" y1="436" x2="1478" y2="406" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<line x1="180" y1="496" x2="1420" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="180" y1="472" x2="180" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="428" y1="472" x2="428" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="676" y1="472" x2="676" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="924" y1="472" x2="924" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="1172" y1="472" x2="1172" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="1420" y1="472" x2="1420" y2="496" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="800" y1="496" x2="800" y2="540" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="800,548 793.0,535.9 807.0,535.9" fill="#2dd4c6"/>
+<rect x="72" y="566" width="192" height="104" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="168" y="623" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">BOUNDED LABELS</text>
+<line x1="264" y1="618" x2="312" y2="618" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="320,618 307.9,625.0 307.9,611.0" fill="#2dd4c6"/>
+<rect x="330" y="566" width="192" height="104" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="426" y="623" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">BASELINE / TARGET</text>
+<line x1="522" y1="618" x2="570" y2="618" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="578,618 565.9,625.0 565.9,611.0" fill="#2dd4c6"/>
+<rect x="588" y="566" width="192" height="104" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="684" y="623" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">ALERT ROUTER</text>
+<line x1="780" y1="618" x2="828" y2="618" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="836,618 823.9,625.0 823.9,611.0" fill="#2dd4c6"/>
+<rect x="846" y="566" width="192" height="104" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="942" y="623" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">RUNBOOK</text>
+<line x1="1038" y1="618" x2="1086" y2="618" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1094,618 1081.9,625.0 1081.9,611.0" fill="#2dd4c6"/>
+<rect x="1104" y="566" width="192" height="104" fill="#0b2034" rx="18" stroke="#43df88" stroke-width="2"/>
+<text x="1200" y="623" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">SAFE EXEMPLAR</text>
+<line x1="1296" y1="618" x2="1344" y2="618" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1352,618 1339.9,625.0 1339.9,611.0" fill="#2dd4c6"/>
+<rect x="1362" y="566" width="166" height="104" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="1445" y="623" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">TRACE</text>
+<rect x="260" y="714" width="1080" height="82" fill="#351a25" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="800" y="762" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">Application-owned targets  |  no provider SLA is implied</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual observability diagram  |  no live-result claims  |  monitoring topology only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">DeepSeek Observability Reference Architecture</title>
+<desc id="visual-description">Reference architecture connecting the product request, application controls, DeepSeek client span, privacy-safe telemetry, stores, dashboards, and alerts.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="710" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK OBSERVABILITY</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="49" font-weight="800" text-anchor="start">DeepSeek Observability Reference Architecture</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Keep the model call inside the application trace, then emit only redacted, versioned signals</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="286" width="220" height="134" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="100" cy="318" r="10" fill="#5ea8ff"/>
+<text x="120" y="324" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">PRODUCT</text>
+<text x="96" y="380" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">request + context</text>
+<line x1="292" y1="353" x2="312" y2="353" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="320,353 307.9,360.0 307.9,346.0" fill="#2dd4c6"/>
+<rect x="332" y="286" width="220" height="134" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="360" cy="318" r="10" fill="#a78bfa"/>
+<text x="380" y="324" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">APP BOUNDARY</text>
+<text x="356" y="380" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">auth + policy</text>
+<line x1="552" y1="353" x2="572" y2="353" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="580,353 567.9,360.0 567.9,346.0" fill="#2dd4c6"/>
+<rect x="592" y="286" width="220" height="134" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="620" cy="318" r="10" fill="#2dd4c6"/>
+<text x="640" y="324" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">CLIENT SPAN</text>
+<text x="616" y="380" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">DeepSeek call</text>
+<line x1="812" y1="353" x2="832" y2="353" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="840,353 827.9,360.0 827.9,346.0" fill="#2dd4c6"/>
+<rect x="852" y="286" width="220" height="134" fill="#10283f" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="880" cy="318" r="10" fill="#ffbd22"/>
+<text x="900" y="324" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">VALIDATION</text>
+<text x="876" y="380" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">contract + quality</text>
+<line x1="1072" y1="353" x2="1092" y2="353" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1100,353 1087.9,360.0 1087.9,346.0" fill="#2dd4c6"/>
+<rect x="1112" y="286" width="220" height="134" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<circle cx="1140" cy="318" r="10" fill="#43df88"/>
+<text x="1160" y="324" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">OUTCOME</text>
+<text x="1136" y="380" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">safe response</text>
+<rect x="72" y="474" width="1456" height="292" fill="#0d2633" rx="24" stroke="#284d68" stroke-width="2"/>
+<text x="104" y="517" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="start">TELEMETRY PLANE</text>
+<rect x="104" y="548" width="246" height="164" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="227" y="589" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">SAFE EVENT BUILDER</text>
+<text x="227" y="636" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">allowlist</text>
+<text x="227" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">schema version</text>
+<line x1="350" y1="630" x2="378" y2="630" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="386,630 373.9,637.0 373.9,623.0" fill="#2dd4c6"/>
+<rect x="398" y="548" width="246" height="164" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="521" y="589" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">OTEL COLLECTOR</text>
+<text x="521" y="636" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">batch + sample</text>
+<text x="521" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">route</text>
+<line x1="644" y1="630" x2="672" y2="630" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="680,630 667.9,637.0 667.9,623.0" fill="#2dd4c6"/>
+<rect x="692" y="548" width="246" height="164" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="815" y="589" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">SIGNAL STORES</text>
+<text x="815" y="636" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">traces + logs</text>
+<text x="815" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">metrics + evals</text>
+<line x1="938" y1="630" x2="966" y2="630" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="974,630 961.9,637.0 961.9,623.0" fill="#2dd4c6"/>
+<rect x="986" y="548" width="246" height="164" fill="#0b2034" rx="18" stroke="#43df88" stroke-width="2"/>
+<text x="1109" y="589" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">DASHBOARDS</text>
+<text x="1109" y="636" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">bounded labels</text>
+<text x="1109" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">owned targets</text>
+<line x1="1232" y1="630" x2="1260" y2="630" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1268,630 1255.9,637.0 1255.9,623.0" fill="#2dd4c6"/>
+<rect x="1280" y="548" width="246" height="164" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="1403" y="589" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">ALERTS</text>
+<text x="1403" y="636" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">runbook</text>
+<text x="1403" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">safe exemplar</text>
+<line x1="702" y1="420" x2="702" y2="527" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="702,535 695.0,522.9 709.0,522.9" fill="#2dd4c6"/>
+<rect x="1160" y="442" width="340" height="60" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="1182" y="478" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">RAW CONTENT PATH: BLOCKED</text>
+<line x1="1128" y1="420" x2="1128" y2="472" stroke="#ff6b81" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 7"/>
+<line x1="1128" y1="472" x2="1142" y2="472" stroke="#ff6b81" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1150,472 1137.9,479.0 1137.9,465.0" fill="#ff6b81"/>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual observability diagram  |  no live-result claims  |  reference design, not a deployment claim</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

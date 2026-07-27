@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">Privacy-Safe DeepSeek Logging Pipeline</title>
+<desc id="visual-description">Pipeline from a quarantined raw request and response through an allowlist, redaction gate, bounded-cardinality controls, sampling, retention, access control, and approved signal stores.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="710" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK OBSERVABILITY</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="49" font-weight="800" text-anchor="start">Privacy-Safe DeepSeek Logging Pipeline</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Construct a new event from approved metadata; never send raw request or response objects into logging</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="286" width="300" height="350" fill="#351a25" rx="22" stroke="#ff6b81" stroke-width="2"/>
+<rect x="96" y="306" width="252" height="36" fill="#0b2034" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="222" y="329" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">QUARANTINED INPUT</text>
+<text x="222" y="396" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">RAW REQUEST</text>
+<text x="222" y="449" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="32" font-weight="800" text-anchor="middle">+</text>
+<text x="222" y="494" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="middle">RAW RESPONSE</text>
+<rect x="112" y="548" width="220" height="46" fill="#0b2034" rx="23" stroke="#ff6b81" stroke-width="2"/>
+<text x="222" y="577" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">DO NOT LOG</text>
+<rect x="420" y="320" width="220" height="278" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="530" cy="367" r="24" fill="#2dd4c6"/>
+<text x="530" y="372" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">1</text>
+<text x="530" y="429" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">ALLOWLIST</text>
+<text x="530" y="485" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">model</text>
+<text x="530" y="516" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">status</text>
+<text x="530" y="547" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">usage</text>
+<line x1="372" y1="459" x2="400" y2="459" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="408,459 395.9,466.0 395.9,452.0" fill="#2dd4c6"/>
+<line x1="640" y1="459" x2="660" y2="459" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="668,459 655.9,466.0 655.9,452.0" fill="#2dd4c6"/>
+<rect x="680" y="320" width="220" height="278" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="790" cy="367" r="24" fill="#a78bfa"/>
+<text x="790" y="372" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">2</text>
+<text x="790" y="429" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">REDACT</text>
+<text x="790" y="485" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">safe errors</text>
+<text x="790" y="516" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">no identifiers</text>
+<line x1="900" y1="459" x2="920" y2="459" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="928,459 915.9,466.0 915.9,452.0" fill="#2dd4c6"/>
+<rect x="940" y="320" width="220" height="278" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="1050" cy="367" r="24" fill="#5ea8ff"/>
+<text x="1050" y="372" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">3</text>
+<text x="1050" y="429" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">CONTROL</text>
+<text x="1050" y="485" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">bounded labels</text>
+<text x="1050" y="516" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">schema version</text>
+<line x1="1160" y1="459" x2="1180" y2="459" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1188,459 1175.9,466.0 1175.9,452.0" fill="#2dd4c6"/>
+<rect x="1200" y="320" width="220" height="278" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<circle cx="1310" cy="367" r="24" fill="#43df88"/>
+<text x="1310" y="372" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">4</text>
+<text x="1310" y="429" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">GOVERN</text>
+<text x="1310" y="485" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">sample</text>
+<text x="1310" y="516" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">retain</text>
+<text x="1310" y="547" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">authorize</text>
+<rect x="420" y="646" width="1000" height="150" fill="#0d2633" rx="22" stroke="#284d68" stroke-width="2"/>
+<text x="450" y="683" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">FIELDS THAT NEVER ENTER THE PUBLIC TELEMETRY PATH</text>
+<rect x="450" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="520" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">API KEY</text>
+<rect x="606" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="676" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PROMPTS</text>
+<rect x="762" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="832" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">OUTPUT</text>
+<rect x="918" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="988" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">REASONING</text>
+<rect x="1074" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="1144" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">TOOL DATA</text>
+<rect x="1230" y="718" width="140" height="42" fill="#351a25" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="1300" y="743" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PROVIDER IDS</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual observability diagram  |  no live-result claims  |  privacy control flow only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

@@ -11,8 +11,10 @@ import {
 import {
   createLiveSession,
   PAID_COMPLETION_PERMIT,
-  API_ORIGIN
+  API_ORIGIN,
+  liveResponseValidators
 } from "../src/live-runner.mjs";
+import { auditSanitizedHistoricalResult } from "../src/post-run-audit.mjs";
 import {
   containsForbiddenPublicField,
   redactString,
@@ -20,6 +22,7 @@ import {
 } from "../src/redact.mjs";
 import {
   createRotationState,
+  rotationLimits,
   rotationPassed,
   transitionRotation
 } from "../src/rotation-state.mjs";
@@ -38,6 +41,24 @@ function responseJson(body, status = 200) {
     status,
     headers: { "Content-Type": "application/json" }
   });
+}
+
+function validModelList() {
+  return {
+    object: "list",
+    data: [
+      {
+        id: "deepseek-v4-flash",
+        object: "model",
+        owned_by: "deepseek"
+      },
+      {
+        id: "deepseek-v4-pro",
+        object: "model",
+        owned_by: "deepseek"
+      }
+    ]
+  };
 }
 
 test("environment guard accepts only an explicit in-memory credential", async () => {
@@ -175,6 +196,27 @@ test("rotation state requires baseline, overlap, rejection, and active continuit
   });
   assert.equal(rotationPassed(state), true);
   assert.equal(JSON.stringify(state).includes("credential"), false);
+  assert.equal(rotationLimits.maxRevocationPolls, 6);
+});
+
+test("rotation state treats only the documented 401 status as credential rejection", () => {
+  let state = createRotationState();
+  state = transitionRotation(state, {
+    type: "baseline",
+    oldKeyAuthorized: true
+  });
+  state = transitionRotation(state, {
+    type: "overlap",
+    oldKeyAuthorized: true,
+    newKeyAuthorized: true
+  });
+  state = transitionRotation(state, {
+    type: "revocation_poll",
+    status: 403
+  });
+
+  assert.equal(state.phase, "revocation_pending");
+  assert.equal(state.evidence.revokedKeyRejected, false);
 });
 
 test("mock authentication matrix is fixed-origin, serial, and covers five variants", async () => {
@@ -194,7 +236,7 @@ test("mock authentication matrix is fixed-origin, serial, and covers five varian
     const auth = options.headers.get("Authorization");
     active -= 1;
     return responseJson(
-      auth === `Bearer ${VALID_MEMORY_CREDENTIAL}` ? { data: [] } : { error: "rejected" },
+      auth === `Bearer ${VALID_MEMORY_CREDENTIAL}` ? validModelList() : { error: "rejected" },
       auth === `Bearer ${VALID_MEMORY_CREDENTIAL}` ? 200 : 401
     );
   };
@@ -207,10 +249,83 @@ test("mock authentication matrix is fixed-origin, serial, and covers five varian
   assert.equal(result.requestsIssued, 5);
   assert.equal(result.allExpectationsMet, true);
   assert.equal(result.observations.length, 5);
+  assert.equal(result.observations[0].responseSchemaValid, true);
+  assert.deepEqual(
+    result.observations[0].modelIds,
+    ["deepseek-v4-flash", "deepseek-v4-pro"]
+  );
+  assert.ok(result.observations.every((observation) => observation.expectationMet));
   assert.equal(peak, 1);
   assert.ok(requests.every((entry) => new URL(entry.url).origin === API_ORIGIN));
   assert.ok(requests.every((entry) => new URL(entry.url).pathname === "/models"));
   assert.equal(requests.filter((entry) => entry.authorization === null).length, 1);
+});
+
+test("live authentication checks fail closed on non-200, non-401, and invalid model schema", async () => {
+  const nonExactSession = createLiveSession({
+    fetchImpl: async (_url, options) => {
+      const auth = options.headers.get("Authorization");
+      if (auth === `Bearer ${VALID_MEMORY_CREDENTIAL}`) {
+        return new Response(null, { status: 204 });
+      }
+      return responseJson({ error: "forbidden" }, 403);
+    },
+    timeoutMs: 5_000
+  });
+  const nonExact = await nonExactSession.runAuthenticationMatrix({
+    validKey: VALID_MEMORY_CREDENTIAL
+  });
+
+  assert.equal(nonExact.allExpectationsMet, false);
+  assert.equal(nonExact.observations[0].status, 204);
+  assert.equal(nonExact.observations[0].expectationMet, false);
+  assert.equal(nonExact.observations[1].statusClass, "forbidden");
+  assert.equal(nonExact.observations[1].expectationMet, false);
+
+  const invalidSchemaSession = createLiveSession({
+    fetchImpl: async () =>
+      responseJson({
+        object: "list",
+        data: [{ id: "deepseek-v4-flash", object: "model" }]
+      }),
+    timeoutMs: 5_000
+  });
+  const invalidSchema = await invalidSchemaSession.checkActiveKey({
+    activeKey: VALID_MEMORY_CREDENTIAL
+  });
+
+  assert.equal(invalidSchema.status, 200);
+  assert.equal(invalidSchema.responseSchemaValid, false);
+  assert.equal(invalidSchema.expectationMet, false);
+  assert.deepEqual(invalidSchema.modelIds, []);
+});
+
+test("response validators reject incomplete balance and completion payloads", () => {
+  const balance = liveResponseValidators.balance({
+    is_available: true
+  });
+  assert.equal(balance.availabilityFieldPresent, true);
+  assert.equal(balance.balanceInfoArrayPresent, false);
+  assert.equal(balance.responseSchemaValid, false);
+
+  const completion = liveResponseValidators.completion({
+    object: "chat.completion",
+    model: "unexpected-model",
+    choices: [
+      {
+        message: { content: "AUTHENTICATED_OK" },
+        finish_reason: "stop"
+      }
+    ],
+    usage: {
+      prompt_tokens: 10,
+      completion_tokens: 1,
+      total_tokens: 99
+    }
+  });
+  assert.equal(completion.returnedModelMatches, false);
+  assert.equal(completion.usageReconciles, false);
+  assert.equal(completion.responseSchemaValid, false);
 });
 
 test("mock balance output includes availability only and omits amounts", async () => {
@@ -235,6 +350,10 @@ test("mock balance output includes availability only and omits amounts", async (
 
   assert.equal(result.availabilityFieldPresent, true);
   assert.equal(result.available, true);
+  assert.equal(result.balanceInfoArrayPresent, true);
+  assert.equal(result.balanceInfoCount, 1);
+  assert.equal(result.responseSchemaValid, true);
+  assert.equal(result.expectationMet, true);
   assert.equal(serialized.includes("98.76"), false);
   assert.equal(serialized.includes("USD"), false);
   assert.equal(serialized.includes("balance_infos"), false);
@@ -247,8 +366,12 @@ test("mock paid completion is limited to one attempt and omits generated text", 
     const requestBody = JSON.parse(options.body);
     assert.equal(requestBody.model, "deepseek-v4-flash");
     assert.equal(requestBody.max_tokens, 16);
+    assert.deepEqual(requestBody.thinking, { type: "disabled" });
+    assert.equal(requestBody.temperature, 0);
     return responseJson({
       id: "provider-id-must-not-leak",
+      object: "chat.completion",
+      model: "deepseek-v4-flash",
       choices: [
         {
           message: { content: "AUTHENTICATED_OK" },
@@ -272,6 +395,11 @@ test("mock paid completion is limited to one attempt and omits generated text", 
   assert.equal(result.paidCallIssued, true);
   assert.equal(result.contentNonEmpty, true);
   assert.equal(result.exactSyntheticReferenceMatch, true);
+  assert.equal(result.responseSchemaValid, true);
+  assert.equal(result.returnedModelMatches, true);
+  assert.equal(result.finishReasonIsStop, true);
+  assert.equal(result.usageReconciles, true);
+  assert.equal(result.expectationMet, true);
   assert.equal(JSON.stringify(result).includes("provider-id-must-not-leak"), false);
   assert.equal(Object.hasOwn(result, "content"), false);
   await assert.rejects(
@@ -294,7 +422,7 @@ test("mock rotation overlap and post-revocation checks preserve active continuit
       auth === `Bearer ${OLD_MEMORY_CREDENTIAL}` ||
       auth === `Bearer ${NEW_MEMORY_CREDENTIAL}`
     ) {
-      return responseJson({ data: [] }, 200);
+      return responseJson(validModelList(), 200);
     }
     return responseJson({ error: "unexpected" }, 401);
   };
@@ -326,7 +454,7 @@ test("module-wide queue keeps concurrent mock calls at one", async () => {
     peak = Math.max(peak, active);
     await new Promise((resolvePromise) => setTimeout(resolvePromise, 5));
     active -= 1;
-    return responseJson({ data: [] }, 200);
+    return responseJson(validModelList(), 200);
   };
 
   const session = createLiveSession({ fetchImpl, timeoutMs: 5_000 });
@@ -337,4 +465,19 @@ test("module-wide queue keeps concurrent mock calls at one", async () => {
   ]);
   assert.equal(peak, 1);
   assert.equal(session.getSafetyState().observedPeakConcurrency, 1);
+});
+
+test("post-run audit deterministically validates the preserved sanitized observation", async () => {
+  const source = JSON.parse(
+    await readFile(resolve(suiteDirectory, "results/final-results-summary.json"), "utf8")
+  );
+  const first = auditSanitizedHistoricalResult(source);
+  const second = auditSanitizedHistoricalResult(source);
+
+  assert.deepEqual(first, second);
+  assert.equal(first.verdict, "pass");
+  assert.equal(first.provider_requests_issued, 0);
+  assert.ok(Object.values(first.checks).every((value) => value === true));
+  assert.match(first.interpretation, /does not reissue provider requests/i);
+  assert.match(first.interpretation, /corrected future-run harness/i);
 });

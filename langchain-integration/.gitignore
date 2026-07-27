@@ -1,0 +1,12 @@
+.python-deps/
+.python-live-deps/
+node_modules/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+results/*.json
+!results/.gitkeep
+!results/run-ledger.json
+!results/js-partial.json
+!results/live-summary.json
+!results/privacy-audit.json

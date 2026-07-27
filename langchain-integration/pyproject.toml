@@ -1,0 +1,20 @@
+[project]
+name = "deepseek-langchain-integration-reproducibility-harness"
+version = "1.0.0"
+description = "A bounded Python and JavaScript LangChain integration harness for DeepSeek."
+requires-python = ">=3.10"
+dependencies = [
+  "langchain==1.3.14",
+  "langchain-deepseek==1.1.0",
+  "langchain-openai==1.4.1",
+  "langchain-core==1.5.1",
+  "openai==2.48.0",
+  "pydantic==2.13.4",
+]
+
+[tool.harness]
+provider_request_cap = 16
+planned_provider_requests = 16
+concurrency = 1
+automatic_retries = 0
+default_timeout_seconds = 30

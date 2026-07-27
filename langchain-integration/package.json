@@ -1,0 +1,18 @@
+{
+  "name": "deepseek-langchain-js-integration-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test js-tests/*.test.mjs",
+    "test:js": "node --test js-tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@langchain/core": "1.2.3",
+    "@langchain/deepseek": "1.1.5",
+    "zod": "4.4.3"
+  }
+}

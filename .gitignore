@@ -41,6 +41,13 @@ python-sdk/results/*
 !python-sdk/results/live-summary.json
 !python-sdk/results/live-case-summary.csv
 !python-sdk/results/postrun-audit-summary.json
+!langchain-integration/results/
+langchain-integration/results/*
+!langchain-integration/results/.gitkeep
+!langchain-integration/results/run-ledger.json
+!langchain-integration/results/js-partial.json
+!langchain-integration/results/live-summary.json
+!langchain-integration/results/privacy-audit.json
 screenshots/
 private/
 secrets/

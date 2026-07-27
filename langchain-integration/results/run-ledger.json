@@ -1,0 +1,23 @@
+{
+  "cap": 16,
+  "case_ids": [
+    "py-sync-invoke-v4-flash",
+    "py-async-invoke-v4-flash",
+    "py-sync-stream-v4-flash",
+    "py-async-stream-v4-flash",
+    "py-sync-invoke-v4-pro-thinking",
+    "py-structured-json-mode",
+    "py-strict-tool-initial",
+    "py-strict-tool-continuation",
+    "py-local-context-rag",
+    "py-alias-deepseek-chat-probe",
+    "py-invalid-model-error",
+    "js-invoke-v4-flash",
+    "js-stream-v4-flash",
+    "js-structured-function-calling",
+    "js-alias-deepseek-reasoner-probe",
+    "js-invalid-model-error"
+  ],
+  "issued": 16,
+  "schema_version": 1
+}

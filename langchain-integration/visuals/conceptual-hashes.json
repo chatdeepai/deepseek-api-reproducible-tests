@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_status": "conceptual_visuals_plus_sanitized_dated_dashboard",
+  "images": [
+    {
+      "file": "01-deepseek-langchain-integration-architecture.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "c78e3a74df5ecb9695340420ddde8464ab121b604cfdf456a514add1bec85cf9"
+    },
+    {
+      "file": "02-langchain-dependency-configuration-boundary.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "b0f535b32ea7d8cd61af1112342119badf9c0eaabf920c8eaa04d3f08e5f6cff"
+    },
+    {
+      "file": "03-langchain-sync-async-streaming-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "2fbae6274f1b0db3fbd98e2f92c5495b14fb04db439a05d07f06c63b3988c2f2"
+    },
+    {
+      "file": "04-langchain-structured-output-validation.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "ee8a0dbd8c136f735d1ca307135b358e759f47ca0d919e1f720f14da0e4f185d"
+    },
+    {
+      "file": "05-langchain-tool-agent-safety-loop.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "2949b83757d752d6a85eaabce4e17d9903dbddcc801b53ddee654ac3dd202985"
+    },
+    {
+      "file": "06-langchain-error-retry-cancellation-tree.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "f0e7b6f3d7f04e07ef64963b52f36a8ab46724858a5a7bfe6b2e37418e8c0f6b"
+    },
+    {
+      "file": "07-langchain-test-methodology-ladder.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "5211113d1a45646459cb040c63bc315a0b0424717bd7fa8c6a207e0b4cd6cc84"
+    },
+    {
+      "file": "08-langchain-live-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_dated_observation_2026-07-27_utc",
+      "sha256": "fa5284a7f5ab22458358a56506b2bd5f804cee2283ed9047e108000158b2d6f8"
+    }
+  ]
+}

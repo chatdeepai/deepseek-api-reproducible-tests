@@ -68,6 +68,13 @@ This public evidence repository contains bounded, reproducible live tests used b
   - deterministic localhost timeout and retry controls with no provider traffic;
   - sanitized JSON and CSV summaries with no prompts, outputs, reasoning, request IDs, tool-call IDs, credentials, balances, or account data;
   - English-only reproducibility documentation and editable evidence visuals.
+- [DeepSeek LangChain Integration](./langchain-integration/)
+  - 18 deterministic localhost tests covering Python and JavaScript wrappers, streaming, structured output, tools, retries, timeouts, cancellation, privacy auditing, and local-context RAG;
+  - 16 preregistered serial provider requests with concurrency one and zero automatic retries;
+  - current V4 invoke, streaming, thinking, structured-output, strict-tool, continuation, and synthetic RAG observations;
+  - dated legacy-alias probes plus typed Python and JavaScript invalid-model controls;
+  - pinned Python and JavaScript dependency sets with a cross-process request ledger;
+  - sanitized JSON evidence, an independent privacy audit, eight English-only visuals, and publication-ready Gutenberg source.
 
 ## Evidence policy
 

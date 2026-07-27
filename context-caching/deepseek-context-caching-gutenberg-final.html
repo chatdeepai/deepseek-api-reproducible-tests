@@ -1,0 +1,474 @@
+<!-- wp:paragraph -->
+<p><strong>DeepSeek context caching can make repeated API input dramatically cheaper, but a shared prefix is not a guarantee of an immediate cache hit.</strong> In our live test, an exact-extension request achieved a 98.23% cache-hit rate, four warm requests with a stable long prefix achieved 99.79%, and five similarly sized requests whose first line changed every time achieved 0%. This guide separates DeepSeek’s documented behavior from our bounded observations, shows the returned token evidence, and provides a runnable direct-HTTP Python test.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Last tested:</strong> July 27, 2026, 06:24–06:31 UTC (July 26, 2026 PDT). We used the hosted DeepSeek Chat Completions endpoint, <code>deepseek-v4-flash</code>, non-thinking mode, non-streaming responses, short outputs, and deterministic synthetic English content. Chat-Deep.ai is independent and is not affiliated with DeepSeek. Recheck current behavior and prices in DeepSeek’s official documentation before a production decision.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">DeepSeek Context Caching: The Short Answer</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li>DeepSeek says context caching is enabled automatically; there is no separate cache switch in a normal request.</li>
+<li>A later input can receive cache-hit tokens when it fully reuses a prefix unit that DeepSeek has already persisted.</li>
+<li>The API reports the result through <code>prompt_cache_hit_tokens</code> and <code>prompt_cache_miss_tokens</code>.</li>
+<li>Caching reuses input computation. It does not store an answer, guarantee identical output, or make the stateless API remember a conversation.</li>
+<li>Stable material belongs at the beginning of the request. A changing timestamp, request ID, or user-specific line at the top can destroy useful prefix reuse.</li>
+<li>DeepSeek describes the system as best effort. Cache construction, availability, and retention remain provider-managed.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"align":"wide","id":7566,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image alignwide size-large"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-live-cold-warm-evidence-1024x576.png" alt="Redacted DeepSeek context caching live API evidence showing prompt cache hit and miss tokens" class="wp-image-7566"/><figcaption class="wp-element-caption">Redacted evidence from the July 26 PDT live test. No API key, account balance, personal data, prompt text, or response text is included.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">What DeepSeek Officially Documents</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s <a href="https://api-docs.deepseek.com/guides/kv_cache/" target="_blank" rel="noopener">official Context Caching guide</a> describes an on-disk cache that is enabled by default. A hit requires more than semantically similar text: the later request must fully match a complete cache prefix unit that has already been persisted. The current guide lists three persistence paths:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list">
+<li><strong>Request boundaries:</strong> a prefix unit can be persisted at the end of user input and at the end of model output.</li>
+<li><strong>Common-prefix detection:</strong> after multiple requests reveal a shared prefix, that common prefix can be persisted as its own unit.</li>
+<li><strong>Fixed token intervals:</strong> long inputs and outputs can be divided into prefix units at provider-defined intervals.</li>
+</ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The official guide illustrates two important shapes. With <code>A+B</code> followed by <code>A+B+C</code>, the second request can reuse the complete <code>A+B</code> unit. With divergent suffixes—<code>A+B</code>, then <code>A+C</code>—the idealized example says the second request does not fully match the first unit. After the common <code>A</code> is detected and persisted, a third <code>A+D</code> request can hit it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>That documented sequence is a conceptual model, not a promise about every long request. Fixed-interval persistence and best-effort cache state can affect the returned counts. DeepSeek also says cache construction takes seconds and that unused entries are usually cleared within hours to days. The correct production rule is therefore to log the API’s usage fields instead of predicting a hit from string comparison alone.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Context Caching Is Not Conversation Memory</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s <a href="https://api-docs.deepseek.com/guides/multi_round_chat/" target="_blank" rel="noopener">multi-round conversation guide</a> calls <code>/chat/completions</code> stateless. Your application must resend the prior messages it wants the model to use. Context caching may make the repeated beginning cheaper, but it does not reconstruct omitted history, save user preferences, or create a durable memory layer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Mechanism</th><th>What it does</th><th>Who supplies the context?</th></tr></thead><tbody><tr><td>DeepSeek context cache</td><td>Reuses eligible persisted input-prefix computation</td><td>Your application resends the input</td></tr><tr><td>Conversation history</td><td>Supplies earlier messages to the model</td><td>Your application stores and resends it</td></tr><tr><td>Application memory</td><td>Stores selected facts, preferences, or summaries</td><td>Your product and data layer</td></tr><tr><td>Response cache</td><td>Returns a previously stored answer</td><td>Your application or gateway; this is not DeepSeek context caching</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Our Test Method</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We measured the cache-token fields returned by <code>https://api.deepseek.com/chat/completions</code>. The benchmark used one account, one endpoint, <code>deepseek-v4-flash</code>, thinking disabled, streaming disabled, and a short output limit. Every prompt contained deterministic synthetic English records; no customer content or personal data was sent. We recorded HTTP status, model, prompt tokens, cache-hit tokens, cache-miss tokens, completion tokens, finish reason, UTC time, and total non-streaming response time.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The suites covered exact extension, three divergent suffixes, stable versus volatile first lines, <code>user_id</code> isolation, eight prefix lengths, and two single-line mutations. A run-specific synthetic marker reduced accidental pre-warming from an earlier run. The key, authorization header, account balance, raw user IDs, prompts, responses, and raw bodies were excluded from the public results.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:quote -->
+<blockquote class="wp-block-quote"><p><strong>Interpretation boundary:</strong> these are observations for one account, payload family, model, and seven-minute window. They do not reveal DeepSeek’s infrastructure and do not guarantee that another request, account, model, date, or third-party host will behave identically.</p></blockquote>
+<!-- /wp:quote -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Live Result 1: Exact Extension Produced a 98.23% Hit Rate</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The cold request contained 6,893 prompt tokens and reported zero hits. The second request extended the complete earlier context and contained 6,906 prompt tokens. It reported 6,784 cache-hit tokens and 122 cache-miss tokens: a 98.23% hit rate.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Call</th><th>HTTP</th><th>Prompt tokens</th><th>Hit tokens</th><th>Miss tokens</th><th>Latency</th></tr></thead><tbody><tr><td>Cold</td><td>200</td><td>6,893</td><td>0</td><td>6,893</td><td>996 ms</td></tr><tr><td>Exact extension</td><td>200</td><td>6,906</td><td>6,784</td><td>122</td><td>1,020 ms</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>At the Flash prices verified for this test, the second call’s input cost was approximately $0.00003608. Treating all 6,906 input tokens as cache misses would have cost approximately $0.00096684. That is a 96.27% reduction in input cost for this request, not a 96.27% reduction in its total cost: output tokens are still billed separately.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Live Result 2: The Long A+B, A+C, A+D Sequence Hit on Calls 2 and 3</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We next sent three requests with the same long byte-for-byte prefix <code>A</code> and three different suffixes. Call 1 was cold. Calls 2 and 3 each returned more than 7,000 cache-hit tokens.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Call</th><th>Shape</th><th>Prompt tokens</th><th>Hit tokens</th><th>Miss tokens</th><th>Latency</th></tr></thead><tbody><tr><td>1</td><td>A+B</td><td>7,074</td><td>0</td><td>7,074</td><td>1,250 ms</td></tr><tr><td>2</td><td>A+C</td><td>7,074</td><td>7,040</td><td>34</td><td>1,055 ms</td></tr><tr><td>3</td><td>A+D</td><td>7,072</td><td>7,040</td><td>32</td><td>945 ms</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"align":"wide","id":7567,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image alignwide size-large"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-prefix-length-matrix-1024x576.png" alt="DeepSeek context caching prefix test matrix with cache hit rates from 92 to 5172 prompt tokens" class="wp-image-7567"/><figcaption class="wp-element-caption">Observed warm-request results across eight synthetic prefix sizes. The chart reports this run; it does not define an official minimum cacheable size.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>This differs from a simplistic reading of the official divergent-suffix example, where the second call is described as a miss and the third can hit the newly detected common prefix. A plausible explanation is that our approximately 7,000-token shared prefix was long enough for fixed-interval persistence from the first request. That explanation is an inference consistent with the documented persistence paths; the API response does not identify which internal path produced a hit, so we cannot prove it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The practical conclusion is more useful than forcing every workload into the A/B diagram: exact prefix stability matters, long prompts may expose additional persisted units, and the returned usage fields are the evidence that billing and monitoring should use.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">How Prefix Length Changed the Observed Hit Rate</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Our cold-and-warm matrix ranged from 92 to 5,172 prompt tokens. The 92- and 132-token warm requests reported no hits. The 212-token request reported 128 hit tokens, and the hit share rose as the stable prefix grew.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Warm prompt tokens</th><th>Cache-hit tokens</th><th>Cache-miss tokens</th><th>Observed hit rate</th></tr></thead><tbody><tr><td>92</td><td>0</td><td>92</td><td>0%</td></tr><tr><td>132</td><td>0</td><td>132</td><td>0%</td></tr><tr><td>212</td><td>128</td><td>84</td><td>60.38%</td></tr><tr><td>372</td><td>256</td><td>116</td><td>68.82%</td></tr><tr><td>692</td><td>640</td><td>52</td><td>92.49%</td></tr><tr><td>1,332</td><td>1,280</td><td>52</td><td>96.10%</td></tr><tr><td>2,612</td><td>2,560</td><td>52</td><td>98.01%</td></tr><tr><td>5,172</td><td>5,120</td><td>52</td><td>98.99%</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Every non-zero hit count in this matrix was a multiple of 128. That is an observation, not proof of an official current minimum or storage-unit size. DeepSeek’s public guide does not publish the fixed interval, and a small sample cannot establish an implementation contract. Do not hard-code “128 tokens” as a production rule.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Stable Prefix vs. a Volatile First Line</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Four warm requests using a stable long prefix processed 23,602 prompt tokens: 23,552 were hits and only 50 were misses, for a 99.79% aggregate hit rate. Their median non-streaming latency was 1,035 ms. Five requests with a similarly sized body but a different first line every time processed 29,573 prompt tokens and reported zero cache hits; median latency was 1,139 ms.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"align":"wide","id":7569,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image alignwide size-large"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-stable-vs-volatile-1024x576.png" alt="Comparison of stable and volatile DeepSeek prompt prefixes showing 99.79 percent versus zero cache hits" class="wp-image-7569"/><figcaption class="wp-element-caption">A stable beginning produced 23,552 hit tokens in four warm requests. Changing the first line produced zero hits across five requests in this bounded test.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>The stable group’s measured input cost was $0.00007296 versus a $0.00330428 all-miss baseline, a difference of $0.00323132. The volatile group cost $0.00414022 for input—the same as its all-miss baseline. The groups contained different request counts, so compare their hit rates and per-token behavior rather than treating the total dollar amounts as a controlled latency or cost benchmark.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Two additional controls changed one synthetic line in the middle or near the end of an otherwise repeated prompt. Those second requests reported zero hits across 5,748 and 6,201 input tokens respectively. This does not prove that every middle or late edit always invalidates the whole cache. It does show why prompt teams should version and test the exact serialized request instead of assuming that “mostly unchanged” text will preserve a useful persisted unit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Live Result 3: user_id Isolated the Observed Cache State</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s <a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">Rate Limit &amp; Isolation guide</a> says <code>user_id</code> provides KVCache isolation for users under the same account. We warmed one synthetic prefix for user A, sent the same prefix as user B, warmed B, and then returned to A.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Phase</th><th>Prompt tokens</th><th>Hit tokens</th><th>Miss tokens</th><th>Latency</th></tr></thead><tbody><tr><td>User A cold</td><td>5,901</td><td>0</td><td>5,901</td><td>1,217 ms</td></tr><tr><td>User A warm</td><td>5,901</td><td>5,888</td><td>13</td><td>1,166 ms</td></tr><tr><td>User B first request</td><td>5,901</td><td>0</td><td>5,901</td><td>1,039 ms</td></tr><tr><td>User B warm</td><td>5,901</td><td>5,888</td><td>13</td><td>1,086 ms</td></tr><tr><td>User A recheck</td><td>5,901</td><td>5,888</td><td>13</td><td>999 ms</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"align":"wide","id":7568,"sizeSlug":"large","linkDestination":"none"} -->
+<figure class="wp-block-image alignwide size-large"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-user-id-isolation-1024x576.png" alt="DeepSeek user_id cache isolation test for two synthetic users" class="wp-image-7568"/><figcaption class="wp-element-caption">The same synthetic prefix was warm for user A, cold for user B’s first request, then warm independently for both users.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>The returned token fields were consistent with documented <code>user_id</code> isolation. This experiment did not inspect DeepSeek’s infrastructure, so it should not be described as a security audit. Use a stable pseudonymous identifier matching <code>[a-zA-Z0-9\-_]+</code>, up to 512 characters, and never put names, email addresses, account numbers, or other personal information in it. For concurrency behavior and implementation details, see our <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API rate limits guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Current DeepSeek Cache Pricing and Cost Formula</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek bills cache-hit input, cache-miss input, and output separately. The following rates were verified on July 26, 2026 against the <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">official Models &amp; Pricing page</a>. Prices can change; use our <a href="https://chat-deep.ai/pricing/">DeepSeek API pricing guide</a> for broader budgeting and recheck the official table before deployment.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Model</th><th>Cache-hit input / 1M</th><th>Cache-miss input / 1M</th><th>Output / 1M</th></tr></thead><tbody><tr><td><code>deepseek-v4-flash</code></td><td>$0.0028</td><td>$0.14</td><td>$0.28</td></tr><tr><td><code>deepseek-v4-pro</code></td><td>$0.003625</td><td>$0.435</td><td>$0.87</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>cache_hit_rate =
+  prompt_cache_hit_tokens / prompt_tokens * 100
+
+input_cost =
+  prompt_cache_hit_tokens / 1_000_000 * cache_hit_price
+  + prompt_cache_miss_tokens / 1_000_000 * cache_miss_price
+
+no_cache_input_cost =
+  prompt_tokens / 1_000_000 * cache_miss_price</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">Chat Completions reference</a> states that <code>prompt_tokens</code> equals cache-hit plus cache-miss prompt tokens. Validate that equation in telemetry. Do not calculate “total savings” from input alone: add completion cost, reasoning-token effects where applicable, network overhead, retries, and the value of model quality.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Runnable Python Direct-HTTP Three-Call Test</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This dependency-free Python example sends <code>A+B</code>, <code>A+C</code>, and <code>A+D</code> directly over HTTPS. It creates a new synthetic prefix and pseudonymous <code>user_id</code> each time, never prints the key, makes no automatic retries, and waits five seconds between calls. Set <code>DEEPSEEK_API_KEY</code> in the current process before running it. Our <a href="https://chat-deep.ai/docs/deepseek-api-key/">API key guide</a> explains safer server-side storage.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>#!/usr/bin/env python3
+import json
+import os
+import time
+import uuid
+import urllib.error
+import urllib.request
+
+URL = "https://api.deepseek.com/chat/completions"
+MODEL = "deepseek-v4-flash"
+HIT_PRICE = 0.0028
+MISS_PRICE = 0.14
+
+api_key = os.environ.get("DEEPSEEK_API_KEY")
+if not api_key:
+    raise SystemExit("Set DEEPSEEK_API_KEY for this process.")
+
+run_id = uuid.uuid4().hex[:12]
+user_id = f"cache-demo-{run_id}"
+
+records = "\n".join(
+    f"Record {i:03d}: product=Aster; region=North; units={1000 + i}; "
+    "policy=Use only these synthetic records and return no private data."
+    for i in range(1, 221)
+)
+
+system_text = (
+    f"Cache benchmark {run_id}. This is deterministic synthetic English. "
+    "Reply with only OK."
+)
+stable_prefix = (
+    "REFERENCE DATA\n"
+    f"{records}\n"
+    "END REFERENCE DATA\n"
+)
+
+suffixes = [
+    "B: Confirm that the reference block is present.",
+    "C: Confirm that the records are synthetic.",
+    "D: Confirm that no personal data is present.",
+]
+
+def send_call(call_number, suffix):
+    payload = {
+        "model": MODEL,
+        "messages": [
+            {"role": "system", "content": system_text},
+            {"role": "user", "content": stable_prefix + "\nTASK\n" + suffix},
+        ],
+        "thinking": {"type": "disabled"},
+        "user_id": user_id,
+        "max_tokens": 24,
+        "stream": False,
+    }
+
+    request = urllib.request.Request(
+        URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+
+    started = time.perf_counter()
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            result = json.loads(response.read().decode("utf-8"))
+            status = response.status
+    except urllib.error.HTTPError as error:
+        raise SystemExit(f"Call {call_number} failed with HTTP {error.code}")
+    except urllib.error.URLError as error:
+        raise SystemExit(f"Call {call_number} failed: {error.reason}")
+
+    latency_ms = round((time.perf_counter() - started) * 1000)
+    usage = result["usage"]
+    prompt = int(usage["prompt_tokens"])
+    hits = int(usage["prompt_cache_hit_tokens"])
+    misses = int(usage["prompt_cache_miss_tokens"])
+
+    if prompt != hits + misses:
+        raise RuntimeError("Prompt-token accounting did not balance.")
+
+    hit_rate = hits / prompt * 100 if prompt else 0
+    input_cost = (hits * HIT_PRICE + misses * MISS_PRICE) / 1_000_000
+
+    print({
+        "call": call_number,
+        "http_status": status,
+        "model": result.get("model"),
+        "prompt_tokens": prompt,
+        "cache_hit_tokens": hits,
+        "cache_miss_tokens": misses,
+        "hit_rate_percent": round(hit_rate, 2),
+        "input_cost_usd": round(input_cost, 10),
+        "latency_ms": latency_ms,
+    })
+
+for number, suffix in enumerate(suffixes, start=1):
+    send_call(number, suffix)
+    if number != len(suffixes):
+        time.sleep(5)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Your counts may differ from ours. A zero on call 2 is compatible with the official common-prefix example; a hit can also be compatible with documented fixed-interval persistence for a sufficiently long prefix. Run the complete sequence, keep all rows, and describe what the API returned. For OpenAI-client setup, environment handling, and error management, see the <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For the complete dependency-free Node.js benchmark, including exact-extension, divergent-suffix, stable/volatile, prefix-length, mutation, and <code>user_id</code> suites, use the <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/context-caching" target="_blank" rel="noopener">DeepSeek context-caching reproducible test harness on GitHub</a>. Review the request plan before supplying a temporary key.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Cache-Friendly Prompt Design</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><strong>Put stable content first:</strong> system instructions, policy text, long documents, tool definitions, and fixed examples should precede the changing task.</li>
+<li><strong>Move volatile values later:</strong> timestamps, request IDs, session state, retrieved snippets, and the current question should follow reusable material whenever meaning permits.</li>
+<li><strong>Preserve exact serialization:</strong> whitespace, headings, JSON property order, example order, and wrappers can change tokens even when the meaning looks unchanged.</li>
+<li><strong>Version deliberately:</strong> record a prompt-prefix version and expected hash in application telemetry so a hit-rate drop can be tied to a release.</li>
+<li><strong>Keep tenant identity out of prompt position zero:</strong> use the documented <code>user_id</code> field for isolation instead of prepending changing personal identifiers to a shared template.</li>
+<li><strong>Measure by workload:</strong> long-document Q&amp;A, repeated repository context, fixed few-shot examples, support policies, and multi-turn history are stronger candidates than one-off short prompts.</li>
+</ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>Production systems should record hit, miss, prompt, completion, and reasoning-token counts alongside model, prompt version, tenant-safe identifier, latency, status, finish reason, and cost. Our <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek observability guide</a> shows how to turn these fields into dashboards and alerts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Why DeepSeek Cache Hits May Be Zero</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table><thead><tr><th>Symptom</th><th>Likely explanation</th><th>What to check</th></tr></thead><tbody><tr><td>Every request is a miss</td><td>The first tokens change</td><td>Diff the exact system message and serialized request beginning</td></tr><tr><td>Second divergent request misses</td><td>The shared prefix has not yet been persisted as its own unit</td><td>Send the complete third request and inspect its usage</td></tr><tr><td>Short prompts never hit</td><td>No eligible persisted unit was observed</td><td>Test a longer deterministic prefix; do not assume an undocumented minimum</td></tr><tr><td>One tenant misses after another warms</td><td><code>user_id</code> isolation</td><td>Confirm the same pseudonymous ID is used for that tenant</td></tr><tr><td>Hit rate fell after deployment</td><td>Prompt text, order, tools, model, or mode changed</td><td>Compare prompt hashes and release versions</td></tr><tr><td>A formerly warm prompt misses</td><td>Best-effort cache state expired or was unavailable</td><td>Keep the request valid without a hit and measure over time</td></tr><tr><td>Output differs despite a hit</td><td>Output inference is performed again</td><td>Do not confuse context caching with response caching</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Do not retry merely to chase a cache hit. A miss is a valid successful request, and an automatic retry adds cost and duplicate work. Retry only appropriate transient failures with bounded backoff. Also avoid treating the small latency differences in this test as a service-level guarantee: these were non-streaming samples with short outputs, not a statistically powered time-to-first-token benchmark.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Thinking Mode, Tool Calls, and Security</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Both current V4 API models support thinking and non-thinking modes, with thinking enabled by default in the current documentation. We disabled it to keep the cache experiment focused. In an application, prompt-prefix stability still matters, but reasoning and tool workflows have additional message-history requirements. See the dedicated <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a> and <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">DeepSeek Tool Calls guide</a> before changing or removing prior reasoning fields.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Context caching is not a reason to send more data. Apply the same data-minimization, authorization, retention, and vendor-review standards used for ordinary API input. Keep API keys server-side, use synthetic data in public benchmarks, avoid personal data in <code>user_id</code>, and never publish raw prompts or responses without reviewing them. Start with the broader <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a> if you are building your first integration.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">DeepSeek Context Caching FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Is DeepSeek context caching automatic?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. DeepSeek’s official guide says it is enabled by default and requires no cache-specific request switch. Your request structure still determines how much reusable prefix may be available.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Why did my second request show zero cache-hit tokens?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If the calls are <code>A+B</code> and <code>A+C</code>, the second request may not fully match a previously persisted <code>A+B</code> unit. Common-prefix detection can make <code>A</code> available for a later <code>A+D</code> request. Short length, changed early tokens, isolation, construction delay, or best-effort availability can also explain a miss.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How do I verify a cache hit?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Read <code>usage.prompt_cache_hit_tokens</code> and <code>usage.prompt_cache_miss_tokens</code>. Confirm that their sum equals <code>usage.prompt_tokens</code>, then calculate the hit share and cost with the current model rates.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does repeated text in the middle of a prompt count?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Do not rely on semantic or middle-text similarity. DeepSeek documents prefix units. Put reusable content at the beginning and test the exact serialized input.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does caching remember my conversation?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. The Chat Completions API is stateless. Your application must resend the history required for the next answer; caching can only reduce eligible repeated-input processing.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">How long does the DeepSeek cache last?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek says unused entries are usually cleared within a few hours to a few days. This is not a retention guarantee. Applications must work correctly and remain within budget when every request is a miss.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does user_id affect cache sharing?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents <code>user_id</code> as a KVCache-isolation control. Our two-user test returned independent cold and warm states consistent with that documentation. Use a stable pseudonymous value and no personal information.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does a cache hit return the same answer?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. DeepSeek says the output is generated through inference again. Sampling, model behavior, tools, and changing suffixes can produce a different answer even when much of the input is a cache hit.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Is 128 tokens the official cache block size?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No official current block size is stated in the public guide. Our non-zero matrix results were multiples of 128, but that bounded observation cannot establish a provider contract or minimum.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Can DeepSeek context caching be guaranteed?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. DeepSeek calls it best effort. Design for correctness, acceptable latency, and affordable cost on a cache miss; treat hits as measured optimization rather than required application state.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading">Does the same caching behavior apply through OpenRouter, Azure, or another provider?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Do not assume it does. Our test used DeepSeek’s hosted API directly. A gateway or cloud host can expose different model IDs, usage fields, cache controls, prices, routing, and retention behavior. Check that provider’s current documentation and run a cold/warm control against the exact endpoint you will deploy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading">Sources and Test Transparency</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list">
+<li><a href="https://api-docs.deepseek.com/guides/kv_cache/" target="_blank" rel="noopener">DeepSeek Context Caching</a> — persistence rules, usage fields, output behavior, best-effort construction, and retention.</li>
+<li><a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">Create Chat Completion</a> — current models, request fields, and token accounting.</li>
+<li><a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">Models &amp; Pricing</a> — rates used for the dated calculations.</li>
+<li><a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">Rate Limit &amp; Isolation</a> — current <code>user_id</code> requirements and KVCache isolation.</li>
+<li><a href="https://api-docs.deepseek.com/guides/multi_round_chat/" target="_blank" rel="noopener">Multi-round Conversation</a> — stateless conversation handling.</li>
+<li><a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/context-caching" target="_blank" rel="noopener">Chat-Deep.ai reproducible context-caching harness</a> — public Node.js methodology and rerunnable test code.</li>
+</ul>
+<!-- /wp:list -->

@@ -1,0 +1,750 @@
+<!-- wp:paragraph -->
+<p><strong>Last tested: July 27, 2026.</strong> This <strong>DeepSeek Observability</strong> guide shows how to instrument production API calls with privacy-safe logs, OpenTelemetry traces, token and cache metrics, cost estimates, quality checks, dashboards, and incident alerts. It separates fields that DeepSeek actually returns from signals your application must calculate, so a plausible dashboard never masquerades as provider evidence.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>We also ran an original, frozen eight-case study against the live <a href="/docs/api/">DeepSeek API</a>. Seven planned requests returned HTTP 200 and the expected invalid-model control returned HTTP 400. The most useful finding was not a perfect pass: a streamed response finished normally and included final usage, yet produced five words when the prompt required six. That is the central lesson of LLM observability&mdash;transport success, terminal completion, contract validity, product quality, safety, and cost are different measurements.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:quote -->
+<blockquote class="wp-block-quote"><p><strong>Quick answer:</strong> monitor every DeepSeek call at four layers: provider lifecycle, application contract, evaluated quality, and business outcome. Keep prompts, outputs, reasoning text, tool arguments, authorization headers, and raw error bodies out of default telemetry.</p></blockquote>
+<!-- /wp:quote -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_01_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_01_URL}}" alt="DeepSeek observability reference architecture connecting application spans, safe logs, metrics, evaluations, dashboards, and alerts" class="wp-image-{{OBS_MEDIA_01_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A production DeepSeek observability path keeps the model call inside the application trace while sending redacted, versioned signals to a separate telemetry pipeline.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"table-of-contents"} -->
+<h2 class="wp-block-heading" id="table-of-contents">Table of Contents</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li><a href="#deepseek-observability-minimum-signal-set">The minimum production signal set</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#deepseek-observability-reference-architecture">Reference architecture</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#what-the-deepseek-api-actually-returns">What the DeepSeek API actually returns</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#opentelemetry-mapping-for-deepseek">OpenTelemetry mapping</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#privacy-safe-deepseek-logs">Privacy-safe logs</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#deepseek-streaming-observability">Streaming observability</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#token-cache-and-cost-monitoring">Token, cache, and cost monitoring</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#quality-and-contract-monitoring">Quality and contract monitoring</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#thinking-tools-and-agent-traces">Thinking, tools, and agent traces</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#errors-retries-timeouts-and-concurrency">Errors, retries, timeouts, and concurrency</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#deepseek-dashboard-and-alert-design">Dashboard and alert design</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#original-live-test-results">Original live test results</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#implementation-checklist">Implementation checklist</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#deepseek-observability-faq">FAQ</a></li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><a href="#methodology-and-sources">Methodology and sources</a></li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"anchor":"deepseek-observability-minimum-signal-set"} -->
+<h2 class="wp-block-heading" id="deepseek-observability-minimum-signal-set">DeepSeek Observability: The Minimum Production Signal Set</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A useful DeepSeek monitoring implementation starts with questions, not a vendor dashboard. Can you tell whether the provider accepted the request, whether the response reached a valid terminal state, whether your parser accepted it, whether the answer satisfied the task, and what the request cost? If any answer is missing, the system is only partially observable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Question</th><th>Minimum signal</th><th>Source of truth</th><th>Do not confuse it with</th></tr></thead><tbody><tr><td>Did the call complete?</td><td>Status, timeout state, cancellation state, <code>finish_reason</code></td><td>Transport and DeepSeek response</td><td>Answer quality</td></tr><tr><td>Was streaming responsive?</td><td>First response-stream chunk, first parsed event, first content, total duration, terminal usage</td><td>Application clock and stream parser</td><td>A provider SLA</td></tr><tr><td>What was consumed?</td><td>Input, output, cache-hit, cache-miss, and reasoning tokens</td><td>DeepSeek <code>usage</code></td><td>Character counts</td></tr><tr><td>What did it cost?</td><td>Usage multiplied by a dated price snapshot</td><td>Application calculation plus billing reconciliation</td><td>A field returned by Chat Completions</td></tr><tr><td>Was the contract valid?</td><td>JSON schema, tool schema, citation, or format check</td><td>Application validator</td><td>HTTP 200</td></tr><tr><td>Was the answer useful?</td><td>Task-specific evaluator, human feedback, and business outcome</td><td>Evaluation pipeline</td><td>Model confidence or fluent wording</td></tr><tr><td>Can an incident be debugged?</td><td>Trace, safe correlation ID, prompt version, deployment, and error class</td><td>Your application</td><td>Raw prompt storage</td></tr></tbody></table><figcaption class="wp-element-caption">The signal owner matters. Provider fields, application measurements, evaluators, and billing records answer different questions.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Do not put every field on every metric. Metrics need a small, controlled label set such as environment, route, model tier, operation, and outcome. Request IDs, user IDs, prompt versions, tool-call IDs, error messages, and fingerprints belong in sampled traces or access-controlled logs, not in high-cardinality metric labels.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_02_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_02_URL}}" alt="Map of DeepSeek provider fields, application-derived metrics, evaluator signals, and account-level evidence" class="wp-image-{{OBS_MEDIA_02_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A signal ownership map prevents application estimates from being presented as DeepSeek-returned facts.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"anchor":"deepseek-observability-reference-architecture"} -->
+<h2 class="wp-block-heading" id="deepseek-observability-reference-architecture">DeepSeek Observability Reference Architecture</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The model request is one span in a larger workflow. A useful trace begins when your API route, job, or agent receives work and ends only after parsing, validation, tool execution, quality checks, and response delivery. Instrumenting only the HTTP call hides the failures that matter most.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Entry span:</strong> authenticate the request and attach a server-generated correlation ID. Never use a raw email address, phone number, prompt, or session secret.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Prompt-build span:</strong> record template and policy versions, input-size buckets, and retrieval counts&mdash;not prompt text by default.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>DeepSeek client span:</strong> record requested model, returned model, streaming flag, terminal state, token usage, safe error class, and measured durations.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Validation span:</strong> parse JSON or tool arguments and record only pass/fail plus a low-cardinality failure category.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Tool spans:</strong> trace allowlist validation, authorization, execution, timeout, and result acceptance separately.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Evaluation event:</strong> attach evaluator name, version, rubric, sample policy, and score without copying private content into the event.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Collector boundary:</strong> redact again, drop forbidden attributes, sample deliberately, and route traces, logs, and metrics to their retention classes.</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>This design works whether your application uses the raw API, the OpenAI-compatible client, our <a href="/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a>, the <a href="/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>, LangChain, or LlamaIndex. Framework auto-instrumentation can reduce setup work, but the application still owns privacy policy, business validation, tool authorization, and quality definitions.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"what-the-deepseek-api-actually-returns"} -->
+<h2 class="wp-block-heading" id="what-the-deepseek-api-actually-returns">What the DeepSeek API Actually Returns</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's current <a href="https://api-docs.deepseek.com/api/create-chat-completion" target="_blank" rel="noopener">Chat Completions contract</a> exposes enough metadata for a strong provider span. The application should still validate optional fields and preserve a clear difference between the requested model and the model reported in the response.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>DeepSeek field or event</th><th>What it supports</th><th>Recommended telemetry treatment</th></tr></thead><tbody><tr><td><code>model</code></td><td>Model reported by the response</td><td>Record beside the requested model; alert on unexpected routing</td></tr><tr><td><code>system_fingerprint</code></td><td>Backend configuration fingerprint</td><td>Keep in sampled traces if useful; never use as a metric label</td></tr><tr><td><code>finish_reason</code></td><td><code>stop</code>, <code>length</code>, <code>content_filter</code>, <code>tool_calls</code>, or <code>insufficient_system_resource</code></td><td>Make terminal-state validation mandatory</td></tr><tr><td><code>prompt_tokens</code></td><td>Total input tokens</td><td>Record as provider usage</td></tr><tr><td><code>completion_tokens</code></td><td>Total generated tokens</td><td>Record as provider usage</td></tr><tr><td><code>prompt_cache_hit_tokens</code></td><td>Input tokens served from cache</td><td>Calculate cache-hit share and estimated cache savings</td></tr><tr><td><code>prompt_cache_miss_tokens</code></td><td>Input tokens not served from cache</td><td>Keep as a DeepSeek-specific usage field</td></tr><tr><td><code>completion_tokens_details.reasoning_tokens</code></td><td>Reasoning-token count when available</td><td>Record the count, not reasoning text</td></tr><tr><td><code>message.reasoning_content</code></td><td>Thinking-mode reasoning text</td><td>Do not log by default; expose to users only under an explicit product policy</td></tr><tr><td><code>message.tool_calls</code></td><td>Requested function calls and arguments</td><td>Trace count, allowlisted name, validation, and outcome; redact arguments</td></tr><tr><td>Final streaming usage chunk</td><td>Full request usage when <code>stream_options.include_usage</code> is enabled</td><td>Read through the terminal sequence before closing telemetry</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The response does <em>not</em> know your prompt-template version, tenant bucket, deployment, evaluation rubric, business conversion, incident ID, or current price snapshot. Add those fields at the application boundary. DeepSeek also does not return a ready-made cost number in Chat Completions; cost is an application estimate until reconciled with account billing data.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Our live <code>/models</code> preflight returned <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. Use those canonical IDs in new code and monitor requested versus returned model separately. This is more reliable than treating an alias as a permanent product identity.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"opentelemetry-mapping-for-deepseek"} -->
+<h2 class="wp-block-heading" id="opentelemetry-mapping-for-deepseek">OpenTelemetry Mapping for DeepSeek</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The official <a href="https://github.com/open-telemetry/semantic-conventions-genai" target="_blank" rel="noopener">OpenTelemetry GenAI semantic conventions</a> provide a portable vocabulary for model operations, tokens, streaming, tools, and evaluations. They remain versioned and under development, so pin the convention revision supported by your instrumentation and test upgrades like an API migration. The mapping below was checked against <a href="https://github.com/open-telemetry/semantic-conventions-genai/commit/64cfaa612a1af8472b2f063374fbe3c9e6cea2ab" target="_blank" rel="noopener">repository commit <code>64cfaa6</code></a>; your installed library may implement a different revision.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Signal</th><th>Current OpenTelemetry name</th><th>DeepSeek mapping</th></tr></thead><tbody><tr><td>Operation</td><td><code>gen_ai.operation.name</code></td><td><code>chat</code></td></tr><tr><td>Provider</td><td><code>gen_ai.provider.name</code></td><td>The standardized value <code>deepseek</code></td></tr><tr><td>Requested model</td><td><code>gen_ai.request.model</code></td><td>The model sent in the request</td></tr><tr><td>Returned model</td><td><code>gen_ai.response.model</code></td><td>DeepSeek response <code>model</code></td></tr><tr><td>Finish state</td><td><code>gen_ai.response.finish_reasons</code></td><td>The returned <code>finish_reason</code></td></tr><tr><td>Input tokens</td><td><code>gen_ai.usage.input_tokens</code></td><td><code>usage.prompt_tokens</code></td></tr><tr><td>Output tokens</td><td><code>gen_ai.usage.output_tokens</code></td><td><code>usage.completion_tokens</code></td></tr><tr><td>Cache-read input</td><td><code>gen_ai.usage.cache_read.input_tokens</code></td><td><code>usage.prompt_cache_hit_tokens</code></td></tr><tr><td>Reasoning output</td><td><code>gen_ai.usage.reasoning.output_tokens</code></td><td><code>completion_tokens_details.reasoning_tokens</code></td></tr><tr><td>Streaming request</td><td><code>gen_ai.request.stream</code></td><td>The request's <code>stream</code> flag</td></tr><tr><td>First chunk</td><td><code>gen_ai.response.time_to_first_chunk</code></td><td>Seconds from request start to the first response-stream chunk received</td></tr><tr><td>Duration metric</td><td><code>gen_ai.client.operation.duration</code></td><td>Seconds through the complete client operation</td></tr><tr><td>First-chunk metric</td><td><code>gen_ai.client.operation.time_to_first_chunk</code></td><td>Histogram of first response-stream chunk observations in seconds</td></tr><tr><td>Per-output-chunk metric</td><td><code>gen_ai.client.operation.time_per_output_chunk</code></td><td>Optional streaming inter-chunk timing in seconds</td></tr><tr><td>Token metric</td><td><code>gen_ai.client.token.usage</code></td><td>Provider-reported billable token counts</td></tr></tbody></table><figcaption class="wp-element-caption">Do not map DeepSeek cache-miss tokens to cache-creation tokens automatically; a miss is not proof that a provider created a reusable cache entry.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Where no standard attribute expresses a DeepSeek field, use a documented namespace such as <code>deepseek.prompt_cache_miss_tokens</code>. Keep custom fields out of metric labels until you have bounded their cardinality. OpenTelemetry's content attributes and tool arguments are opt-in for a reason: they can contain personal data, secrets, proprietary context, and prompt-injection payloads.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"privacy-safe-typescript-wrapper"} -->
+<h3 class="wp-block-heading" id="privacy-safe-typescript-wrapper">Privacy-Safe TypeScript Wrapper</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The following pattern records provider metadata and usage while leaving application contract validation to a separate internal span. It deliberately does not call <code>recordException(error)</code>, store <code>error.message</code>, or attach request and response content. It assumes that your service has already registered fully initialized global OpenTelemetry tracer and meter providers, processors or readers, and exporters; the API package alone uses no-op defaults. The low-cardinality classifier should be owned and tested by your application.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import {
+  SpanKind,
+  SpanStatusCode,
+  metrics,
+  trace,
+} from "@opentelemetry/api";
+
+const tracer = trace.getTracer("deepseek-client", "1.0.0");
+const meter = metrics.getMeter("deepseek-client", "1.0.0");
+
+const duration = meter.createHistogram(
+  "gen_ai.client.operation.duration",
+  { unit: "s" },
+);
+
+const tokenUsage = meter.createHistogram(
+  "gen_ai.client.token.usage",
+  { unit: "{token}" },
+);
+
+function classifySafeError(error: unknown): string {
+  const name = error instanceof Error ? error.name : "Unknown";
+  if (name === "AbortError") return "cancelled";
+  if (name === "TimeoutError") return "timeout";
+  return "provider_or_transport";
+}
+
+function metricModel(model: string): string {
+  if (model === "deepseek-v4-flash") return model;
+  if (model === "deepseek-v4-pro") return model;
+  return "other";
+}
+
+type SafeUsage = {
+  prompt_tokens: number;
+  completion_tokens: number;
+  prompt_cache_hit_tokens: number;
+  prompt_cache_miss_tokens: number;
+  completion_tokens_details?: { reasoning_tokens?: number };
+};
+
+type SafeResult = {
+  requestedModel: string;
+  returnedModel: string;
+  finishReason: string;
+  usage: SafeUsage;
+  contractValid: boolean;
+};
+
+export async function observeDeepSeek(
+  route: string,
+  requestedModel: string,
+  call: () =&gt; Promise&lt;SafeResult&gt;,
+): Promise&lt;SafeResult&gt; {
+  const started = performance.now();
+  let metricErrorType: string | undefined;
+
+  return tracer.startActiveSpan(
+    `chat ${requestedModel}`,
+    {
+      kind: SpanKind.CLIENT,
+      attributes: {
+        "gen_ai.operation.name": "chat",
+        "gen_ai.provider.name": "deepseek",
+        "gen_ai.request.model": requestedModel,
+        "server.address": "api.deepseek.com",
+        "server.port": 443,
+        "app.route": route,
+      },
+    },
+    async (span) =&gt; {
+      try {
+        const result = await call();
+        const u = result.usage;
+
+        span.setAttributes({
+          "gen_ai.response.model": result.returnedModel,
+          "gen_ai.response.finish_reasons": [result.finishReason],
+          "gen_ai.usage.input_tokens": u.prompt_tokens,
+          "gen_ai.usage.output_tokens": u.completion_tokens,
+          "gen_ai.usage.cache_read.input_tokens":
+            u.prompt_cache_hit_tokens,
+          "gen_ai.usage.reasoning.output_tokens":
+            u.completion_tokens_details?.reasoning_tokens ?? 0,
+          "deepseek.prompt_cache_miss_tokens":
+            u.prompt_cache_miss_tokens,
+        });
+
+        const tokenLabels = {
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "deepseek",
+          "gen_ai.request.model": metricModel(requestedModel),
+        };
+        tokenUsage.record(u.prompt_tokens, {
+          ...tokenLabels,
+          "gen_ai.token.type": "input",
+        });
+        tokenUsage.record(u.completion_tokens, {
+          ...tokenLabels,
+          "gen_ai.token.type": "output",
+        });
+
+        return result;
+      } catch (error: unknown) {
+        metricErrorType = classifySafeError(error);
+        span.setStatus({ code: SpanStatusCode.ERROR });
+        span.setAttribute("error.type", metricErrorType);
+        throw error;
+      } finally {
+        const metricAttributes: Record&lt;string, string&gt; = {
+          "gen_ai.operation.name": "chat",
+          "gen_ai.provider.name": "deepseek",
+          "gen_ai.request.model": metricModel(requestedModel),
+          "app.route": route,
+        };
+        if (metricErrorType) {
+          metricAttributes["error.type"] = metricErrorType;
+        }
+        duration.record(
+          (performance.now() - started) / 1000,
+          metricAttributes,
+        );
+        span.end();
+      }
+    },
+  );
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Keep <code>route</code> on a fixed allowlist. A raw URL path containing IDs, a full user ID, or a generated model name can create expensive cardinality and expose data. The same rule applies to prompt versions: useful in traces, usually unsuitable as metric labels. Record contract validation in a separate internal validation span, event, or metric; do not mark a successful remote DeepSeek span as a provider error merely because an application-level rule failed.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"privacy-safe-deepseek-logs"} -->
+<h2 class="wp-block-heading" id="privacy-safe-deepseek-logs">Privacy-Safe DeepSeek Logs</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Logging should be default-deny. Define an allowlisted event schema and reject unknown fields before export. Redaction after a raw payload reaches your log pipeline is too late: copies may already exist in buffers, error trackers, or secondary sinks.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_03_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_03_URL}}" alt="Privacy-safe DeepSeek logging pipeline with allowlisted metadata, redaction gates, sampling, retention, and access controls" class="wp-image-{{OBS_MEDIA_03_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A safe event is constructed from approved metadata; raw request and response objects never enter the logging path.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Safe by default</th><th>Restricted or sampled</th><th>Never log by default</th></tr></thead><tbody><tr><td>Timestamp, environment, service, route allowlist</td><td>Internal correlation ID</td><td>API key or Authorization header</td></tr><tr><td>Requested and returned model</td><td>Provider response ID under short retention</td><td>Prompt or uploaded document text</td></tr><tr><td>HTTP status and safe error class</td><td>Backend fingerprint in sampled traces</td><td>Final answer or reasoning text</td></tr><tr><td>Finish reason and validation booleans</td><td>Hashed or bucketed tenant identity</td><td>Raw tool arguments or tool result</td></tr><tr><td>Token counts and measured durations</td><td>Retrieved document IDs under access control</td><td>Raw exception message or stack with payload data</td></tr><tr><td>Retry, timeout, and cancellation state</td><td>Human feedback linked by internal ID</td><td>Cookies, headers, emails, phone numbers, or secrets</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Hashing is not magic anonymization. A stable hash of an email address can still be personal data and can create a high-cardinality metric. Prefer a server-generated opaque ID. If a legitimate workflow requires deterministic pseudonymization, use a keyed HMAC with managed secret rotation, keep it in restricted traces rather than metrics, and define retention and deletion paths; an ordinary salted hash is not enough for predictable identifiers.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>{
+  "event": "deepseek.chat.completed",
+  "correlation_id": "internal-random-id",
+  "environment": "production",
+  "route": "support-summary",
+  "requested_model": "deepseek-v4-flash",
+  "returned_model": "deepseek-v4-flash",
+  "stream": true,
+  "finish_reason": "stop",
+  "http_status": 200,
+  "prompt_tokens": 1200,
+  "completion_tokens": 180,
+  "cache_hit_tokens": 1024,
+  "cache_miss_tokens": 176,
+  "contract_valid": true,
+  "quality_sampled": false,
+  "raw_content_stored": false
+}</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Make <code>raw_content_stored: false</code> an enforced invariant, not decorative metadata. A post-run audit should scan serialized evidence for secret patterns, provider IDs, prompt/output fields, non-allowlisted keys, and accidental Unicode content before publication. Our <a href="/docs/deepseek-api-key/">DeepSeek API Key guide</a> covers server-only credential storage and revocation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"deepseek-streaming-observability"} -->
+<h2 class="wp-block-heading" id="deepseek-streaming-observability">DeepSeek Streaming Observability</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Streaming needs more than one latency number. DeepSeek uses server-sent events and can send keep-alive comments while a request waits. A keep-alive proves that the connection is alive; it is not a model chunk, a token, or visible content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_04_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_04_URL}}" alt="DeepSeek streaming timing state machine from request start through first response chunk, first parsed event, first content, finish reason, final usage, and DONE" class="wp-image-{{OBS_MEDIA_04_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Measure the first response-stream chunk, first parsed JSON event, and first visible content separately; close the span only after terminal state and usage handling.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Time to first network data:</strong> useful for transport diagnosis, but it may be an empty line or keep-alive.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to first response-stream chunk:</strong> the current OpenTelemetry GenAI first-chunk concept.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to first parsed JSON event:</strong> an application-specific parser measurement that can differ from the stream-chunk boundary.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to first content:</strong> when the user can see final-answer content. Thinking metadata may arrive earlier.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to terminal reason:</strong> when the stream declares <code>stop</code>, <code>length</code>, <code>tool_calls</code>, or another finish state.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to final usage:</strong> when the usage chunk is observed with <code>stream_options.include_usage: true</code>.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Time to cleanup:</strong> when the reader, abort signal, buffers, and span are closed.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>In our one-run stream observation, the first response-stream data chunk and first parsed JSON event were both observed at 331 ms, while the first content arrived at 740 ms. The stream contained nine parsed JSON events, finished with <code>stop</code>, and included terminal usage. These numbers describe one dated request from one test environment; they are not averages, percentiles, throughput measurements, or a DeepSeek SLA.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The quality check still failed because the output contained five words instead of the requested six. That failure should increment a task-contract metric even though transport, streaming, terminal state, and usage collection all succeeded.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"token-cache-and-cost-monitoring"} -->
+<h2 class="wp-block-heading" id="token-cache-and-cost-monitoring">DeepSeek Token, Cache, and Cost Monitoring</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the provider's returned token counts. DeepSeek states that <code>prompt_tokens</code> equals cache-hit plus cache-miss input tokens. Do not replace those fields with a character estimate when billable usage is available.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A per-request cache-hit share is:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>cache_hit_share =
+  prompt_cache_hit_tokens / prompt_tokens</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Estimated request cost must use a dated price table because prices can change:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>estimated_cost =
+  (
+    cache_hit_tokens * cache_hit_input_rate_per_million
+    + cache_miss_tokens * cache_miss_input_rate_per_million
+    + completion_tokens * output_rate_per_million
+  ) / 1_000_000</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">official DeepSeek pricing page</a> checked for this study listed the following USD rates per one million tokens:</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Model</th><th>Cache-hit input</th><th>Cache-miss input</th><th>Output</th></tr></thead><tbody><tr><td><code>deepseek-v4-flash</code></td><td>$0.0028</td><td>$0.14</td><td>$0.28</td></tr><tr><td><code>deepseek-v4-pro</code></td><td>$0.003625</td><td>$0.435</td><td>$0.87</td></tr></tbody></table><figcaption class="wp-element-caption">Pricing snapshot checked July 27, 2026 UTC. Always re-read the official page before budgeting or alerting.</figcaption></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_05_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_05_URL}}" alt="DeepSeek token cache and estimated cost calculation using provider usage fields and a dated external price snapshot" class="wp-image-{{OBS_MEDIA_05_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Provider usage is measured; cost is derived from usage and a versioned price snapshot, then reconciled with billing.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3,"anchor":"original-cache-observation"} -->
+<h3 class="wp-block-heading" id="original-cache-observation">Original Cache Observation</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We sent the same synthetic 4,810-token prefix twice in immediate succession. The first request reported zero cache-hit tokens. The second reported 4,736 cache-hit tokens and 74 cache-miss tokens&mdash;a 98.4615% hit share for that request. At the price snapshot above, the first request's estimated cost was $0.000674240 and the immediate repeat was $0.000024461, about 96.37% lower.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This is a controlled demonstration, not a cache-persistence promise. It does not establish how long a prefix remains reusable, how another account behaves, or what hit share a changing production prompt will achieve. Monitor your own prefix versions and compare stable cohorts.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For a deeper implementation, use our <a href="/docs/deepseek-context-caching/">DeepSeek Context Caching guide</a>. Keep price rates in configuration with an effective date and source URL, and reconcile estimated monthly spend against the DeepSeek platform's usage or billing export.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"quality-and-contract-monitoring"} -->
+<h2 class="wp-block-heading" id="quality-and-contract-monitoring">DeepSeek Quality and Contract Monitoring</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Quality is not one universal score. Define checks that match the job. A customer-support summarizer may need groundedness and omission tests; a <a href="/docs/json-output/">DeepSeek JSON Output</a> endpoint needs parse, schema, and business-rule checks; a coding assistant needs compilation and unit tests; an agent needs correct tool selection, authorized arguments, and a valid terminal answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Layer</th><th>Example check</th><th>Useful result</th><th>Unsafe shortcut</th></tr></thead><tbody><tr><td>Terminal state</td><td>Require the expected <code>finish_reason</code></td><td>Complete, truncated, filtered, tool call, or resource interruption</td><td>Accept any HTTP 200</td></tr><tr><td>Syntax</td><td>Parse JSON</td><td>Boolean plus safe error class</td><td>Log malformed output</td></tr><tr><td>Schema</td><td>Validate required fields and types</td><td>Schema version and pass/fail</td><td>Trust TypeScript types at runtime</td></tr><tr><td>Business rule</td><td>Check allowlists, ranges, and permissions</td><td>Rule ID and pass/fail</td><td>Let the model authorize an action</td></tr><tr><td>Task constraint</td><td>Exact word count, citation count, or required section</td><td>Deterministic compliance result</td><td>Use fluency as correctness</td></tr><tr><td>Groundedness</td><td>Compare claims with supplied evidence</td><td>Versioned rubric, score, and sample policy</td><td>Ask the same model if it is correct</td></tr><tr><td>Human outcome</td><td>Accepted edit, resolved ticket, or reviewer score</td><td>Delayed product signal</td><td>Optimize only automated scores</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Sample expensive evaluators instead of running them blindly on every request. Keep an always-on deterministic layer for finish state, JSON, tool schema, citations, and policy flags; add offline regression suites for releases; then apply human or model-based evaluation to a stratified sample. Version every prompt, dataset, judge, rubric, threshold, and model used for evaluation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The companion <a href="/docs/deepseek-evaluation-framework/">DeepSeek Evaluation Framework</a> covers release gates and regression design. Observability consumes those evaluation results; it should not silently redefine the scoring method.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"thinking-tools-and-agent-traces"} -->
+<h2 class="wp-block-heading" id="thinking-tools-and-agent-traces">DeepSeek Thinking, Tools, and Agent Traces</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><a href="/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode</a> adds another output lane. Record whether reasoning was requested, whether reasoning metadata was present, the reasoning-token count, final-content presence, and the terminal state. Do not treat nonempty reasoning as a complete answer, and do not export reasoning text to ordinary logs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Our V4 Pro control returned a normal <code>stop</code>, 30 reasoning tokens, and the correct final integer. That proves those fields were observable in that request; it does not justify logging the reasoning text or assuming every thinking request will finish inside the same token budget.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_06_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_06_URL}}" alt="DeepSeek tool and agent trace waterfall covering model request, tool proposal, argument validation, authorization, execution, continuation, and final validation" class="wp-image-{{OBS_MEDIA_06_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">An agent trace must show the application-controlled gates between a model's tool proposal and any real side effect.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li>Start the model-call span and record the allowlisted tool-set version.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Record tool-call count and allowlisted tool name; keep raw arguments out of default telemetry.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Parse arguments as untrusted input and record syntax/schema outcomes.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Authorize the requested action against the current user and tenant policy.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Execute a bounded adapter with its own timeout, retry, and side-effect policy.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Return a tool result with the correct call ID inside the model protocol.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Validate the continuation's final state and output contract.</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>In our required-tool live case, DeepSeek returned one <code>get_service_health</code> call with valid JSON and the allowed synthetic service value. We did not execute a real tool because the test's purpose was observability of the proposal and validation boundary. The result is evidence for that narrow contract, not a production authorization test. See the <a href="/docs/deepseek-tool-calls/">DeepSeek Tool Calls guide</a> for the complete application loop.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"errors-retries-timeouts-and-concurrency"} -->
+<h2 class="wp-block-heading" id="errors-retries-timeouts-and-concurrency">DeepSeek Errors, Retries, Timeouts, and Concurrency</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Classify errors before alerting or retrying. DeepSeek's current <a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">error documentation</a> lists 400, 401, 402, 422, 429, 500, and 503 outcomes. Your telemetry should also distinguish client timeout, user cancellation, stream parse failure, incomplete terminal state, JSON failure, tool validation failure, and business-policy rejection.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Class</th><th>Retry?</th><th>Observability fields</th><th>Alert route</th></tr></thead><tbody><tr><td>400 / 422 request contract</td><td>No until code or input is fixed</td><td>Safe validation category, release, prompt/tool schema version</td><td>Owning engineering team</td></tr><tr><td>401 authentication</td><td>No automatic retry</td><td>Credential identifier alias, not the key</td><td>Security or platform on-call</td></tr><tr><td>402 balance</td><td>No until account state changes</td><td>Account alias and billing state</td><td>Billing owner</td></tr><tr><td>429 concurrency limit</td><td>Bounded backoff if the operation is safe</td><td>In-flight count, queue depth, model, attempt</td><td>Capacity and application owner</td></tr><tr><td>500 / 503 provider failure</td><td>Bounded retry for idempotent work</td><td>Error class, attempt, elapsed budget, fallback state</td><td>Provider dependency incident</td></tr><tr><td>Timeout or cancellation</td><td>Policy-dependent; never retry a user cancellation</td><td>Timeout owner, phase, abort source, side-effect state</td><td>Application owner</td></tr><tr><td>Contract or quality failure</td><td>Repair only under a bounded, measured policy</td><td>Validator/evaluator version and failure class</td><td>Product quality owner</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Choose one retry owner. If the SDK, gateway, worker, and job queue all retry, one user action can multiply into many billable calls and duplicate side effects. Record <code>attempt</code>, <code>retry_owner</code>, <code>elapsed_budget_ms</code>, and an internal deduplication key, then verify that cancellation stops pending work.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek's <a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">Rate Limit and Isolation page</a> checked for this guide listed account-level concurrency of 2,500 for V4 Flash and 500 for V4 Pro. These are concurrency limits, not published RPM or TPM quotas. Track your own in-flight gauge and queue age because the response does not expose account saturation. The same documentation says <code>user_id</code> must not contain private information; use an opaque internal value and do not turn it into a metric label.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek may send empty lines for non-streaming waits and SSE keep-alive comments for streaming waits. Your parser must ignore them without resetting the entire business timeout indefinitely. Measure queue-wait indicators separately and set an application timeout that fits your user experience and retry budget. Our <a href="/docs/deepseek-error-codes/">DeepSeek Error Codes</a> and <a href="/docs/api-rate-limits/">DeepSeek API Rate Limits</a> pages cover those boundaries in more detail.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"deepseek-dashboard-and-alert-design"} -->
+<h2 class="wp-block-heading" id="deepseek-dashboard-and-alert-design">DeepSeek Dashboard and Incident Alert Design</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A dashboard should lead from symptom to trace. Put a small set of service-level indicators at the top, then provide drill-down panels for tokens, cache, cost, contracts, tools, and telemetry health. Do not mix unrelated populations: separate environment, route, streaming mode, canonical model, and release when those dimensions change behavior.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_07_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_07_URL}}" alt="DeepSeek observability dashboard and alert topology for reliability, streaming, tokens, cache, cost, quality, tools, and telemetry health" class="wp-image-{{OBS_MEDIA_07_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Dashboards summarize bounded labels; exemplars and correlation IDs connect an alert to a privacy-safe trace.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3,"anchor":"recommended-dashboard-panels"} -->
+<h3 class="wp-block-heading" id="recommended-dashboard-panels">Recommended Dashboard Panels</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li><strong>Reliability:</strong> request count, operational success, terminal-complete rate, 4xx/5xx by safe class, timeouts, cancellations, and retry amplification.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Streaming:</strong> first-chunk and first-content distributions, complete-stream rate, terminal-usage rate, client aborts, and orphaned streams.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Usage and cost:</strong> input, output, cache-read, cache-miss, and reasoning tokens; estimated spend by route and model; billing reconciliation difference.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Quality:</strong> deterministic contract pass rate, sampled evaluator scores, human feedback, and business outcome by prompt/release cohort.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Tools and agents:</strong> calls per run, validation failures, authorization denials, tool timeouts, side-effect retries, and final-answer completion.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li><strong>Telemetry health:</strong> collector drops, export failures, sampling rate, missing usage, missing terminal states, redaction rejects, and clock skew.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"level":3,"anchor":"starting-alert-policies"} -->
+<h3 class="wp-block-heading" id="starting-alert-policies">Starting Alert Policies</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The following are policy shapes, not universal thresholds. Establish a baseline and error budget for each route before choosing numbers.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Alert</th><th>Condition shape</th><th>Guardrail</th></tr></thead><tbody><tr><td>Provider dependency</td><td>5xx or 503 rate exceeds the route's short-window budget</td><td>Require minimum traffic and compare with official status</td></tr><tr><td>Concurrency pressure</td><td>429 rate, in-flight gauge, and queue age rise together</td><td>Do not infer RPM/TPM from a concurrency error</td></tr><tr><td>Streaming regression</td><td>First-chunk or first-content percentile departs from baseline</td><td>Separate network, keep-alive, parsed chunk, and content</td></tr><tr><td>Incomplete outputs</td><td><code>length</code>, content filter, resource interruption, or empty final answer rises</td><td>Group by request budget and model</td></tr><tr><td>Cost anomaly</td><td>Token or estimated-cost burn exceeds a cohort forecast</td><td>Pin the price snapshot and reconcile billing</td></tr><tr><td>Cache regression</td><td>Hit share drops after a prompt/template release</td><td>Compare like-for-like prefix cohorts</td></tr><tr><td>Quality regression</td><td>Contract or sampled evaluation rate falls below its release budget</td><td>Version the evaluator and watch sample size</td></tr><tr><td>Telemetry blind spot</td><td>Usage, terminal state, or export coverage falls</td><td>Alert on missing evidence, not only bad evidence</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Link provider incidents to <a href="https://status.deepseek.com/" target="_blank" rel="noopener">DeepSeek's official status page</a>, but do not wait for an external status update before protecting users. Your own measured error budget and fallback policy should control application behavior.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"original-live-test-results"} -->
+<h2 class="wp-block-heading" id="original-live-test-results">Original DeepSeek Observability Live Test Results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We froze the plan before any paid generation request. The run used concurrency one, zero provider retries, a 30-second per-request timeout, synthetic English-only prompts, and no real tools or user data. Raw prompts, outputs, reasoning text, provider IDs, raw errors, and the API key were excluded from public artifacts. The temporary key existed only in memory and was revoked after the run.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":{{OBS_MEDIA_08_ID}},"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_08_URL}}" alt="Sanitized DeepSeek observability live results dashboard showing eight cases, usage, cache evidence, quality detection, and privacy audit" class="wp-image-{{OBS_MEDIA_08_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Sanitized live evidence from July 27, 2026 UTC. Timings are individual observations, not a provider benchmark or SLA.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:table -->
+<figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Case</th><th>Observed outcome</th><th>What the monitor proved</th></tr></thead><tbody><tr><td>Ordinary V4 Flash</td><td>200, <code>stop</code>, exact output, usage present</td><td>Provider lifecycle and deterministic contract</td></tr><tr><td>Streaming V4 Flash</td><td>200, nine JSON events, terminal usage, five words instead of six</td><td>Streaming health can pass while task quality fails</td></tr><tr><td>JSON mode</td><td>200, valid JSON, exact two-field schema</td><td>Parse and schema gates</td></tr><tr><td>Required tool call</td><td>200, <code>tool_calls</code>, one valid allowlisted call</td><td>Proposal, count, name, and argument validation</td></tr><tr><td>V4 Pro thinking</td><td>200, <code>stop</code>, reasoning usage, correct final answer</td><td>Separate reasoning metadata and final completion</td></tr><tr><td>Cache request one</td><td>4,810 input tokens; zero hits</td><td>Cold observation for the controlled prefix</td></tr><tr><td>Immediate cache repeat</td><td>4,736 hits and 74 misses</td><td>Provider-returned cache telemetry and cost calculation</td></tr><tr><td>Invalid model control</td><td>Expected 400, <code>invalid_request_error</code></td><td>Safe error classification</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Across the seven successful generation requests, DeepSeek reported 10,036 prompt tokens, 98 completion tokens, and 10,134 total tokens. Using the dated official prices, the study's estimated token cost was $0.000808071. The models preflight returned only the two canonical V4 IDs. Every planned outcome was observed, including the expected error and the deliberately independent quality failure.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/observability" target="_blank" rel="noopener">Open the public reproducibility package on GitHub</a> for the frozen plan, source, fixtures, local tests, sanitized result files, privacy audit, and editable SVG visuals. The repository contains synthetic test prompts needed for reproduction, but no private prompts, raw provider outputs, provider IDs, API keys, account balances, or tool side effects.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"study-limitations"} -->
+<h3 class="wp-block-heading" id="study-limitations">Study Limitations</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><!-- wp:list-item -->
+<li>One serial request per scenario cannot establish a latency distribution, throughput limit, availability rate, or SLA.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>The immediate repeated-prefix test does not measure cache persistence or cross-user behavior.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>The six-word rule is one deterministic contract, not a general quality score.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>The tool test validated a synthetic proposal and did not execute a business action.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Prices, model IDs, limits, and semantic conventions are time-sensitive and must be rechecked.</li>
+<!-- /wp:list-item --></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading {"anchor":"implementation-checklist"} -->
+<h2 class="wp-block-heading" id="implementation-checklist">DeepSeek Observability Implementation Checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li>Define operational, terminal, contract, quality, safety, and business success separately.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Generate an internal correlation ID and propagate trace context through retrieval, DeepSeek, tools, and evaluation.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Pin your OpenTelemetry GenAI convention version and regression-test upgrades.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Record requested model, returned model, streaming flag, finish reason, safe error class, and usage.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Measure first network data, first response-stream chunk, first parsed event, first content, terminal state, final usage, and cleanup separately.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Validate JSON, tool arguments, citations, business rules, and terminal state before calling the result successful.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Keep prompts, outputs, reasoning text, tool arguments, credentials, headers, provider IDs, and raw errors out of default telemetry.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Use low-cardinality metric labels; keep request-level identifiers in sampled traces.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Calculate cost from provider usage plus a dated price snapshot and reconcile against billing.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Choose one retry owner and record attempt, timeout owner, cancellation source, and side-effect state.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Build separate dashboard panels for reliability, streaming, tokens/cache/cost, quality, tools, and telemetry health.</li>
+<!-- /wp:list-item -->
+<!-- wp:list-item -->
+<li>Run a privacy audit on exported evidence and alert when expected telemetry disappears.</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:heading {"anchor":"deepseek-observability-faq"} -->
+<h2 class="wp-block-heading" id="deepseek-observability-faq">DeepSeek Observability FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3,"anchor":"does-deepseek-export-opentelemetry-natively"} -->
+<h3 class="wp-block-heading" id="does-deepseek-export-opentelemetry-natively">Does DeepSeek export OpenTelemetry traces natively?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Chat Completions response supplies model, finish, usage, cache, reasoning, and tool metadata; it does not by itself export your end-to-end application trace. Instrument the client boundary or use a tested framework/gateway integration, then add your own prompt-build, retrieval, validation, tool, evaluation, and business spans.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"should-i-log-deepseek-prompts-and-responses"} -->
+<h3 class="wp-block-heading" id="should-i-log-deepseek-prompts-and-responses">Should I log DeepSeek prompts and responses?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Not by default. They can contain personal data, secrets, proprietary material, retrieved documents, and injection payloads. Start with metadata-only telemetry. If a narrowly defined debugging or evaluation workflow needs content, require explicit approval, minimization, redaction, encryption, access control, short retention, deletion support, and an auditable sampling policy.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"how-should-i-measure-deepseek-ttft"} -->
+<h3 class="wp-block-heading" id="how-should-i-measure-deepseek-ttft">How should I measure DeepSeek TTFT?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Define the term. Measure time to first network data, first response-stream chunk, first parsed model event, and first visible content separately. Ignore empty lines and SSE keep-alive comments as model output. OpenTelemetry's current client metric uses the first response-stream chunk, while parser diagnostics and user experience may care more about the first parsed event and first visible content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"which-token-fields-should-i-monitor"} -->
+<h3 class="wp-block-heading" id="which-token-fields-should-i-monitor">Which DeepSeek token fields should I monitor?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Record <code>prompt_tokens</code>, <code>completion_tokens</code>, <code>total_tokens</code>, <code>prompt_cache_hit_tokens</code>, <code>prompt_cache_miss_tokens</code>, and reasoning tokens when present. Validate that hit plus miss equals prompt tokens before using the event for cost calculations.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"does-http-200-mean-the-answer-is-good"} -->
+<h3 class="wp-block-heading" id="does-http-200-mean-the-answer-is-good">Does HTTP 200 mean the DeepSeek answer is good?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. It means the transport produced a successful HTTP response. You still need terminal-state, parse, schema, business-rule, safety, quality, and outcome checks. Our live streaming case returned 200 and <code>stop</code> but failed its six-word task constraint.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"how-do-i-monitor-deepseek-cost"} -->
+<h3 class="wp-block-heading" id="how-do-i-monitor-deepseek-cost">How do I monitor DeepSeek cost?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Multiply provider-reported cache-hit input, cache-miss input, and output tokens by the matching dated model rates. Store the price version and source URL with the estimate, then reconcile aggregates with account billing. Do not hard-code an undated price into dashboards or treat the estimate as an invoice.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3,"anchor":"what-alerts-should-i-create-first"} -->
+<h3 class="wp-block-heading" id="what-alerts-should-i-create-first">What DeepSeek alerts should I create first?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Start with provider error budget, timeout/cancellation rate, incomplete terminal states, missing usage, missing telemetry, deterministic contract failure, token/cost burn, cache-hit regression, and retry amplification. Add sampled quality alerts after the evaluator, baseline, and minimum sample size are reliable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"anchor":"methodology-and-sources"} -->
+<h2 class="wp-block-heading" id="methodology-and-sources">Methodology and Sources</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Documentation and pricing were reviewed July 27, 2026 UTC. Provider claims come from DeepSeek's official <a href="https://api-docs.deepseek.com/api/create-chat-completion" target="_blank" rel="noopener">Chat Completions API</a>, <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">Models and Pricing</a>, <a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">Rate Limit and Isolation</a>, <a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">Error Codes</a>, and <a href="https://api-docs.deepseek.com/guides/kv_cache" target="_blank" rel="noopener">Context Caching</a> pages. Telemetry names and privacy guidance come from the official <a href="https://github.com/open-telemetry/semantic-conventions-genai" target="_blank" rel="noopener">OpenTelemetry GenAI semantic conventions project</a> and <a href="https://opentelemetry.io/blog/2026/genai-observability/" target="_blank" rel="noopener">OpenTelemetry's GenAI observability guidance</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Every live figure in this article is a dated observation from the frozen plan, not a claim about future availability, performance, cache persistence, or service level. Re-run the harness in your own region, network, account, workload, and release process before setting production budgets or alerts.</p>
+<!-- /wp:paragraph -->

@@ -47,6 +47,13 @@ This public evidence repository contains bounded, reproducible live tests used b
   - two-key overlap, replacement continuity, and confirmed cleanup;
   - deterministic environment, redaction, secret-scan, and rotation-state checks;
   - sanitized JSON and CSV summaries with no key value, fragment, header, amount, or account identifier.
+- [DeepSeek Tool Calls](./tool-calls/)
+  - 30 bounded generation-capable HTTP requests across V4 Flash and V4 Pro;
+  - `tool_choice`, thinking, strict-mode, streaming, replay, and truncation controls;
+  - a separate four-request diagnostic completing one single-tool and one two-tool round trip;
+  - deterministic offline validation with 20/20 checks and zero network requests;
+  - sanitized JSON and CSV summaries with no raw prompts, arguments, reasoning, call IDs, credentials, or account data;
+  - eight editable English-only evidence visuals and a publication-ready Gutenberg source.
 
 ## Evidence policy
 

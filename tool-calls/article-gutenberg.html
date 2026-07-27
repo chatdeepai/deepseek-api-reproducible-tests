@@ -1,0 +1,709 @@
+<!-- SEO_FIELDS {"page_title_h1":"DeepSeek Tool Calls: Function Calling, Strict Mode, and Live V4 Tests","seo_title":"DeepSeek Tool Calls: Function Calling & Live V4 Tests","focus_keyword":"DeepSeek Tool Calls","meta_description":"Build DeepSeek tool calls in Python and Node.js. See live V4 function-calling tests for tool_choice, strict mode, multiple calls, thinking, and validation.","slug":"deepseek-tool-calls","canonical":"https://chat-deep.ai/docs/deepseek-tool-calls/","category":"Docs","tags":[],"excerpt":"An independently tested guide to DeepSeek function calling, covering tool_choice, strict mode, multiple calls, thinking-mode replay, streaming, and safe argument validation."} -->
+<!-- ARTICLE_STATUS final-measured-copy; WordPress media mapping complete -->
+
+<!-- wp:paragraph -->
+<p><strong>Live test date: July 27, 2026 (UTC).</strong> DeepSeek Tool Calls let a model request an external function, but the model does not execute that function. Your application receives the proposed function name and JSON argument string, validates them, runs an allowlisted function outside the model, appends a <code>role: "tool"</code> message with the matching <code>tool_call_id</code>, and asks DeepSeek for the final answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>We recorded 34 bounded case outcomes across <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. Thirty actual generation requests were sent: 26 from the primary run and four from one compact diagnostic follow-up. The combined HTTP results were 25 responses with status 200 and five with status 400; four planned primary continuations were safety-skipped before any request because their preceding tool arguments were incomplete. Fourteen of 34 declared case expectations were met—10 in the primary plan and all four diagnostic cases—with maximum application concurrency one and zero automatic retries.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>The most important production finding was truncation.</strong> Sixteen primary cases returned HTTP 200 and started one or more structurally recognizable tool calls, yet ended with <code>finish_reason: "length"</code> and incomplete argument JSON under deliberately tight 48-, 64-, or 96-token caps. An HTTP 200 response and a non-empty <code>tool_calls</code> array do not prove that a call is executable. The application must check the finish reason, assemble the complete argument string, parse it, validate it, and refuse execution when any step fails.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek. Official documentation defines the supported request contract; our live results show only what the recorded test observed. No API key, Authorization header, account identifier, raw hidden reasoning, provider-generated call ID, balance, or arbitrary raw response body is published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>Model proposes; application executes.</strong> Treat every function name and argument as untrusted input.</li><li><strong><code>tool_choice</code> is a request control, not a substitute for testing.</strong> Compare the documented value with the behavior observed for your model and thinking setting.</li><li><strong>Thinking tool-call turns have a replay requirement.</strong> Preserve the complete assistant message, including <code>reasoning_content</code>, for subsequent requests.</li><li><strong>Strict mode is a Beta schema feature.</strong> It improves format enforcement but does not authorize a user or make an external action safe.</li><li><strong>Every returned tool call needs a result with the same ID.</strong> Validate all calls before executing any side effect.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7622,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/01-deepseek-tool-call-lifecycle.png" alt="DeepSeek tool-call lifecycle from tool definition through model request, application execution, tool-result replay, and final answer" class="wp-image-7622"/><figcaption class="wp-element-caption">A tool call is an application-controlled loop: define tools, let the model request a function, validate and execute it outside the model, replay the result, and request the final answer.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="live-results-at-a-glance">Live results at a glance</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Measure</th><th>Recorded result</th></tr></thead><tbody><tr><td>Recorded case outcomes</td><td>34</td></tr><tr><td>Actual HTTP generation requests</td><td>30: 26 primary plus 4 diagnostic</td></tr><tr><td>HTTP status totals</td><td>25 × 200; 5 × 400</td></tr><tr><td>Primary continuations skipped by the safety gate</td><td>4</td></tr><tr><td>Declared case expectations met</td><td>14/34: 10 primary plus 4 diagnostic</td></tr><tr><td>Primary HTTP-200 tool-producing cases truncated with invalid argument JSON</td><td>16</td></tr><tr><td>Diagnostic round trips</td><td>Single tool: 1/1 ID; two tools: 2/2 IDs; both final continuations returned 200 with <code>stop</code></td></tr><tr><td>Execution controls</td><td>Concurrency 1; automatic retries 0</td></tr><tr><td>Offline validation</td><td>20/20 tests; 0 network requests; 0 secret findings</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The compact follow-up did not erase the primary failures. It answered a narrower diagnostic question: after simplifying the schema and retaining a 96-token cap, could the complete round trip finish? The single-tool initial request produced one valid call with one unique ID, and the two-tool initial request produced two valid calls with two unique IDs. Both continuations returned HTTP 200, <code>finish_reason: "stop"</code>, and non-empty final content.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="how-deepseek-tool-calls-work">How DeepSeek Tool Calls work</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/guides/tool_calls/" target="_blank" rel="noopener">official DeepSeek Tool Calls guide</a> describes an application-controlled loop. “Tool Calls” and “function calling” refer to the same practical pattern in the current Chat Completions API, where the documented tool type is <code>function</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Your application sends conversation messages and a list of function definitions in <code>tools</code>.</li><li>DeepSeek either returns normal text or an assistant message containing one or more <code>tool_calls</code>.</li><li>Your application checks the finish reason, function name, call ID, and argument string.</li><li>It parses and validates the arguments against an application-owned schema and authorization policy.</li><li>The application executes an allowlisted local or remote function.</li><li>It appends the original assistant message, then one <code>role: "tool"</code> result for each matching <code>tool_call_id</code>.</li><li>It sends the updated conversation back to DeepSeek and repeats until a final assistant answer arrives or a maximum-step guard stops the loop.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>This distinction matters operationally. DeepSeek can propose <code>lookup_order</code>, but it cannot reach your order database unless your code exposes and executes that capability. The application remains responsible for authentication, user authorization, validation, timeouts, retries, audit records, confirmation for write actions, and the decision to reject a request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="official-contract-observed-results">Official contract versus observed results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Question</th><th>Official contract</th><th>Dated live observation</th></tr></thead><tbody><tr><td>Which models are documented?</td><td>The current reference lists <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>.</td><td>Both models were tested.</td></tr><tr><td>Who executes a function?</td><td>The application supplies and executes the function; the model returns a request.</td><td>Primary continuations were blocked when arguments were incomplete. The compact follow-up completed one single-tool and one two-tool round trip safely.</td></tr><tr><td>How are results matched?</td><td>Each tool result includes the corresponding <code>tool_call_id</code>.</td><td>The follow-up validated 1/1 unique ID in the single-tool case and 2/2 unique IDs in the two-tool case before both final continuations returned 200 with <code>stop</code>.</td></tr><tr><td>Can thinking mode call tools?</td><td>Yes; the complete reasoning field from tool-call turns must be replayed.</td><td>The initial thinking <code>auto</code> request returned 200 with reasoning present, but its call arguments were truncated at 96 tokens. Both replay continuations were therefore not executed.</td></tr><tr><td>What does strict mode require?</td><td>The Beta base URL, <code>strict: true</code> on every function, and the documented schema subset.</td><td>The valid Beta request returned 200 but truncated its arguments. Several invalid controls were accepted permissively; only the missing-required case returned 400.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">Create Chat Completion reference</a> is the source of truth for request and response fields. It currently documents a maximum of 128 function tools, function names of no more than 64 permitted characters, JSON-formatted argument strings, <code>finish_reason: "tool_calls"</code>, and <code>tool_choice</code> values described below. Live behavior can still vary by model, mode, date, and request, which is why the result column is separate.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="setup">Minimal setup and credential boundary</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use the documented OpenAI-format base URL <code>https://api.deepseek.com</code>, keep the key on a trusted backend, and load it from protected runtime storage. Never put a DeepSeek API key in browser JavaScript, a mobile bundle, a WordPress page, a screenshot, or a public repository. The <a href="https://chat-deep.ai/docs/deepseek-api-key/">DeepSeek API key guide</a> covers creation, masked local input, validation, rotation, and revocation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>python -m pip install openai</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>npm install openai</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The official first-call documentation uses the OpenAI SDK with DeepSeek’s base URL. The examples below explicitly set thinking mode instead of relying on a default, use synthetic data, and never expose a real external action. For general setup and client configuration, see the <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="python-example">Complete Python Tool Calls example</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>This bounded example exposes one read-only function. It validates the requested name and argument shape before running the local lookup, preserves the assistant message, sends the result with the matching call ID, and forces the second response to remain text-only.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import json
+import os
+import re
+from openai import OpenAI
+
+MODEL = "deepseek-v4-flash"
+ORDER_PATTERN = re.compile(r"^ORD-[0-9]{5}$")
+
+client = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com",
+)
+
+def lookup_order_status(order_id: str) -&gt; dict:
+    if not isinstance(order_id, str) or not ORDER_PATTERN.fullmatch(order_id):
+        raise ValueError("Invalid order_id")
+    demo = {
+        "ORD-12345": {
+            "order_id": "ORD-12345",
+            "status": "processing",
+        }
+    }
+    return demo.get(order_id, {"order_id": order_id, "status": "not_found"})
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "lookup_order_status",
+            "description": "Look up a synthetic order by its ORD- plus five-digit ID.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "order_id": {
+                        "type": "string",
+                        "description": "Synthetic order ID such as ORD-12345.",
+                        "pattern": "^ORD-[0-9]{5}$",
+                    }
+                },
+                "required": ["order_id"],
+                "additionalProperties": False,
+            },
+        },
+    }
+]
+
+messages = [
+    {"role": "user", "content": "Check synthetic order ORD-12345."}
+]
+
+first = client.chat.completions.create(
+    model=MODEL,
+    messages=messages,
+    tools=tools,
+    tool_choice="auto",
+    stream=False,
+    extra_body={"thinking": {"type": "disabled"}},
+)
+
+assistant = first.choices[0].message
+calls = assistant.tool_calls or []
+if len(calls) != 1:
+    raise RuntimeError("Expected exactly one tool call")
+
+call = calls[0]
+if call.function.name != "lookup_order_status":
+    raise RuntimeError("Unknown tool requested")
+
+try:
+    arguments = json.loads(call.function.arguments)
+except json.JSONDecodeError as exc:
+    raise ValueError("Tool arguments were not valid JSON") from exc
+
+if set(arguments) != {"order_id"}:
+    raise ValueError("Unexpected or missing argument")
+
+result = lookup_order_status(arguments["order_id"])
+
+messages.append(assistant.model_dump(exclude_none=True))
+messages.append(
+    {
+        "role": "tool",
+        "tool_call_id": call.id,
+        "content": json.dumps(result, separators=(",", ":")),
+    }
+)
+
+final = client.chat.completions.create(
+    model=MODEL,
+    messages=messages,
+    tools=tools,
+    tool_choice="none",
+    stream=False,
+    extra_body={"thinking": {"type": "disabled"}},
+)
+
+content = final.choices[0].message.content
+if not content:
+    raise RuntimeError("Final content was empty")
+print(content)</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>A production validator should use a maintained schema library and explicit business rules rather than only checking keys. The example keeps validation visible for teaching. It also deliberately avoids printing the raw assistant object, argument string, headers, or client configuration.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>For Python packaging, timeouts, async clients, exception classes, and structured application design, continue to the <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a>. This page owns the tool lifecycle and tests, not every Python client feature.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="response-anatomy">DeepSeek tool-call response anatomy</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Field</th><th>Meaning</th><th>Application rule</th></tr></thead><tbody><tr><td><code>choices[0].finish_reason</code></td><td><code>tool_calls</code> indicates that the assistant requested one or more tools.</td><td>Do not assume the reason; inspect it with the message.</td></tr><tr><td><code>message.tool_calls</code></td><td>Array of requested function calls.</td><td>Allowlist and validate every entry before execution.</td></tr><tr><td><code>tool_calls[].id</code></td><td>Identifier linking a request to its result.</td><td>Preserve it internally and return it as <code>tool_call_id</code>.</td></tr><tr><td><code>function.name</code></td><td>Requested function name.</td><td>Dispatch only exact names in a fixed registry.</td></tr><tr><td><code>function.arguments</code></td><td>JSON-formatted string produced by the model.</td><td>Parse, schema-validate, authorize, and constrain it.</td></tr><tr><td><code>reasoning_content</code></td><td>Thinking-mode reasoning field.</td><td>Preserve it for tool-call replay; do not expose it as the user answer.</td></tr><tr><td><code>message.content</code></td><td>Text for the user, often final after tool results.</td><td>Check presence and grounding before display.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The API reference warns that generated arguments may be invalid JSON or may include hallucinated parameters. A successful HTTP response is therefore not the same as a safe function call. Parsing and validation are mandatory application steps.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="tool-choice">DeepSeek <code>tool_choice</code>: official meanings and live results</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><code>tool_choice</code> controls whether the model may call a function, must call one, or must request a specific named function. The official reference documents the four patterns below. The observed column reports the dated live matrix rather than treating documentation as a model-behavior benchmark.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Setting</th><th>Official meaning</th><th>Live status</th><th>Observed behavior</th></tr></thead><tbody><tr><td>Omitted, tools absent</td><td>Default is <code>none</code>.</td><td>200 on Flash and Pro</td><td>Both returned non-empty text with <code>stop</code> and zero tool calls.</td></tr><tr><td>Omitted, tools present</td><td>Default is <code>auto</code>.</td><td>200 on Flash and Pro</td><td>Both started one tool call, but the 48-token cap produced <code>length</code> and incomplete argument JSON.</td></tr><tr><td><code>"none"</code></td><td>The model must not call a tool.</td><td>200 on Flash and Pro</td><td>Both returned non-empty text with <code>stop</code> and zero tool calls.</td></tr><tr><td><code>"auto"</code></td><td>The model can answer or request tools.</td><td>200 on Flash and Pro</td><td>Both started one tool call, but the 48-token cap produced <code>length</code> and incomplete argument JSON.</td></tr><tr><td><code>"required"</code></td><td>The model must request one or more tools.</td><td>Non-thinking: 200 on both. Thinking: 400 on both.</td><td>Both non-thinking responses started one call but truncated its JSON at 48 tokens. Both thinking requests returned 400.</td></tr><tr><td>Named function object</td><td>The model is directed to a specific function.</td><td>Non-thinking: 200 on both. Thinking: 400 on both.</td><td>Both non-thinking responses started the named call but truncated its JSON at 48 tokens. Both thinking requests returned 400.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7623,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-tool-choice-live-matrix.png" alt="DeepSeek tool_choice live-test matrix comparing auto, required, named-tool, and none behaviors" class="wp-image-7623"/><figcaption class="wp-element-caption">The live matrix separates what each <code>tool_choice</code> setting requested from what the tested model actually returned. Read every status and outcome from the sanitized dated test summary.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Use <code>auto</code> when either a normal answer or a lookup is acceptable. Use <code>none</code> when the next turn must be text-only. Use <code>required</code> or a named function only after testing the exact model, thinking setting, base URL, and SDK serialization used in production. Regardless of choice, reject unknown tools and invalid arguments.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Production rule:</strong> a tool-selection control can work while the resulting call remains unusable. In the primary matrix, the expected tool name and a call object often appeared under HTTP 200, but the cap stopped generation inside the argument JSON. Do not enqueue or execute a call merely because <code>tool_calls.length &gt; 0</code>. Require an acceptable finish reason, complete assembly, successful JSON parsing, schema validation, authorization, and an available execution budget.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="thinking-mode">Tool Calls in thinking and non-thinking modes</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek documents Tool Calls in both modes. Set <code>{"thinking":{"type":"disabled"}}</code> explicitly for a simple first integration. For a task that benefits from planning, set thinking to <code>enabled</code> and use a documented reasoning effort. The <a href="https://api-docs.deepseek.com/guides/thinking_mode/" target="_blank" rel="noopener">official Thinking Mode guide</a> says the default toggle is enabled, so explicit configuration avoids accidental mode changes when code moves between clients.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Concern</th><th>Non-thinking</th><th>Thinking</th></tr></thead><tbody><tr><td>Toggle</td><td><code>thinking.type: disabled</code></td><td><code>thinking.type: enabled</code></td></tr><tr><td>Assistant fields</td><td>Content and/or tool calls</td><td>May include <code>reasoning_content</code>, content, and/or tool calls</td></tr><tr><td>Replay after a tool call</td><td>Preserve the assistant tool-call message</td><td>Preserve the complete assistant message, including <code>reasoning_content</code></td></tr><tr><td>User-facing output</td><td>Final <code>content</code></td><td>Final <code>content</code>, not hidden reasoning</td></tr><tr><td>Live result</td><td>Non-thinking tool-producing responses frequently reached <code>length</code> under the primary caps. A compact 96-token follow-up completed one single-tool and one two-tool round trip; the Flash stream also produced valid arguments.</td><td><code>required</code> and named choice returned 400 on both models. The <code>auto</code> initial replay case returned 200 with reasoning present but ended at <code>length</code> with invalid arguments; the Pro stream did the same.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7624,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-thinking-vs-non-thinking-transcript.png" alt="DeepSeek non-thinking versus thinking tool-call transcript showing where reasoning_content appears and what must be replayed" class="wp-image-7624"/><figcaption class="wp-element-caption">The sanitized side-by-side transcript highlights the extra reasoning field in thinking mode and the message fields the application must preserve for the next request.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="reasoning-replay">The <code>reasoning_content</code> replay contract</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>For a thinking turn that performs a tool call, DeepSeek’s official guide says the intermediate assistant <code>reasoning_content</code> must participate in context concatenation and must be passed back in subsequent requests. It also states that incorrect replay returns HTTP 400. The safest SDK pattern is to append the complete assistant message object instead of reconstructing only <code>content</code> and <code>tool_calls</code>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>assistant_message = response.choices[0].message
+messages.append(assistant_message.model_dump(exclude_none=True))
+
+for call in assistant_message.tool_calls or []:
+    messages.append(
+        {
+            "role": "tool",
+            "tool_call_id": call.id,
+            "content": run_validated_tool(call),
+        }
+    )</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Planned replay control</th><th>Changed field</th><th>Execution status</th><th>Interpretation</th></tr></thead><tbody><tr><td>Complete assistant replay</td><td>None removed</td><td>Not executed</td><td>The initial 200 response ended at the 96-token cap with incomplete argument JSON. The safety gate refused tool execution and continuation.</td></tr><tr><td>Missing reasoning replay</td><td><code>reasoning_content</code> omitted</td><td>Not executed</td><td>The same incomplete initial call prevented a safe paired replay request. No 200-versus-400 comparison was observed in this run.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7625,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-reasoning-content-replay-control.png" alt="DeepSeek reasoning_content replay contract compared with a live thinking tool call that was truncated and safety-gated before replay" class="wp-image-7625"/><figcaption class="wp-element-caption">The initial thinking tool call returned HTTP 200 with <code>reasoning_content</code> present, but its arguments were incomplete at the 96-token cap. Both replay branches were safety-skipped, so this run did not produce a 200-versus-400 continuation comparison.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>This run therefore does not report a successful full replay or an observed missing-field 400. The official replay requirement still applies. A separate <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode benchmark</a> was conducted under its own plan and owns broader reasoning behavior and replay evidence; its cases and denominators are not counted in this Tool Calls study. Do not publish raw <code>reasoning_content</code> in screenshots, logs, traces, or user interfaces.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="strict-mode">DeepSeek strict Tool Calls mode</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Strict mode is a Beta feature for tighter tool-argument schema adherence. The official Tool Calls guide requires <code>https://api.deepseek.com/beta</code>, requires every function in <code>tools</code> to set <code>strict: true</code>, and says the server validates the supplied JSON Schema. A schema outside the documented subset can be rejected before generation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>from openai import OpenAI
+import os
+
+client = OpenAI(
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com/beta",
+)
+
+strict_tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_temperature",
+            "description": "Return a synthetic temperature for an allowlisted city.",
+            "strict": True,
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {
+                        "type": "string",
+                        "pattern": "^[A-Za-z -]+$",
+                    },
+                    "unit": {
+                        "type": "string",
+                        "enum": ["celsius", "fahrenheit"],
+                    },
+                },
+                "required": ["city", "unit"],
+                "additionalProperties": False,
+            },
+        },
+    }
+]</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The documented strict subset includes objects, strings, numbers, integers, booleans, arrays, enums, <code>anyOf</code>, and local <code>$ref</code>/<code>$def</code>. For objects, every property must be listed in <code>required</code> and <code>additionalProperties</code> must be <code>false</code>. The guide documents string <code>pattern</code> and selected <code>format</code> values, numeric bounds, and several numeric constraints. It lists <code>minLength</code>, <code>maxLength</code>, <code>minItems</code>, and <code>maxItems</code> as unsupported.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Strict case</th><th>Documented expectation</th><th>Observed status</th><th>Observed outcome</th></tr></thead><tbody><tr><td>Valid strict schema on Beta</td><td>Meets documented setup</td><td>200</td><td>The server accepted the request, but the 64-token cap produced <code>length</code> and incomplete JSON. Argument conformance could not be assessed.</td></tr><tr><td>Strict tool on standard route</td><td>Does not meet the documented Beta setup</td><td>200</td><td>The request was accepted in this run, but output truncated and the result does not replace the documented Beta requirement.</td></tr><tr><td>Property omitted from <code>required</code></td><td>Invalid strict object schema</td><td>400</td><td>The server rejected the request as expected.</td></tr><tr><td>Missing <code>additionalProperties: false</code></td><td>Invalid strict object schema</td><td>200</td><td>The server accepted it in this run. Output truncated, so no generated-argument conformance claim is possible.</td></tr><tr><td>Documented unsupported <code>minLength</code></td><td>Outside the documented strict subset</td><td>200</td><td>The server accepted it in this run. Output truncated, and permissive acceptance is not a portable contract.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7626,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-strict-beta-schema-validation.png" alt="DeepSeek strict beta schema validation results for valid and invalid tool argument schemas" class="wp-image-7626"/><figcaption class="wp-element-caption">The strict beta panel distinguishes provider-side schema acceptance from application-side validation of the arguments produced by the model.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Strict mode is not an authorization system. A schema-valid request to <code>refund_order</code> can still be unauthorized, duplicated, fraudulent, or contrary to business rules. Validate arguments again at the execution boundary and apply user permissions, confirmation, idempotency, and limits.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The acceptance pattern is a dated observation, not proof that the standard route, an omitted <code>additionalProperties: false</code>, or <code>minLength</code> is supported reliably. Provider validation can be permissive, change over time, or differ across schema shapes. Build against the published Beta contract, preflight schemas locally, and treat HTTP acceptance separately from the correctness of generated arguments.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="multiple-tool-calls">Multiple Tool Calls and result mapping</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A response can contain more than one tool call. Build the application around an array even when the first demo usually returns one call. For each entry, confirm that the ID is unique, the function is allowlisted, and the arguments validate. Append one tool result for every accepted ID before requesting the next assistant turn.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>seen_call_ids = set()
+
+for call in assistant_message.tool_calls or []:
+    if call.id in seen_call_ids:
+        raise ValueError("Duplicate tool_call_id")
+    seen_call_ids.add(call.id)
+
+    handler = ALLOWED_TOOLS.get(call.function.name)
+    if handler is None:
+        raise ValueError("Unknown tool")
+
+    arguments = parse_and_validate(
+        call.function.name,
+        call.function.arguments,
+    )
+    result = handler(**arguments)
+
+    messages.append(
+        {
+            "role": "tool",
+            "tool_call_id": call.id,
+            "content": json.dumps(result, separators=(",", ":")),
+        }
+    )</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The primary Pro multi-tool request returned HTTP 200 and started two calls, but it reached the 96-token cap with incomplete argument JSON; the safety gate skipped its continuation. The compact Flash diagnostic then produced two valid calls with two unique IDs, the application attached 2/2 matching tool results, and the continuation returned HTTP 200 with <code>finish_reason: "stop"</code> and non-empty final content. The single-tool diagnostic likewise completed 1/1 ID and ended with a 200 <code>stop</code>. Public evidence uses aliases instead of provider-generated IDs.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7627,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-multi-tool-loop-timeline.png" alt="DeepSeek multi-tool loop timeline showing multiple model requests, application execution, tool-result replay, and final completion" class="wp-image-7627"/><figcaption class="wp-element-caption">The timeline maps each observed tool request to application execution and a matching <code>tool_call_id</code> before the final completion is requested.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Do not launch all external side effects in parallel merely because the model returned multiple calls. Read-only independent lookups may be safe to parallelize after validation; writes often need sequencing, locks, idempotency keys, or user confirmation. The model’s array is a proposal, not an execution plan with authority.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="streaming">Streaming DeepSeek Tool Calls safely</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Chat Completion reference documents server-sent events when <code>stream: true</code>, ending with <code>data: [DONE]</code>. A streamed tool call can arrive as partial deltas: the function name, call ID, and argument string may be incomplete until later chunks. Buffer by choice and tool-call index, assemble the complete structure, then parse and validate it once.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Collect deltas without executing a function.</li><li>Associate fragments by response choice and tool-call index.</li><li>Wait for the terminal condition and a complete call structure.</li><li>Parse the assembled argument string once.</li><li>Validate the name, ID, schema, permissions, and budget.</li><li>Execute the application function and append its result.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>One of two streaming cases met every preregistered assembly expectation. Flash in non-thinking mode returned HTTP 200, emitted 31 events, ended with <code>finish_reason: "tool_calls"</code>, produced one valid call, and included the terminal <code>[DONE]</code> marker. Pro in thinking mode also returned 200 and included <code>[DONE]</code>, but its 55-event stream ended with <code>finish_reason: "length"</code> and incomplete argument JSON. The harness executed zero tools before complete validation in both cases.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="nodejs-typescript">Concise Node.js Tool Calls pattern</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Node.js flow is the same: request, inspect, parse, validate, dispatch, replay, and request the final answer. This core example omits installation and TypeScript type design, which belong in the <a href="https://chat-deep.ai/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com",
+});
+
+const first = await client.chat.completions.create({
+  model: "deepseek-v4-flash",
+  messages: [{ role: "user", content: "Check synthetic order ORD-12345." }],
+  tools,
+  tool_choice: "auto",
+  thinking: { type: "disabled" },
+  stream: false,
+});
+
+const message = first.choices[0]?.message;
+const calls = message?.tool_calls ?? [];
+if (calls.length !== 1) throw new Error("Expected one tool call");
+
+const call = calls[0];
+if (call.function.name !== "lookup_order_status") {
+  throw new Error("Unknown tool");
+}
+
+let args;
+try {
+  args = JSON.parse(call.function.arguments);
+} catch {
+  throw new Error("Invalid tool argument JSON");
+}
+
+if (
+  Object.keys(args).length !== 1 ||
+  !/^ORD-[0-9]{5}$/.test(args.order_id)
+) {
+  throw new Error("Tool arguments failed validation");
+}
+
+const toolResult = lookupOrderStatus(args.order_id);
+const messages = [
+  { role: "user", content: "Check synthetic order ORD-12345." },
+  message,
+  {
+    role: "tool",
+    tool_call_id: call.id,
+    content: JSON.stringify(toolResult),
+  },
+];
+
+const final = await client.chat.completions.create({
+  model: "deepseek-v4-flash",
+  messages,
+  tools,
+  tool_choice: "none",
+  thinking: { type: "disabled" },
+  stream: false,
+});
+
+console.log(final.choices[0]?.message?.content);</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not log the entire SDK client, environment, assistant object, request headers, or raw failed payload. The <a href="https://chat-deep.ai/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a> covers broader compatibility and migration boundaries.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="argument-validation-security">Argument validation and the security boundary</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Model-generated function arguments are untrusted input, even in strict mode. Validation should happen before any database query, network call, message, file write, transaction, or privileged action. A production dispatcher should reject on the first failed boundary instead of attempting to repair an unsafe request automatically.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Allowlist exact function names; never evaluate an arbitrary model-provided name.</li><li>Parse JSON with an explicit failure path and never echo rejected values into public logs.</li><li>Validate types, required fields, enums, formats, ranges, patterns, and unexpected properties.</li><li>Check the authenticated user’s permission for the requested resource and action.</li><li>Separate read-only tools from functions that change state.</li><li>Require explicit user confirmation for consequential writes.</li><li>Use idempotency or deduplication for payments, messages, record creation, and other repeat-sensitive actions.</li><li>Set external timeouts, response-size limits, step budgets, and total request budgets.</li><li>Treat tool results as data; do not let text returned by an external system override application instructions.</li><li>Return only fields the model needs, without secrets, access tokens, internal traces, or excessive personal data.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7628,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-argument-validation-security-boundary.png" alt="Application-side DeepSeek tool argument validation and security boundary before external side effects" class="wp-image-7628"/><figcaption class="wp-element-caption">Treat model-produced arguments as untrusted input: parse, validate, authorize, constrain, and log safely before any external side effect is allowed.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Observability should record safe metadata such as internal route, approved tool alias, validation outcome, duration, token counts, and normalized error class. It should not retain credentials, raw reasoning, arbitrary arguments, private tool results, or provider-generated IDs. See the <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek observability guide</a> for logging and tracing design.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="json-output-vs-tool-calls-vs-agents">Tool Calls versus JSON Output versus agents</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Need</th><th>Use</th><th>Why</th></tr></thead><tbody><tr><td>Extract structured fields from supplied text</td><td>JSON Output</td><td>The model returns structured content; no external function is required.</td></tr><tr><td>Read live application state</td><td>Tool Calls</td><td>The application performs a controlled lookup and returns the result.</td></tr><tr><td>Request a controlled action</td><td>Tool Calls plus authorization</td><td>The model proposes; the application validates and executes.</td></tr><tr><td>Plan across tools and multiple steps</td><td>Agent workflow</td><td>An agent adds loop policy, memory, limits, and orchestration around tool calls.</td></tr><tr><td>Return a final JSON object after using a tool</td><td>Tool Calls, then validated structured output</td><td>External data acquisition and final formatting are separate boundaries.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a> owns <code>response_format</code>, parsing, and standalone response validation. This page owns function selection, argument validation, application execution, and tool-result replay. For planning, memory, and multi-step autonomy, continue to the <a href="https://chat-deep.ai/solutions/deepseek-ai-agents/">DeepSeek agents guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="errors-debugging">Tool-specific errors and debugging</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Symptom</th><th>Likely boundary</th><th>Fix</th></tr></thead><tbody><tr><td>No tool call under <code>auto</code></td><td>Model decision or ambiguous tool description</td><td>Decide whether normal text is acceptable; improve the description or test a required/named control.</td></tr><tr><td>Malformed argument JSON</td><td>Generated tool-call arguments</td><td>Reject safely; do not execute or silently guess values.</td></tr><tr><td>Unknown function name</td><td>Dispatcher allowlist</td><td>Reject the call and record a normalized validation outcome.</td></tr><tr><td>Strict schema rejected</td><td>Beta URL or unsupported schema structure</td><td>Check <code>strict: true</code>, required properties, <code>additionalProperties: false</code>, and supported keywords.</td></tr><tr><td>HTTP 400 after a thinking tool call</td><td>Assistant replay</td><td>Preserve the complete assistant message, including <code>reasoning_content</code>.</td></tr><tr><td>Tool result not associated</td><td>ID mapping or message order</td><td>Use the exact matching <code>tool_call_id</code> and append one result per call.</td></tr><tr><td>Incomplete streamed arguments</td><td>Delta assembly</td><td>Wait for the complete call before parsing or execution.</td></tr><tr><td>Endless tool loop</td><td>Missing orchestration bound</td><td>Enforce a maximum step count and total budget.</td></tr><tr><td>429 or transient 5xx</td><td>Capacity or service condition</td><td>Use bounded retry and backoff; do not repeat side effects without idempotency.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Do not treat every failure as retryable. A malformed schema, missing credential, invalid parameter, unsafe tool, or missing replay field needs correction. The <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek error codes guide</a> owns the general status decision tree, and the <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API rate-limits guide</a> owns concurrency and backoff.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="cost-context">Tokens, context, and cost</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A tool loop adds messages: the user request, assistant tool-call message, tool result, and final answer, with more turns for multi-step workflows. Keep function descriptions and tool results concise, record usage safely, and bound the number of steps. Repeated stable tool definitions may also affect cache accounting. The <a href="https://chat-deep.ai/docs/deepseek-context-caching/">DeepSeek Context Caching guide</a> covers measured cache behavior.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek’s <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">official pricing page</a> states that model usage is billed by tokens and that prices can change. This page does not duplicate a volatile rate table. Check the current official figures and the <a href="https://chat-deep.ai/pricing/">DeepSeek pricing guide</a> before production budgeting.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="methodology">Methodology, reproducibility, and limitations</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The live benchmark ran on July 27, 2026 against <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code> using the official DeepSeek API. It recorded 34 case outcomes. The primary plan contained 30 records: 26 requests were issued and four continuations were safety-skipped. A one-time compact diagnostic issued four additional requests, bringing the actual total to 30 generation-capable HTTP requests. The run used maximum application concurrency one, observed peak concurrency one, zero automatic retries, and a maximum of 96 output tokens per request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Across the 30 issued requests, 25 returned HTTP 200 and five returned HTTP 400. Fourteen of 34 recorded expectations were met: 10/30 primary records and 4/4 diagnostic records. Sixteen primary HTTP-200 tool-producing responses ended with <code>length</code> and incomplete argument JSON. Combined usage was 9,058 tokens. Recorded request time ranged from 277 to 549 ms, with a 296 ms median and 440 ms p95; those timings describe this client session, not a global performance benchmark.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The result schema retained case ID, public model, thinking setting, requested tool policy, HTTP status, elapsed time, finish reason, tool-call count, argument parse and validation flags, replay checks, safe token counters, and streaming event counts. It omitted credentials, Authorization headers, account data, raw prompts, raw arguments, raw tool results, raw <code>reasoning_content</code>, provider request IDs, provider-generated call IDs, and raw error messages.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>A separate dependency-free offline suite converted the documented contract into deterministic application tests. It made zero network requests and used no API key. The final run recorded 20/20 deterministic tests passing, zero failures, zero network requests, and zero public secret-scan findings. Local passing tests establish application-side safety behavior; they do not prove that a provider model accepted a request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Inspect the public <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/tool-calls" target="_blank" rel="noopener">DeepSeek Tool Calls reproducibility suite on GitHub</a> for the test plan, official source register, safety contract, fixtures, source, sanitized summaries, and audit notes.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This page reports one feature-specific experiment. For reusable benchmark design, preregistration, fixtures, reference checks, and regression reporting across a wider application, use the <a href="https://chat-deep.ai/docs/deepseek-evaluation-framework/">DeepSeek evaluation framework</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="limitations">Limitations</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>The live sample used one account, network environment, test date, and bounded prompt set.</li><li>Recorded timing is an audit of this run, not a global latency benchmark or service-level promise.</li><li>A model can select different tools or arguments for differently worded prompts.</li><li>Passing synthetic read-only cases does not certify a production database, payment, messaging, or administrative integration.</li><li>Strict-mode acceptance does not replace business authorization or semantic validation.</li><li>Only the models, choices, schemas, replay variants, and streaming cases explicitly listed in the public summary were tested.</li><li>Official documentation and provider behavior can change; reruns should record a new date and preserve earlier evidence.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7629,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-methodology-results-dashboard.png" alt="DeepSeek Tool Calls live-test methodology and results dashboard with pass counts, models, controls, and privacy guardrails" class="wp-image-7629"/><figcaption class="wp-element-caption">The dashboard summarizes the bounded dated run, including tested models, logical cases, expected controls, serial or concurrent execution, retries, and evidence-redaction rules.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="production-checklist">Production checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Use current model IDs obtained from current official documentation or <code>/models</code>.</li><li>Store the API key outside source code and client-delivered assets.</li><li>Set thinking mode explicitly.</li><li>Choose <code>tool_choice</code> intentionally and test the exact configuration.</li><li>Keep function names, descriptions, and parameter schemas narrow.</li><li>Allowlist tools and validate all arguments before execution.</li><li>Preserve assistant tool-call messages and match every result ID.</li><li>Preserve <code>reasoning_content</code> privately after thinking-mode tool calls.</li><li>Wait for complete streamed calls before validation or execution.</li><li>Separate read-only functions from consequential writes.</li><li>Require permission and confirmation for sensitive actions.</li><li>Use idempotency, timeouts, result-size limits, and maximum-step guards.</li><li>Log allowlisted metadata without credentials, raw reasoning, or private tool data.</li><li>Monitor tool selection, validation failures, execution failures, tokens, and loop termination.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="faq">FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-what-are-tool-calls">What are DeepSeek Tool Calls?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>DeepSeek Tool Calls let the model return a structured request for a function defined by your application. Your code validates the name and arguments, executes the real function, returns its result with the matching call ID, and asks the model for the final answer.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-function-calling">Is DeepSeek Function Calling the same as Tool Calls?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In this API context, yes. “Function calling” is the common developer phrase, while the current DeepSeek documentation labels the feature Tool Calls and currently documents function tools.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-execution">Does DeepSeek execute my function?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. DeepSeek proposes a function name and arguments. Your application decides whether to accept the request and performs any lookup or action outside the model.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-models">Which DeepSeek models support Tool Calls?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The current official API reference lists <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>, and the current pricing/model table marks Tool Calls as supported for both. Check the official documentation again before deployment because model catalogs can change.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-tool-choice">What do <code>auto</code>, <code>none</code>, <code>required</code>, and named <code>tool_choice</code> mean?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p><code>auto</code> lets the model answer or request tools; <code>none</code> prevents tool use; <code>required</code> requests at least one tool call; and the named object directs the model to a particular function. Test actual behavior for the selected model and thinking mode.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-strict">What is DeepSeek strict Tool Calls mode?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>It is a Beta feature for tighter JSON Schema adherence. Official setup requires the Beta base URL, <code>strict: true</code> on every function, all object properties marked required, <code>additionalProperties: false</code>, and the documented schema subset. Application-side validation and authorization are still required.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-reasoning-content">Why do I get HTTP 400 about <code>reasoning_content</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>For a thinking-mode turn that performed a tool call, preserve and replay the complete assistant message, including <code>reasoning_content</code>, before appending tool results. Reconstructing the message without that field violates the documented replay contract.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-multiple">How should I handle multiple <code>tool_calls</code>?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Iterate the array, require unique IDs, validate every function and argument set, execute only allowlisted operations, and append one result for each matching <code>tool_call_id</code>. Decide separately whether independent operations are safe to parallelize.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-streaming">Can DeepSeek stream Tool Calls?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The Chat Completion API supports streaming, but tool-call fields can arrive in fragments. Assemble the complete call and validate it before executing any function.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-invalid-json">Why are tool arguments invalid JSON or outside my schema?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Arguments are model-generated. The official reference explicitly warns that they may be invalid JSON or contain hallucinated parameters. Reject malformed or schema-invalid arguments; do not silently repair them before a consequential action.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-http-200-incomplete">Can an HTTP 200 Tool Calls response still be unusable?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. Sixteen primary cases in this test returned 200 and a tool-call structure but ended with <code>finish_reason: "length"</code> and incomplete argument JSON under tight output caps. Require complete assembly, an acceptable finish reason, successful parsing, schema validation, and authorization before execution.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-json-output">Should I use Tool Calls or JSON Output?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use JSON Output when the model only needs to return structured text. Use Tool Calls when your application must fetch external data or perform a controlled action. A workflow can use Tool Calls first and validate a structured final response separately.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-secure-actions">How do I secure tools that change data?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Require authenticated user permission, strict argument validation, explicit confirmation for consequential actions, idempotency, audit logging, bounded retries, and a narrow allowlist. Never execute a write solely because the model requested it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Next step:</strong> begin with one synthetic read-only tool in non-thinking mode, validate a complete request → tool → result → answer loop, then add strict mode, thinking replay, multiple calls, or streaming one boundary at a time.</p>
+<!-- /wp:paragraph -->

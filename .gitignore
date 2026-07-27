@@ -19,6 +19,14 @@ api-key/results/*
 !api-key/results/offline-results-summary.json
 !api-key/results/independent-audit.json
 !api-key/.env.example
+!tool-calls/results/
+tool-calls/results/*
+!tool-calls/results/.gitkeep
+!tool-calls/results/combined-live-findings.json
+!tool-calls/results/live-case-summary.csv
+!tool-calls/results/live-followup-summary.json
+!tool-calls/results/live-results-summary.json
+!tool-calls/results/offline-results-summary.json
 screenshots/
 private/
 secrets/

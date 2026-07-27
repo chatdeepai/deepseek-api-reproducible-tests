@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "generated_from": [
+    "../results/combined-live-findings.json"
+  ],
+  "test_date_utc": "2026-07-27",
+  "privacy": {
+    "raw_prompts_shown": false,
+    "raw_arguments_shown": false,
+    "raw_reasoning_shown": false,
+    "provider_tool_call_ids_shown": false,
+    "credentials_or_account_data_shown": false
+  },
+  "images": [
+    {
+      "file": "01-deepseek-tool-call-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "21de4c1767f8641f0e7d4cb0d8d98682649e8b1c6f802e18cdbc69ae07fe873e"
+    },
+    {
+      "file": "02-tool-choice-live-matrix.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "d658a9949c47968e45c983bca65a513c620f7e52ced0ed9613c5bc1ab868bc0d"
+    },
+    {
+      "file": "03-thinking-vs-non-thinking-transcript.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "270ffb26dc216e1e6eb95bd94bc3b8cd5ea6b65142cedfe5db0153e4e61f4afe"
+    },
+    {
+      "file": "04-reasoning-content-replay-control.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "3feb84907105d1a5b7730ca46d6dc02da29980dc3a90785d8037802b6caf2914"
+    },
+    {
+      "file": "05-strict-beta-schema-validation.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "32b87aff5e0564c80866d7a3889675755ce6fc2e2cfdf82e6d1e3f933ba564d2"
+    },
+    {
+      "file": "06-multi-tool-loop-timeline.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "b3e50a87e43faf203a254c1eed5ed736104662f78d9e81b7fe3cc362e5bc0ebf"
+    },
+    {
+      "file": "07-argument-validation-security-boundary.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "b6b08d83b20cc2a95079077245bdbf11369ef2667444555d656af3a32c7df73b"
+    },
+    {
+      "file": "08-methodology-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "cb8686df0ac4c2592b068c1a4e0cccedf0d83c103b2641179bf76ee2b3830bdc"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "deepseek-tool-calls-offline-harness",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A dependency-free offline contract, schema, replay, and orchestration harness for DeepSeek Tool Calls.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node src/offline-runner.mjs --syntax-only",
+    "test:offline": "node --test tests/offline.test.mjs",
+    "test": "node src/offline-runner.mjs"
+  }
+}

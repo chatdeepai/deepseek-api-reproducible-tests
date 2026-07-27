@@ -1,0 +1,13 @@
+.env
+.env.*
+*.key
+*.pem
+private/
+secrets/
+results/*
+!results/.gitkeep
+!results/combined-live-findings.json
+!results/live-case-summary.csv
+!results/live-followup-summary.json
+!results/live-results-summary.json
+!results/offline-results-summary.json

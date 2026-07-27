@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#07111f"/>
+      <stop offset="100%" stop-color="#0b1b2e"/>
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2dd4bf"/>
+      <stop offset="100%" stop-color="#60a5fa"/>
+    </linearGradient>
+    <marker id="arrowTeal" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2dd4bf"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#fb7185"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#4ade80"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bgGradient)"/>
+  <circle cx="1460" cy="-60" r="370" fill="#60a5fa" opacity="0.06"/>
+  <circle cx="30" cy="930" r="340" fill="#2dd4bf" opacity="0.055"/>
+  <rect x="72" y="54" width="500" height="42" rx="21" fill="#0c2b36" stroke="#23606a" stroke-width="1.5" opacity="1"/>
+  <text x="322" y="83" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" text-anchor="middle" letter-spacing="0.4" opacity="1">CHAT-DEEP.AI • ORIGINAL EXPLAINER</text>
+  <text x="72" y="152" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="56" font-weight="820" text-anchor="start" letter-spacing="0" opacity="1">DeepSeek Tool-Call Lifecycle</text>
+  <text x="72" y="202" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="start" letter-spacing="0" opacity="1">The model requests; your application validates, executes, and replays</text>
+  <rect x="72" y="228" width="1456" height="3" rx="1.5" fill="url(#accentGradient)" opacity="0.9"/><rect x="84" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#60a5fa" stroke-width="2" opacity="1"/>
+  <circle cx="190" cy="358" r="28" fill="#60a5fa" stroke="#07111f" stroke-width="0"/>
+  <text x="190" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">1</text>
+  <rect x="110" y="402" width="160" height="40" rx="20" fill="#102a45" stroke="#60a5fa" stroke-width="1.5" opacity="1"/>
+  <text x="190" y="430" fill="#60a5fa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">APPLICATION</text>
+  <text x="190" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">DEFINE</text><text x="190" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">TOOLS</text>
+  <text x="190" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Name · inputs</text><text x="190" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">purpose</text><line x1="298" y1="455" x2="320" y2="455" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="328" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#a78bfa" stroke-width="2" opacity="1"/>
+  <circle cx="434" cy="358" r="28" fill="#a78bfa" stroke="#07111f" stroke-width="0"/>
+  <text x="434" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">2</text>
+  <rect x="354" y="402" width="160" height="40" rx="20" fill="#261f42" stroke="#a78bfa" stroke-width="1.5" opacity="1"/>
+  <text x="434" y="430" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">MODEL</text>
+  <text x="434" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">REQUEST</text><text x="434" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">A TOOL</text>
+  <text x="434" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Select tool</text><text x="434" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">and arguments</text><line x1="542" y1="455" x2="564" y2="455" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="572" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#fbbf24" stroke-width="2" opacity="1"/>
+  <circle cx="678" cy="358" r="28" fill="#fbbf24" stroke="#07111f" stroke-width="0"/>
+  <text x="678" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">3</text>
+  <rect x="598" y="402" width="160" height="40" rx="20" fill="#302817" stroke="#fbbf24" stroke-width="1.5" opacity="1"/>
+  <text x="678" y="430" fill="#fbbf24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">APPLICATION</text>
+  <text x="678" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">VALIDATE</text><text x="678" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">INPUT</text>
+  <text x="678" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Parse · schema</text><text x="678" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">policy · auth</text><line x1="786" y1="455" x2="808" y2="455" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="816" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#4ade80" stroke-width="2" opacity="1"/>
+  <circle cx="922" cy="358" r="28" fill="#4ade80" stroke="#07111f" stroke-width="0"/>
+  <text x="922" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">4</text>
+  <rect x="842" y="402" width="160" height="40" rx="20" fill="#143324" stroke="#4ade80" stroke-width="1.5" opacity="1"/>
+  <text x="922" y="430" fill="#4ade80" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">APPLICATION</text>
+  <text x="922" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">EXECUTE</text><text x="922" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">ADAPTER</text>
+  <text x="922" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Approved code</text><text x="922" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">outside model</text><line x1="1030" y1="455" x2="1052" y2="455" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="1060" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#2dd4bf" stroke-width="2" opacity="1"/>
+  <circle cx="1166" cy="358" r="28" fill="#2dd4bf" stroke="#07111f" stroke-width="0"/>
+  <text x="1166" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">5</text>
+  <rect x="1086" y="402" width="160" height="40" rx="20" fill="#0d3435" stroke="#2dd4bf" stroke-width="1.5" opacity="1"/>
+  <text x="1166" y="430" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">APPLICATION</text>
+  <text x="1166" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">REPLAY</text><text x="1166" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">RESULT</text>
+  <text x="1166" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Tool role +</text><text x="1166" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">matching ID</text><line x1="1274" y1="455" x2="1296" y2="455" stroke="#2dd4bf" stroke-width="5" opacity="1" marker-end="url(#arrowTeal)"/><rect x="1304" y="310" width="212" height="290" rx="24" fill="#10243a" stroke="#a78bfa" stroke-width="2" opacity="1"/>
+  <circle cx="1410" cy="358" r="28" fill="#a78bfa" stroke="#07111f" stroke-width="0"/>
+  <text x="1410" y="367" fill="#07111f" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="900" text-anchor="middle" letter-spacing="0" opacity="1">6</text>
+  <rect x="1330" y="402" width="160" height="40" rx="20" fill="#261f42" stroke="#a78bfa" stroke-width="1.5" opacity="1"/>
+  <text x="1410" y="430" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="middle" letter-spacing="0.4" opacity="1">MODEL</text>
+  <text x="1410" y="492" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">FINAL</text><text x="1410" y="526" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="27" font-weight="800" text-anchor="middle" letter-spacing="0" opacity="1">ANSWER</text>
+  <text x="1410" y="550" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">Use result</text><text x="1410" y="583" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" text-anchor="middle" letter-spacing="0" opacity="1">to respond</text><rect x="190" y="652" width="1220" height="136" rx="24" fill="#0d2633" stroke="#2b6a73" stroke-width="2" opacity="1"/><text x="800" y="695" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="850" text-anchor="middle" letter-spacing="0.7" opacity="1">CONTROL RULE</text><text x="800" y="740" fill="#f8fafc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="760" text-anchor="middle" letter-spacing="0" opacity="1">A tool_call is a request for your code—not an action already performed.</text><text x="800" y="775" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="520" text-anchor="middle" letter-spacing="0" opacity="1">Your application owns validation, authorization, execution, and side effects.</text><line x1="72" y1="840" x2="1528" y2="840" stroke="#294864" stroke-width="2" opacity="1"/>
+  <text x="72" y="877" fill="#adc1d3" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="500" text-anchor="start" letter-spacing="0" opacity="1">Conceptual application architecture · no credentials, provider UI, or live-result claims</text>
+  <text x="1528" y="877" fill="#2dd4bf" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" text-anchor="end" letter-spacing="0" opacity="1">chat-deep.ai</text>
+  </svg>

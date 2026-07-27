@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_type": "sanitized_combined_live_tool_calls_findings",
+  "test_date_utc": "2026-07-27",
+  "models_tested": [
+    "deepseek-v4-flash",
+    "deepseek-v4-pro"
+  ],
+  "environment_scope": "one authorized account and one network environment",
+  "execution": {
+    "actual_http_requests": 30,
+    "generation_capable_requests": 30,
+    "primary_plan_requests_executed": 26,
+    "diagnostic_followup_requests_executed": 4,
+    "primary_safety_skipped_continuations": 4,
+    "maximum_application_concurrency": 1,
+    "observed_peak_concurrency": 1,
+    "automatic_retries": 0,
+    "maximum_tokens_per_request": 96,
+    "combined_total_tokens": 9058,
+    "latency_ms": {
+      "n": 30,
+      "min": 277,
+      "median": 296,
+      "p95": 440,
+      "max": 549
+    }
+  },
+  "primary_plan": {
+    "case_records": 30,
+    "expectations_met": 10,
+    "expectations_not_met": 20,
+    "http_status_counts": {
+      "200": 21,
+      "400": 5,
+      "skipped": 4
+    },
+    "http_200_with_length_and_invalid_argument_json": 16,
+    "thinking_required_or_named_http_400": 4
+  },
+  "diagnostic_followup": {
+    "case_records": 4,
+    "expectations_met": 4,
+    "expectations_not_met": 0,
+    "http_status_counts": {
+      "200": 4
+    },
+    "single_tool_round_trip": {
+      "initial_status": 200,
+      "initial_finish_reason": "tool_calls",
+      "requested_calls": 1,
+      "unique_call_ids": 1,
+      "arguments_valid": true,
+      "continuation_status": 200,
+      "continuation_finish_reason": "stop",
+      "final_content_nonempty": true
+    },
+    "multiple_tool_round_trip": {
+      "initial_status": 200,
+      "initial_finish_reason": "tool_calls",
+      "requested_calls": 2,
+      "unique_call_ids": 2,
+      "arguments_valid": true,
+      "continuation_status": 200,
+      "continuation_finish_reason": "stop",
+      "final_content_nonempty": true
+    }
+  },
+  "tool_choice_observations": {
+    "omitted_without_tools": "HTTP 200 on Flash and Pro; zero tool calls; non-empty text.",
+    "omitted_with_tools": "HTTP 200 on Flash and Pro; one tool call was started, but the 48-token cap ended generation with finish_reason length and incomplete argument JSON.",
+    "explicit_none": "HTTP 200 on Flash and Pro; zero tool calls; non-empty text.",
+    "explicit_auto": "HTTP 200 on Flash and Pro; one tool call was started, but the 48-token cap ended generation with finish_reason length and incomplete argument JSON.",
+    "required_non_thinking": "HTTP 200 on Flash and Pro; one tool call was started, but the 48-token cap truncated argument JSON.",
+    "named_non_thinking": "HTTP 200 on Flash and Pro; one named tool call was started, but the 48-token cap truncated argument JSON.",
+    "required_thinking": "HTTP 400 on Flash and Pro.",
+    "named_thinking": "HTTP 400 on Flash and Pro."
+  },
+  "strict_mode_observations": {
+    "valid_beta_schema": {
+      "status": 200,
+      "server_accepted_request": true,
+      "generated_arguments_valid": false,
+      "limitation": "64-token cap ended generation with finish_reason length."
+    },
+    "strict_on_standard_route": {
+      "status": 200,
+      "server_accepted_request": true,
+      "generated_arguments_valid": false,
+      "limitation": "Acceptance in this run does not replace the documented Beta requirement."
+    },
+    "missing_required_property": {
+      "status": 400,
+      "server_rejected_request": true
+    },
+    "missing_additional_properties_false": {
+      "status": 200,
+      "server_accepted_request": true,
+      "generated_arguments_valid": false,
+      "limitation": "Permissive acceptance is dated behavior and not a portable contract."
+    },
+    "unsupported_minLength": {
+      "status": 200,
+      "server_accepted_request": true,
+      "generated_arguments_valid": false,
+      "limitation": "Permissive acceptance is dated behavior and not a portable contract."
+    }
+  },
+  "thinking_replay_observation": {
+    "initial_status": 200,
+    "reasoning_content_present": true,
+    "tool_call_count": 1,
+    "initial_finish_reason": "length",
+    "arguments_valid": false,
+    "full_replay_status": "not_executed",
+    "missing_reasoning_control_status": "not_executed",
+    "reason": "The safety gate refused to execute or replay incomplete argument JSON. The official replay rule therefore remains the production requirement; this run did not test the continuation comparison."
+  },
+  "streaming_observations": {
+    "flash_non_thinking": {
+      "status": 200,
+      "done_seen": true,
+      "event_count": 31,
+      "finish_reason": "tool_calls",
+      "tool_call_count": 1,
+      "arguments_valid": true,
+      "tool_executions_before_complete_validation": 0
+    },
+    "pro_thinking": {
+      "status": 200,
+      "done_seen": true,
+      "event_count": 55,
+      "finish_reason": "length",
+      "tool_call_count": 1,
+      "arguments_valid": false,
+      "tool_executions_before_complete_validation": 0
+    }
+  },
+  "offline_validation": {
+    "tests_passed": 20,
+    "tests_total": 20,
+    "network_requests": 0,
+    "secret_findings": 0,
+    "arabic_script_findings": 0
+  },
+  "privacy": {
+    "credentials_persisted": false,
+    "authorization_headers_persisted": false,
+    "raw_prompts_persisted": false,
+    "raw_arguments_persisted": false,
+    "raw_tool_results_persisted": false,
+    "raw_reasoning_persisted": false,
+    "provider_request_ids_persisted": false,
+    "provider_tool_call_ids_persisted": false,
+    "account_data_persisted": false
+  },
+  "interpretation": "The 48/64/96-token caps were intentionally strict and exposed a production-relevant truncation hazard. HTTP 200 alone did not mean a complete executable tool call. A four-request compact-schema follow-up completed one single-tool and one two-tool round trip while keeping the combined actual request total at 30."
+}

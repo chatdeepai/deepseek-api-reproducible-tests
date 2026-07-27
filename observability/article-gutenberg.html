@@ -10,8 +10,8 @@
 <blockquote class="wp-block-quote"><p><strong>Quick answer:</strong> monitor every DeepSeek call at four layers: provider lifecycle, application contract, evaluated quality, and business outcome. Keep prompts, outputs, reasoning text, tool arguments, authorization headers, and raw error bodies out of default telemetry.</p></blockquote>
 <!-- /wp:quote -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_01_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_01_URL}}" alt="DeepSeek observability reference architecture connecting application spans, safe logs, metrics, evaluations, dashboards, and alerts" class="wp-image-{{OBS_MEDIA_01_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A production DeepSeek observability path keeps the model call inside the application trace while sending redacted, versioned signals to a separate telemetry pipeline.</figcaption></figure>
+<!-- wp:image {"id":7684,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/01-deepseek-observability-reference-architecture.png" alt="DeepSeek observability reference architecture connecting application spans, safe logs, metrics, evaluations, dashboards, and alerts" class="wp-image-7684" width="1600" height="900"/><figcaption class="wp-element-caption">A production DeepSeek observability path keeps the model call inside the application trace while sending redacted, versioned signals to a separate telemetry pipeline.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"table-of-contents"} -->
@@ -82,8 +82,8 @@
 <p>Do not put every field on every metric. Metrics need a small, controlled label set such as environment, route, model tier, operation, and outcome. Request IDs, user IDs, prompt versions, tool-call IDs, error messages, and fingerprints belong in sampled traces or access-controlled logs, not in high-cardinality metric labels.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_02_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_02_URL}}" alt="Map of DeepSeek provider fields, application-derived metrics, evaluator signals, and account-level evidence" class="wp-image-{{OBS_MEDIA_02_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A signal ownership map prevents application estimates from being presented as DeepSeek-returned facts.</figcaption></figure>
+<!-- wp:image {"id":7685,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-deepseek-signal-ownership-map.png" alt="Map of DeepSeek provider fields, application-derived metrics, evaluator signals, and account-level evidence" class="wp-image-7685" width="1600" height="900"/><figcaption class="wp-element-caption">A signal ownership map prevents application estimates from being presented as DeepSeek-returned facts.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"deepseek-observability-reference-architecture"} -->
@@ -308,8 +308,8 @@ export async function observeDeepSeek(
 <p>Logging should be default-deny. Define an allowlisted event schema and reject unknown fields before export. Redaction after a raw payload reaches your log pipeline is too late: copies may already exist in buffers, error trackers, or secondary sinks.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_03_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_03_URL}}" alt="Privacy-safe DeepSeek logging pipeline with allowlisted metadata, redaction gates, sampling, retention, and access controls" class="wp-image-{{OBS_MEDIA_03_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">A safe event is constructed from approved metadata; raw request and response objects never enter the logging path.</figcaption></figure>
+<!-- wp:image {"id":7686,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-privacy-safe-logging-pipeline.png" alt="Privacy-safe DeepSeek logging pipeline with allowlisted metadata, redaction gates, sampling, retention, and access controls" class="wp-image-7686" width="1600" height="900"/><figcaption class="wp-element-caption">A safe event is constructed from approved metadata; raw request and response objects never enter the logging path.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:table -->
@@ -353,8 +353,8 @@ export async function observeDeepSeek(
 <p>Streaming needs more than one latency number. DeepSeek uses server-sent events and can send keep-alive comments while a request waits. A keep-alive proves that the connection is alive; it is not a model chunk, a token, or visible content.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_04_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_04_URL}}" alt="DeepSeek streaming timing state machine from request start through first response chunk, first parsed event, first content, finish reason, final usage, and DONE" class="wp-image-{{OBS_MEDIA_04_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Measure the first response-stream chunk, first parsed JSON event, and first visible content separately; close the span only after terminal state and usage handling.</figcaption></figure>
+<!-- wp:image {"id":7687,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-streaming-timing-state-machine.png" alt="DeepSeek streaming timing state machine from request start through first response chunk, first parsed event, first content, finish reason, final usage, and DONE" class="wp-image-7687" width="1600" height="900"/><figcaption class="wp-element-caption">Measure the first response-stream chunk, first parsed JSON event, and first visible content separately; close the span only after terminal state and usage handling.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:list -->
@@ -427,8 +427,8 @@ export async function observeDeepSeek(
 <figure class="wp-block-table"><table class="has-fixed-layout"><thead><tr><th>Model</th><th>Cache-hit input</th><th>Cache-miss input</th><th>Output</th></tr></thead><tbody><tr><td><code>deepseek-v4-flash</code></td><td>$0.0028</td><td>$0.14</td><td>$0.28</td></tr><tr><td><code>deepseek-v4-pro</code></td><td>$0.003625</td><td>$0.435</td><td>$0.87</td></tr></tbody></table><figcaption class="wp-element-caption">Pricing snapshot checked July 27, 2026 UTC. Always re-read the official page before budgeting or alerting.</figcaption></figure>
 <!-- /wp:table -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_05_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_05_URL}}" alt="DeepSeek token cache and estimated cost calculation using provider usage fields and a dated external price snapshot" class="wp-image-{{OBS_MEDIA_05_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Provider usage is measured; cost is derived from usage and a versioned price snapshot, then reconciled with billing.</figcaption></figure>
+<!-- wp:image {"id":7688,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-token-cache-cost-math.png" alt="DeepSeek token cache and estimated cost calculation using provider usage fields and a dated external price snapshot" class="wp-image-7688" width="1600" height="900"/><figcaption class="wp-element-caption">Provider usage is measured; cost is derived from usage and a versioned price snapshot, then reconciled with billing.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3,"anchor":"original-cache-observation"} -->
@@ -479,8 +479,8 @@ export async function observeDeepSeek(
 <p>Our V4 Pro control returned a normal <code>stop</code>, 30 reasoning tokens, and the correct final integer. That proves those fields were observable in that request; it does not justify logging the reasoning text or assuming every thinking request will finish inside the same token budget.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_06_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_06_URL}}" alt="DeepSeek tool and agent trace waterfall covering model request, tool proposal, argument validation, authorization, execution, continuation, and final validation" class="wp-image-{{OBS_MEDIA_06_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">An agent trace must show the application-controlled gates between a model's tool proposal and any real side effect.</figcaption></figure>
+<!-- wp:image {"id":7689,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-tool-agent-trace-waterfall.png" alt="DeepSeek tool and agent trace waterfall covering model request, tool proposal, argument validation, authorization, execution, continuation, and final validation" class="wp-image-7689" width="1600" height="900"/><figcaption class="wp-element-caption">An agent trace must show the application-controlled gates between a model's tool proposal and any real side effect.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:list {"ordered":true} -->
@@ -543,8 +543,8 @@ export async function observeDeepSeek(
 <p>A dashboard should lead from symptom to trace. Put a small set of service-level indicators at the top, then provide drill-down panels for tokens, cache, cost, contracts, tools, and telemetry health. Do not mix unrelated populations: separate environment, route, streaming mode, canonical model, and release when those dimensions change behavior.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_07_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_07_URL}}" alt="DeepSeek observability dashboard and alert topology for reliability, streaming, tokens, cache, cost, quality, tools, and telemetry health" class="wp-image-{{OBS_MEDIA_07_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Dashboards summarize bounded labels; exemplars and correlation IDs connect an alert to a privacy-safe trace.</figcaption></figure>
+<!-- wp:image {"id":7690,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-dashboard-alert-topology.png" alt="DeepSeek observability dashboard and alert topology for reliability, streaming, tokens, cache, cost, quality, tools, and telemetry health" class="wp-image-7690" width="1600" height="900"/><figcaption class="wp-element-caption">Dashboards summarize bounded labels; exemplars and correlation IDs connect an alert to a privacy-safe trace.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"level":3,"anchor":"recommended-dashboard-panels"} -->
@@ -596,8 +596,8 @@ export async function observeDeepSeek(
 <p>We froze the plan before any paid generation request. The run used concurrency one, zero provider retries, a 30-second per-request timeout, synthetic English-only prompts, and no real tools or user data. Raw prompts, outputs, reasoning text, provider IDs, raw errors, and the API key were excluded from public artifacts. The temporary key existed only in memory and was revoked after the run.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{OBS_MEDIA_08_ID}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{OBS_MEDIA_08_URL}}" alt="Sanitized DeepSeek observability live results dashboard showing eight cases, usage, cache evidence, quality detection, and privacy audit" class="wp-image-{{OBS_MEDIA_08_ID}}" width="1600" height="900"/><figcaption class="wp-element-caption">Sanitized live evidence from July 27, 2026 UTC. Timings are individual observations, not a provider benchmark or SLA.</figcaption></figure>
+<!-- wp:image {"id":7691,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-sanitized-live-results-dashboard.png" alt="Sanitized DeepSeek observability live results dashboard showing eight cases, usage, cache evidence, quality detection, and privacy audit" class="wp-image-7691" width="1600" height="900"/><figcaption class="wp-element-caption">Sanitized live evidence from July 27, 2026 UTC. Timings are individual observations, not a provider benchmark or SLA.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:table -->

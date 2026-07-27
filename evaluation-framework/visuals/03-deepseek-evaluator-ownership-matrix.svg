@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">DeepSeek Evaluation Signal Ownership Matrix</title>
+<desc id="visual-description">Four-column matrix separating provider-returned, application-measured, evaluator-produced, and human or reconciled evidence.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">DeepSeek Evaluation Signal Ownership Matrix</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Keep returned fields, measured behavior, derived scores, and decisions visibly separate</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="276" width="346" height="484" fill="#0d2633" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<rect x="72" y="276" width="346" height="64" fill="#10283f" rx="22"/>
+<circle cx="100" cy="308" r="8" fill="#5ea8ff"/>
+<text x="120" y="314" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">PROVIDER-RETURNED</text>
+<circle cx="100" cy="382" r="5" fill="#5ea8ff"/>
+<text x="115" y="387" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">model</text>
+<circle cx="100" cy="424" r="5" fill="#5ea8ff"/>
+<text x="115" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">finish reason</text>
+<circle cx="100" cy="466" r="5" fill="#5ea8ff"/>
+<text x="115" y="471" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">token usage</text>
+<circle cx="100" cy="508" r="5" fill="#5ea8ff"/>
+<text x="115" y="513" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">cache hit / miss tokens</text>
+<line x1="96" y1="548" x2="394" y2="548" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="96" y="583" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">SOURCE</text>
+<text x="172" y="584" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">DeepSeek API response</text>
+<text x="96" y="628" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">UNIT</text>
+<text x="172" y="629" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">field / token</text>
+<text x="96" y="673" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">OWNER</text>
+<text x="172" y="674" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">provider contract</text>
+<rect x="96" y="707" width="298" height="36" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="245" y="730" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">MEASURED</text>
+<rect x="442" y="276" width="346" height="484" fill="#0d2633" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<rect x="442" y="276" width="346" height="64" fill="#10283f" rx="22"/>
+<circle cx="470" cy="308" r="8" fill="#2dd4c6"/>
+<text x="490" y="314" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">APPLICATION-MEASURED</text>
+<circle cx="470" cy="382" r="5" fill="#2dd4c6"/>
+<text x="485" y="387" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">latency milestones</text>
+<circle cx="470" cy="424" r="5" fill="#2dd4c6"/>
+<text x="485" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">timeout</text>
+<circle cx="470" cy="466" r="5" fill="#2dd4c6"/>
+<text x="485" y="471" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">retry / cancellation</text>
+<circle cx="470" cy="508" r="5" fill="#2dd4c6"/>
+<text x="485" y="513" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">tool execution outcome</text>
+<line x1="466" y1="548" x2="764" y2="548" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="466" y="583" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">SOURCE</text>
+<text x="542" y="584" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">application runtime</text>
+<text x="466" y="628" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">UNIT</text>
+<text x="542" y="629" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">time / state</text>
+<text x="466" y="673" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">OWNER</text>
+<text x="542" y="674" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">service team</text>
+<rect x="466" y="707" width="298" height="36" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="615" y="730" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">MEASURED</text>
+<rect x="812" y="276" width="346" height="484" fill="#0d2633" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<rect x="812" y="276" width="346" height="64" fill="#10283f" rx="22"/>
+<circle cx="840" cy="308" r="8" fill="#a78bfa"/>
+<text x="860" y="314" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">EVALUATOR-PRODUCED</text>
+<circle cx="840" cy="382" r="5" fill="#a78bfa"/>
+<text x="855" y="387" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">exact match / schema</text>
+<circle cx="840" cy="424" r="5" fill="#a78bfa"/>
+<text x="855" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">faithfulness</text>
+<circle cx="840" cy="466" r="5" fill="#a78bfa"/>
+<text x="855" y="471" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">pairwise preference</text>
+<circle cx="840" cy="508" r="5" fill="#a78bfa"/>
+<text x="855" y="513" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">hallucination class</text>
+<line x1="836" y1="548" x2="1134" y2="548" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="836" y="583" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">SOURCE</text>
+<text x="912" y="584" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">scorer implementation</text>
+<text x="836" y="628" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">UNIT</text>
+<text x="912" y="629" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">label / score</text>
+<text x="836" y="673" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">OWNER</text>
+<text x="912" y="674" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">evaluation team</text>
+<rect x="836" y="707" width="298" height="36" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="985" y="730" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">DERIVED OR JUDGED</text>
+<rect x="1182" y="276" width="346" height="484" fill="#0d2633" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<rect x="1182" y="276" width="346" height="64" fill="#10283f" rx="22"/>
+<circle cx="1210" cy="308" r="8" fill="#ffbd22"/>
+<text x="1230" y="314" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">HUMAN / RECONCILED</text>
+<circle cx="1210" cy="382" r="5" fill="#ffbd22"/>
+<text x="1225" y="387" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">reviewer label</text>
+<circle cx="1210" cy="424" r="5" fill="#ffbd22"/>
+<text x="1225" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">disagreement resolution</text>
+<circle cx="1210" cy="466" r="5" fill="#ffbd22"/>
+<text x="1225" y="471" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">billing reconciliation</text>
+<circle cx="1210" cy="508" r="5" fill="#ffbd22"/>
+<text x="1225" y="513" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">release decision</text>
+<line x1="1206" y1="548" x2="1504" y2="548" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="1206" y="583" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">SOURCE</text>
+<text x="1282" y="584" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">review workflow</text>
+<text x="1206" y="628" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">UNIT</text>
+<text x="1282" y="629" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">label / decision</text>
+<text x="1206" y="673" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start">OWNER</text>
+<text x="1282" y="674" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">accountable reviewer</text>
+<rect x="1206" y="707" width="298" height="36" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="1355" y="730" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">JUDGED OR RECONCILED</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">DeepSeek Application Evaluation System Architecture</title>
+<desc id="visual-description">Application evaluation lifecycle from task contract and golden dataset through frozen runs, scorers, human review, release gate, production monitoring, and regression feedback.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">DeepSeek Application Evaluation Architecture</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Application evidence moves through a release boundary and returns as reviewed regression cases</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="260" width="254" height="38" fill="#0b2034" rx="19" stroke="#5ea8ff" stroke-width="2"/>
+<text x="199" y="284" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">DEVELOPMENT / OFFLINE</text>
+<rect x="1272" y="260" width="256" height="38" fill="#0b2034" rx="19" stroke="#43df88" stroke-width="2"/>
+<text x="1400" y="284" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">PRODUCTION / ONLINE</text>
+<line x1="1204" y1="264" x2="1204" y2="698" stroke="#ffbd22" stroke-width="3" stroke-linecap="round" stroke-dasharray="9 7"/>
+<text x="1204" y="724" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">RELEASE-DECISION BOUNDARY</text>
+<rect x="72" y="327" width="184" height="146" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="96" cy="352" r="7" fill="#5ea8ff"/>
+<text x="114" y="358" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">TASK CONTRACT</text>
+<text x="164" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">behavior + risk</text>
+<text x="164" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">acceptance policy</text>
+<line x1="256" y1="400" x2="265" y2="400" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="274,400 261.9,407.0 261.9,393.0" fill="#2dd4c6"/>
+<rect x="284" y="327" width="184" height="146" fill="#10283f" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="308" cy="352" r="7" fill="#a78bfa"/>
+<text x="326" y="358" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="start">GOLDEN DATASET</text>
+<text x="376" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">versioned cases</text>
+<text x="376" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">provenance + splits</text>
+<line x1="468" y1="400" x2="477" y2="400" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="486,400 473.9,407.0 473.9,393.0" fill="#2dd4c6"/>
+<rect x="496" y="327" width="184" height="146" fill="#10283f" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="520" cy="352" r="7" fill="#2dd4c6"/>
+<text x="538" y="358" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">FROZEN RUN</text>
+<text x="588" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">model + prompt</text>
+<text x="588" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">code + plan hash</text>
+<line x1="680" y1="400" x2="689" y2="400" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="698,400 685.9,407.0 685.9,393.0" fill="#2dd4c6"/>
+<rect x="708" y="327" width="184" height="146" fill="#10283f" rx="18" stroke="#43df88" stroke-width="2"/>
+<circle cx="732" cy="352" r="7" fill="#43df88"/>
+<text x="750" y="358" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">SCORERS</text>
+<text x="800" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">deterministic</text>
+<text x="800" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">model-based</text>
+<line x1="892" y1="400" x2="901" y2="400" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="910,400 897.9,407.0 897.9,393.0" fill="#2dd4c6"/>
+<rect x="920" y="327" width="184" height="146" fill="#10283f" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="944" cy="352" r="7" fill="#ffbd22"/>
+<text x="962" y="358" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">HUMAN REVIEW</text>
+<text x="1012" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">ambiguous cases</text>
+<text x="1012" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">risk escalation</text>
+<rect x="1118" y="327" width="172" height="146" fill="#10283f" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="1142" cy="352" r="7" fill="#ffbd22"/>
+<text x="1160" y="358" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">RELEASE GATE</text>
+<text x="1204" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">segment policy</text>
+<text x="1204" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">ship / block</text>
+<line x1="1104" y1="400" x2="1099" y2="400" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1108,400 1095.9,407.0 1095.9,393.0" fill="#2dd4c6"/>
+<line x1="1290" y1="400" x2="1315" y2="400" stroke="#43df88" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1324,400 1311.9,407.0 1311.9,393.0" fill="#43df88"/>
+<rect x="1336" y="327" width="192" height="146" fill="#10283f" rx="18" stroke="#43df88" stroke-width="2"/>
+<circle cx="1360" cy="352" r="7" fill="#43df88"/>
+<text x="1378" y="358" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">MONITORING</text>
+<text x="1432" y="396" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">operational signals</text>
+<text x="1432" y="422" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">reviewed failures</text>
+<text x="72" y="525" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="start">EVIDENCE TYPES</text>
+<rect x="72" y="542" width="246" height="42" fill="#0b2034" rx="21" stroke="#5ea8ff" stroke-width="2"/>
+<text x="195" y="568" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">Deterministic evidence</text>
+<rect x="336" y="542" width="236" height="42" fill="#0b2034" rx="21" stroke="#a78bfa" stroke-width="2"/>
+<text x="454" y="568" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">Model-based evidence</text>
+<rect x="590" y="542" width="210" height="42" fill="#0b2034" rx="21" stroke="#ffbd22" stroke-width="2"/>
+<text x="695" y="568" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">Human evidence</text>
+<rect x="818" y="542" width="250" height="42" fill="#0b2034" rx="21" stroke="#43df88" stroke-width="2"/>
+<text x="943" y="568" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">Operational evidence</text>
+<rect x="72" y="621" width="420" height="116" fill="#112e4b" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="96" y="657" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">PUBLIC MODEL BENCHMARK</text>
+<text x="96" y="694" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Input to candidate selection</text>
+<text x="96" y="719" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Not the application&#x27;s release gate</text>
+<line x1="492" y1="679" x2="539" y2="679" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<polygon points="548,679 535.9,686.0 535.9,672.0" fill="#5ea8ff"/>
+<rect x="562" y="658" width="266" height="42" fill="#0b2034" rx="21" stroke="#5ea8ff" stroke-width="2"/>
+<text x="695" y="684" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">candidate model input</text>
+<line x1="1432" y1="327" x2="1432" y2="310" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<line x1="1432" y1="310" x2="376" y2="310" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<line x1="376" y1="310" x2="376" y2="318" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<polygon points="376,327 369.0,314.9 383.0,314.9" fill="#a78bfa"/>
+<rect x="650" y="263" width="500" height="42" fill="#252545" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="900" y="289" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">reviewed production failure -&gt; new dataset version</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

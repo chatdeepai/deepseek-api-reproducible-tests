@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">DeepSeek Agent and Tool Evaluation Trace</title>
+<desc id="visual-description">Aligned trace from user intent through model proposal, application validation, stubbed execution, continuation, final answer, and review.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">DeepSeek Agent and Tool Evaluation Trace</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">The model proposes; the application validates, authorizes, executes, and owns side-effect safety</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<text x="72" y="278" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="start">ALIGNED TRACE LANES</text>
+<text x="1518" y="277" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="end">TIME -&gt;</text>
+<rect x="72" y="306" width="1456" height="36" fill="#0d2633" rx="8"/>
+<text x="90" y="329" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">User intent</text>
+<line x1="310" y1="324" x2="1504" y2="324" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="342" cy="324" r="8" fill="#5ea8ff"/>
+<rect x="360" y="309" width="134" height="30" fill="#0b2034" rx="15" stroke="#5ea8ff" stroke-width="2"/>
+<text x="427" y="328" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">request</text>
+<line x1="350" y1="324" x2="436" y2="363" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="444,367 430.1,368.3 435.9,355.6" fill="#2dd4c6"/>
+<rect x="72" y="349" width="1456" height="36" fill="#0b2034" rx="8"/>
+<text x="90" y="372" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">DeepSeek model proposal</text>
+<line x1="310" y1="367" x2="1504" y2="367" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="452" cy="367" r="8" fill="#a78bfa"/>
+<rect x="470" y="352" width="134" height="30" fill="#0b2034" rx="15" stroke="#a78bfa" stroke-width="2"/>
+<text x="537" y="371" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">proposal</text>
+<line x1="460" y1="367" x2="570" y2="407" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="578,410 564.2,412.4 569.0,399.3" fill="#2dd4c6"/>
+<rect x="72" y="392" width="1456" height="36" fill="#0d2633" rx="8"/>
+<text x="90" y="415" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Argument parsing</text>
+<line x1="310" y1="410" x2="1504" y2="410" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="586" cy="410" r="8" fill="#2dd4c6"/>
+<rect x="604" y="395" width="134" height="30" fill="#0b2034" rx="15" stroke="#2dd4c6" stroke-width="2"/>
+<text x="671" y="414" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">parse</text>
+<line x1="594" y1="410" x2="688" y2="450" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="696,453 682.1,454.7 687.5,441.8" fill="#2dd4c6"/>
+<rect x="72" y="435" width="1456" height="36" fill="#0b2034" rx="8"/>
+<text x="90" y="458" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Schema validation</text>
+<line x1="310" y1="453" x2="1504" y2="453" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="704" cy="453" r="8" fill="#43df88"/>
+<rect x="722" y="438" width="134" height="30" fill="#0b2034" rx="15" stroke="#43df88" stroke-width="2"/>
+<text x="789" y="457" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">validate</text>
+<line x1="712" y1="453" x2="814" y2="493" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="822,496 808.2,498.1 813.3,485.1" fill="#2dd4c6"/>
+<rect x="72" y="478" width="1456" height="36" fill="#0d2633" rx="8"/>
+<text x="90" y="501" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Authorization + policy</text>
+<line x1="310" y1="496" x2="1504" y2="496" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="830" cy="496" r="8" fill="#ffbd22"/>
+<rect x="848" y="481" width="134" height="30" fill="#0b2034" rx="15" stroke="#ffbd22" stroke-width="2"/>
+<text x="915" y="500" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">allow / stop</text>
+<line x1="838" y1="496" x2="944" y2="536" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="952,539 938.2,541.3 943.1,528.2" fill="#2dd4c6"/>
+<rect x="72" y="521" width="1456" height="36" fill="#0b2034" rx="8"/>
+<text x="90" y="544" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Stubbed tool execution</text>
+<line x1="310" y1="539" x2="1504" y2="539" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="960" cy="539" r="8" fill="#5ea8ff"/>
+<rect x="978" y="524" width="134" height="30" fill="#0b2034" rx="15" stroke="#5ea8ff" stroke-width="2"/>
+<text x="1045" y="543" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">synthetic stub</text>
+<line x1="968" y1="539" x2="1062" y2="579" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1070,582 1056.1,583.7 1061.5,570.8" fill="#2dd4c6"/>
+<rect x="72" y="564" width="1456" height="36" fill="#0d2633" rx="8"/>
+<text x="90" y="587" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Tool result</text>
+<line x1="310" y1="582" x2="1504" y2="582" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1078" cy="582" r="8" fill="#2dd4c6"/>
+<rect x="1096" y="567" width="134" height="30" fill="#0b2034" rx="15" stroke="#2dd4c6" stroke-width="2"/>
+<text x="1163" y="586" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">result</text>
+<line x1="1086" y1="582" x2="1178" y2="621" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1186,625 1172.1,626.6 1177.6,613.8" fill="#2dd4c6"/>
+<rect x="72" y="607" width="1456" height="36" fill="#0b2034" rx="8"/>
+<text x="90" y="630" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Continuation call</text>
+<line x1="310" y1="625" x2="1504" y2="625" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1194" cy="625" r="8" fill="#a78bfa"/>
+<rect x="1212" y="610" width="134" height="30" fill="#0b2034" rx="15" stroke="#a78bfa" stroke-width="2"/>
+<text x="1279" y="629" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">continue</text>
+<line x1="1202" y1="625" x2="1304" y2="665" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1312,668 1298.2,670.1 1303.3,657.1" fill="#2dd4c6"/>
+<rect x="72" y="650" width="1456" height="36" fill="#0d2633" rx="8"/>
+<text x="90" y="673" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Final answer</text>
+<line x1="310" y1="668" x2="1504" y2="668" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1320" cy="668" r="8" fill="#43df88"/>
+<rect x="1338" y="653" width="134" height="30" fill="#0b2034" rx="15" stroke="#43df88" stroke-width="2"/>
+<text x="1405" y="672" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">answer</text>
+<line x1="1328" y1="668" x2="1424" y2="708" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1432,711 1418.1,712.8 1423.5,699.9" fill="#2dd4c6"/>
+<rect x="72" y="693" width="1456" height="36" fill="#0b2034" rx="8"/>
+<text x="90" y="716" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Evaluator + reviewer</text>
+<line x1="310" y1="711" x2="1504" y2="711" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<circle cx="1440" cy="711" r="8" fill="#ffbd22"/>
+<rect x="1390" y="696" width="120" height="30" fill="#0b2034" rx="15" stroke="#ffbd22" stroke-width="2"/>
+<text x="1450" y="715" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">decision</text>
+<line x1="650" y1="296" x2="650" y2="748" stroke="#ffbd22" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 7"/>
+<text x="650" y="775" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PROPOSAL DOES NOT EXECUTE</text>
+<line x1="900" y1="296" x2="900" y2="748" stroke="#ff6b81" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 7"/>
+<text x="900" y="775" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">INVALID / UNAUTHORIZED -&gt; STOP</text>
+<line x1="1128" y1="296" x2="1128" y2="748" stroke="#5ea8ff" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 7"/>
+<text x="1128" y="775" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PUBLIC TESTS USE STUBS</text>
+<line x1="1364" y1="296" x2="1364" y2="748" stroke="#43df88" stroke-width="2" stroke-linecap="round" stroke-dasharray="8 7"/>
+<text x="1364" y="775" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">SIDE EFFECTS ARE APP-OWNED</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

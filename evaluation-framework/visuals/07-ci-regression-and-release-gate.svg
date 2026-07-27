@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">CI Regression and Fail-Closed Release Gate</title>
+<desc id="visual-description">Two-tier evaluation pipeline combining broad offline checks with an explicit bounded provider run and fail-closed release decisions.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">CI Regression and Fail-Closed Release Gate</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Run broad offline checks on every change; make provider evaluation explicit, bounded, and auditable</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="258" width="260" height="38" fill="#0b2034" rx="19" stroke="#5ea8ff" stroke-width="2"/>
+<text x="202" y="282" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">TIER 1  |  EVERY CHANGE</text>
+<rect x="72" y="309" width="344" height="102" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="96" cy="334" r="7" fill="#5ea8ff"/>
+<text x="114" y="340" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">SCHEMA + FIXTURES</text>
+<text x="244" y="378" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">structure</text>
+<text x="244" y="404" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">stable cases</text>
+<line x1="416" y1="360" x2="421" y2="360" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<polygon points="430,360 417.9,367.0 417.9,353.0" fill="#5ea8ff"/>
+<rect x="440" y="309" width="344" height="102" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="464" cy="334" r="7" fill="#5ea8ff"/>
+<text x="482" y="340" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">SCORER UNIT TESTS</text>
+<text x="612" y="378" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">known labels</text>
+<text x="612" y="404" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">edge cases</text>
+<line x1="784" y1="360" x2="789" y2="360" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<polygon points="798,360 785.9,367.0 785.9,353.0" fill="#5ea8ff"/>
+<rect x="808" y="309" width="344" height="102" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="832" cy="334" r="7" fill="#5ea8ff"/>
+<text x="850" y="340" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">DATASET VALIDATION</text>
+<text x="980" y="378" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">splits</text>
+<text x="980" y="404" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">leakage checks</text>
+<line x1="1152" y1="360" x2="1157" y2="360" stroke="#5ea8ff" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1166,360 1153.9,367.0 1153.9,353.0" fill="#5ea8ff"/>
+<rect x="1176" y="309" width="344" height="102" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="1200" cy="334" r="7" fill="#5ea8ff"/>
+<text x="1218" y="340" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">NO PROVIDER CALL</text>
+<text x="1348" y="378" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">fast</text>
+<text x="1348" y="404" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">zero API spend</text>
+<line x1="1480" y1="411" x2="1480" y2="448" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<line x1="1480" y1="448" x2="112" y2="448" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<line x1="112" y1="448" x2="112" y2="474" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="112,483 105.0,470.9 119.0,470.9" fill="#2dd4c6"/>
+<rect x="72" y="466" width="370" height="38" fill="#0b2034" rx="19" stroke="#2dd4c6" stroke-width="2"/>
+<text x="257" y="490" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">TIER 2  |  EXPLICIT BOUNDED PROVIDER RUN</text>
+<rect x="72" y="522" width="180" height="44" fill="#0b2034" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<text x="162" y="548" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">FROZEN PLAN</text>
+<line x1="252" y1="544" x2="255" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="264,544 251.9,551.0 251.9,537.0" fill="#2dd4c6"/>
+<rect x="272" y="522" width="210" height="44" fill="#0b2034" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<text x="377" y="548" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">RESERVATION LEDGER</text>
+<line x1="482" y1="544" x2="485" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="494,544 481.9,551.0 481.9,537.0" fill="#2dd4c6"/>
+<rect x="502" y="522" width="210" height="44" fill="#0b2034" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<text x="607" y="548" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">REQUEST + COST CAP</text>
+<line x1="712" y1="544" x2="715" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="724,544 711.9,551.0 711.9,537.0" fill="#2dd4c6"/>
+<rect x="732" y="522" width="220" height="44" fill="#0b2034" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<text x="842" y="548" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">BOUNDED CONCURRENCY</text>
+<line x1="952" y1="544" x2="955" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="964,544 951.9,551.0 951.9,537.0" fill="#2dd4c6"/>
+<rect x="972" y="522" width="190" height="44" fill="#0b2034" rx="22" stroke="#ff6b81" stroke-width="2"/>
+<text x="1067" y="548" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">ZERO AUTO RETRIES</text>
+<line x1="1162" y1="544" x2="1165" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1174,544 1161.9,551.0 1161.9,537.0" fill="#2dd4c6"/>
+<rect x="1182" y="522" width="210" height="44" fill="#0b2034" rx="22" stroke="#43df88" stroke-width="2"/>
+<text x="1287" y="548" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">SANITIZED EVIDENCE</text>
+<line x1="1392" y1="544" x2="1395" y2="544" stroke="#2dd4c6" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1404,544 1391.9,551.0 1391.9,537.0" fill="#2dd4c6"/>
+<rect x="1412" y="522" width="190" height="44" fill="#0b2034" rx="22" stroke="#43df88" stroke-width="2"/>
+<text x="1507" y="548" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PRIVACY AUDIT</text>
+<line x1="800" y1="568" x2="800" y2="601" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="800,610 793.0,597.9 807.0,597.9" fill="#2dd4c6"/>
+<rect x="620" y="612" width="360" height="54" fill="#10283f" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="800" y="645" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">RELEASE DECISION</text>
+<line x1="212" y1="686" x2="1388" y2="686" stroke="#284d68" stroke-width="3" stroke-linecap="round"/>
+<line x1="800" y1="666" x2="800" y2="677" stroke="#2dd4c6" stroke-width="3" stroke-linecap="round"/>
+<polygon points="800,686 793.0,673.9 807.0,673.9" fill="#2dd4c6"/>
+<line x1="212" y1="686" x2="212" y2="695" stroke="#ff6b81" stroke-width="2" stroke-linecap="round"/>
+<polygon points="212,704 205.0,691.9 219.0,691.9" fill="#ff6b81"/>
+<rect x="72" y="707" width="280" height="76" fill="#0b2034" rx="16" stroke="#ff6b81" stroke-width="2"/>
+<text x="212" y="734" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">CRITICAL KNOWN FAILURE</text>
+<text x="212" y="764" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">BLOCK</text>
+<line x1="506" y1="686" x2="506" y2="695" stroke="#ff6b81" stroke-width="2" stroke-linecap="round"/>
+<polygon points="506,704 499.0,691.9 513.0,691.9" fill="#ff6b81"/>
+<rect x="366" y="707" width="280" height="76" fill="#0b2034" rx="16" stroke="#ff6b81" stroke-width="2"/>
+<text x="506" y="734" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">MATERIAL SEGMENT REGRESSION</text>
+<text x="506" y="764" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">BLOCK</text>
+<line x1="800" y1="686" x2="800" y2="695" stroke="#ffbd22" stroke-width="2" stroke-linecap="round"/>
+<polygon points="800,704 793.0,691.9 807.0,691.9" fill="#ffbd22"/>
+<rect x="660" y="707" width="280" height="76" fill="#0b2034" rx="16" stroke="#ffbd22" stroke-width="2"/>
+<text x="800" y="734" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">JUDGE DISAGREEMENT</text>
+<text x="800" y="764" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">HUMAN REVIEW</text>
+<line x1="1094" y1="686" x2="1094" y2="695" stroke="#43df88" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1094,704 1087.0,691.9 1101.0,691.9" fill="#43df88"/>
+<rect x="954" y="707" width="280" height="76" fill="#0b2034" rx="16" stroke="#43df88" stroke-width="2"/>
+<text x="1094" y="734" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">COMPLETE PASS</text>
+<text x="1094" y="764" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">CANDIDATE RELEASE</text>
+<line x1="1388" y1="686" x2="1388" y2="695" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+<polygon points="1388,704 1381.0,691.9 1395.0,691.9" fill="#a78bfa"/>
+<rect x="1248" y="707" width="280" height="76" fill="#0b2034" rx="16" stroke="#a78bfa" stroke-width="2"/>
+<text x="1388" y="734" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">MISSING / FAILED EVIDENCE</text>
+<text x="1388" y="764" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">NO PUBLICATION</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

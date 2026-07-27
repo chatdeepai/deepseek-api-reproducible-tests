@@ -1,0 +1,150 @@
+{
+  "schema_version": "1.0.0",
+  "status": "visuals_01_08_complete",
+  "asset_count": 16,
+  "visual_08_generated": true,
+  "assets": [
+    {
+      "basename": "01-deepseek-evaluation-system-architecture",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "DeepSeek application evaluation architecture connecting task contracts, golden datasets, frozen runs, automated scorers, human review, release gates, production monitoring, and regression feedback",
+      "caption": "Conceptual evaluation lifecycle. Public model benchmarks can help select candidates, but application evidence determines whether a release is safe to ship. No live-result claims.",
+      "png": {
+        "file": "01-deepseek-evaluation-system-architecture.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "a75017594151f43ef65b0dc7ce62a73d0554050086ddbfb7ea76f3a98120ceed"
+      },
+      "svg": {
+        "file": "01-deepseek-evaluation-system-architecture.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "9dd93da059fefacf58802688272a3667d4f8ca242a9894a924d79f5c39e5ad09"
+      }
+    },
+    {
+      "basename": "02-golden-dataset-anatomy-and-splits",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "Anatomy of a versioned DeepSeek golden evaluation case with development, regression, and blind holdout splits plus leakage, privacy, and deduplication controls",
+      "caption": "Conceptual dataset design. A larger dataset is not automatically better; provenance, risk coverage, leakage control, and stable versions make results interpretable. No live-result claims.",
+      "png": {
+        "file": "02-golden-dataset-anatomy-and-splits.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "0ac5a1133b48d2b0c62b874caa3d1c29220a13f593159014c9ab29855bc0a266"
+      },
+      "svg": {
+        "file": "02-golden-dataset-anatomy-and-splits.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "6240a8cf0b1aad861a49a303ad1cb147ad9c920cbfe8bf2009e6e605f584b41d"
+      }
+    },
+    {
+      "basename": "03-deepseek-evaluator-ownership-matrix",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "Ownership matrix for DeepSeek provider fields, application measurements, evaluator scores, human labels, and reconciled release evidence",
+      "caption": "Conceptual signal taxonomy. Record who produced each value and how it was derived before combining it in a scorecard. No live-result claims.",
+      "png": {
+        "file": "03-deepseek-evaluator-ownership-matrix.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "b875b5ae599654bcef0a17c56e4d605d6ab0a75d297cf9d89d5609ded2f803dd"
+      },
+      "svg": {
+        "file": "03-deepseek-evaluator-ownership-matrix.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "2f374167de1f94c255ab858542ce0fbe3b01a8035f39d9a8d7535fd0f7586e02"
+      }
+    },
+    {
+      "basename": "04-hallucination-faithfulness-decision-tree",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "Decision tree separating DeepSeek output faithfulness, factuality, groundedness, unsupported claims, contradictions, and correct abstention",
+      "caption": "Conceptual claim-level classification. Hallucination, faithfulness, factuality, and groundedness answer different questions and should not be collapsed into one universal score. No live-result claims.",
+      "png": {
+        "file": "04-hallucination-faithfulness-decision-tree.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "ed45be025ce7dc3fd0cf8f5f0c155e77b33e3dc5b1a40cb5febe068ab25ffbb0"
+      },
+      "svg": {
+        "file": "04-hallucination-faithfulness-decision-tree.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "8af5c11ef9daff4e13959dc879ad284328a093b1dc51daa0351f6a22cd5e63d8"
+      }
+    },
+    {
+      "basename": "05-deepseek-rag-evaluation-two-stage-pipeline",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "Two-stage DeepSeek RAG evaluation pipeline separating retriever coverage and ranking from generator faithfulness, citations, factuality, relevance, and abstention",
+      "caption": "Conceptual RAG evaluation map. Score retrieval and generation separately so one stage cannot hide the other's failure. No live-result claims.",
+      "png": {
+        "file": "05-deepseek-rag-evaluation-two-stage-pipeline.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "adb0ddcd84afb956b185e86b16498348af5fdf520eff5a69eee6e88fcacf25d2"
+      },
+      "svg": {
+        "file": "05-deepseek-rag-evaluation-two-stage-pipeline.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "04132585981608d784862da804b771fd6bd07b603a80aede11953b9c7cbe3941"
+      }
+    },
+    {
+      "basename": "06-deepseek-agent-tool-evaluation-trace",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "DeepSeek agent evaluation trace covering model proposal, argument validation, authorization, stubbed tool execution, continuation, final answer, and reviewer outcome",
+      "caption": "Conceptual agent trace. The application owns validation, authorization, execution, and side-effect safety; the model only proposes tool calls. No live-result claims.",
+      "png": {
+        "file": "06-deepseek-agent-tool-evaluation-trace.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "5583626b5d260f80a8fed4d9ca9ff0a7bfe714be6516b9f9cc6d20217448e3a2"
+      },
+      "svg": {
+        "file": "06-deepseek-agent-tool-evaluation-trace.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "898cb1495d667cd0079f8738e2a62ab5dc1fde1df999e000607b00ddc12d763f"
+      }
+    },
+    {
+      "basename": "07-ci-regression-and-release-gate",
+      "evidence": "conceptual_only_no_live_result_claims",
+      "alt": "Two-tier DeepSeek evaluation CI pipeline with offline checks, bounded provider runs, request and cost caps, regression gates, human review, and fail-closed publication",
+      "caption": "Conceptual release gate. Offline checks run broadly; provider evaluation runs remain explicit, bounded, reproducible, privacy-audited, and fail closed. No live-result claims.",
+      "png": {
+        "file": "07-ci-regression-and-release-gate.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "4bb98fa8e0c02782b18c7cd0c94d546b1d908d7250d2617daeb045bdd5e57f29"
+      },
+      "svg": {
+        "file": "07-ci-regression-and-release-gate.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "a17b1acd9eb9b97c2cfa05db0f072c688c7f9396c8e6442f8052f4995b46a3e6"
+      }
+    },
+    {
+      "basename": "08-deepseek-v4-live-evaluation-dashboard",
+      "evidence": "live_evidence_fail_closed",
+      "source_summary": "live-summary.json",
+      "source_privacy_audit": "live-privacy-audit.json",
+      "alt": "Sanitized DeepSeek V4 application evaluation dashboard showing the bounded case set, contract checks, RAG and tool results, run count and single-observation limitations, token usage, estimated cost, release decision, and privacy audit",
+      "caption": "Sanitized live evidence from 2026-07-27 21:49:03.794 UTC. Values are bounded observations from the frozen application test plan, not a general DeepSeek benchmark, reliability measurement, or SLA.",
+      "png": {
+        "file": "08-deepseek-v4-live-evaluation-dashboard.png",
+        "width": 1600,
+        "height": 900,
+        "sha256": "68e15113ad217084ced02e54b28db85320c937007d0cd5b1dc26aa22f8020c93"
+      },
+      "svg": {
+        "file": "08-deepseek-v4-live-evaluation-dashboard.svg",
+        "editable_text_and_shapes": true,
+        "sha256": "a46ff1220f03f6978efb35fc55c9c3eabcfb8ef78a88037852658c05ff943bba"
+      }
+    }
+  ],
+  "generators": [
+    "visuals/source/render_conceptual_visuals.py",
+    "visuals/source/render_live_visual.mjs"
+  ]
+}

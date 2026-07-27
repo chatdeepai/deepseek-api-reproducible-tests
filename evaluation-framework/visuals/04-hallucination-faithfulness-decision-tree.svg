@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">Hallucination, Faithfulness, and Factuality Decision Tree</title>
+<desc id="visual-description">Claim-level evidence flow separating support, contradiction, external truth, abstention, judge scoring, and human escalation.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">Hallucination, Faithfulness, and Factuality</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">Classify one material claim with evidence checks before judge scoring or human review</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="265" width="1456" height="70" fill="#112e4b" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="102" y="306" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">DETERMINISTIC FIRST</text>
+<text x="300" y="306" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">extract claim -&gt; locate supplied evidence -&gt; detect explicit contradiction</text>
+<line x1="800" y1="335" x2="800" y2="358" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="800,367 793.0,354.9 807.0,354.9" fill="#2dd4c6"/>
+<rect x="590" y="370" width="420" height="70" fill="#10283f" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="800" y="411" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">Is the claim supported by supplied context?</text>
+<line x1="590" y1="405" x2="356" y2="405" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<line x1="356" y1="405" x2="356" y2="459" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<polygon points="356,468 349.0,455.9 363.0,455.9" fill="#43df88"/>
+<text x="474" y="394" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">YES</text>
+<line x1="1010" y1="405" x2="1244" y2="405" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<line x1="1244" y1="405" x2="1244" y2="459" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1244,468 1237.0,455.9 1251.0,455.9" fill="#ff6b81"/>
+<text x="1126" y="394" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">NO</text>
+<rect x="126" y="470" width="460" height="68" fill="#10283f" rx="18" stroke="#43df88" stroke-width="2"/>
+<text x="356" y="510" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">Does authoritative external truth agree?</text>
+<line x1="1244" y1="468" x2="1244" y2="495" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1244,504 1237.0,491.9 1251.0,491.9" fill="#ff6b81"/>
+<rect x="1014" y="470" width="460" height="68" fill="#10283f" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="1244" y="510" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">Does it contradict the supplied context?</text>
+<line x1="356" y1="538" x2="229" y2="576" stroke="#43df88" stroke-width="3" stroke-linecap="round"/>
+<polygon points="220,579 229.6,568.8 233.6,582.2" fill="#43df88"/>
+<line x1="356" y1="538" x2="483" y2="576" stroke="#ffbd22" stroke-width="3" stroke-linecap="round"/>
+<polygon points="492,579 478.4,582.2 482.4,568.8" fill="#ffbd22"/>
+<rect x="116" y="582" width="246" height="50" fill="#0b2034" rx="25" stroke="#43df88" stroke-width="2"/>
+<text x="239" y="612" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">FAITHFUL + FACTUAL</text>
+<rect x="376" y="582" width="330" height="50" fill="#0b2034" rx="25" stroke="#ffbd22" stroke-width="2"/>
+<text x="541" y="611" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">FAITHFUL TO STALE / WRONG CONTEXT</text>
+<line x1="1244" y1="538" x2="1113" y2="576" stroke="#ff6b81" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1104,579 1113.7,568.9 1117.6,582.3" fill="#ff6b81"/>
+<line x1="1244" y1="538" x2="1375" y2="576" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<polygon points="1384,579 1370.4,582.3 1374.3,568.9" fill="#a78bfa"/>
+<rect x="982" y="582" width="244" height="50" fill="#0b2034" rx="25" stroke="#ff6b81" stroke-width="2"/>
+<text x="1104" y="612" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">CONTRADICTORY</text>
+<rect x="1240" y="582" width="288" height="50" fill="#0b2034" rx="25" stroke="#a78bfa" stroke-width="2"/>
+<text x="1384" y="612" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">CHECK EXTERNAL TRUTH</text>
+<rect x="704" y="486" width="278" height="152" fill="#0d2633" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="843" y="521" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">UNSUPPORTED PATH</text>
+<text x="843" y="557" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">External truth confirms it:</text>
+<text x="843" y="583" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">FACTUAL BUT UNFAITHFUL</text>
+<text x="843" y="609" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle">No confirmation: UNSUPPORTED</text>
+<line x1="1014" y1="504" x2="998" y2="504" stroke="#a78bfa" stroke-width="3" stroke-linecap="round"/>
+<polygon points="989,504 1001.1,497.0 1001.1,511.0" fill="#a78bfa"/>
+<rect x="252" y="652" width="1096" height="128" fill="#252545" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="278" y="683" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">WHEN EVIDENCE IS MISSING, IS ABSTENTION REQUIRED?</text>
+<rect x="278" y="699" width="244" height="34" fill="#0b2034" rx="17" stroke="#43df88" stroke-width="2"/>
+<text x="400" y="720" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">Evidence missing + abstains</text>
+<text x="400" y="758" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">CORRECT ABSTENTION</text>
+<rect x="542" y="699" width="244" height="34" fill="#0b2034" rx="17" stroke="#ff6b81" stroke-width="2"/>
+<text x="664" y="720" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">Evidence missing + answers</text>
+<text x="664" y="758" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">FAILED ABSTENTION</text>
+<line x1="816" y1="669" x2="816" y2="762" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="842" y="704" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start">Judge scoring follows evidence checks.</text>
+<text x="842" y="740" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start">Ambiguous or high-risk claims -&gt; human review</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

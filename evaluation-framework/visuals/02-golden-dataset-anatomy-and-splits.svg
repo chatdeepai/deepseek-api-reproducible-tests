@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">Golden Dataset Anatomy and Governance Splits</title>
+<desc id="visual-description">A versioned golden evaluation case, controlled dataset partitions, a holdout leakage barrier, and quality gates.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  DEEPSEEK EVALUATION FRAMEWORK</text>
+<text x="72" y="164" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start">Golden Dataset Anatomy and Governance Splits</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start">A useful case is traceable, risk-aware, leak-resistant, and frozen into a stable version</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="272" width="870" height="430" fill="#0d2633" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<text x="104" y="313" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">VERSIONED GOLDEN CASE</text>
+<rect x="682" y="286" width="228" height="36" fill="#0b2034" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<text x="796" y="309" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">dataset v2026.07</text>
+<rect x="104" y="344" width="250" height="316" fill="#0b2034" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<text x="124" y="379" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">IDENTITY + INPUT</text>
+<circle cx="128" cy="424" r="5" fill="#5ea8ff"/>
+<text x="143" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Stable case ID</text>
+<circle cx="128" cy="478" r="5" fill="#5ea8ff"/>
+<text x="143" y="483" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Task and risk tier</text>
+<circle cx="128" cy="532" r="5" fill="#5ea8ff"/>
+<text x="143" y="537" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Input</text>
+<circle cx="128" cy="586" r="5" fill="#5ea8ff"/>
+<text x="143" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Reference context</text>
+<rect x="382" y="344" width="250" height="316" fill="#0b2034" rx="18" stroke="#2dd4c6" stroke-width="2"/>
+<text x="402" y="379" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">EXPECTED BEHAVIOR</text>
+<circle cx="406" cy="424" r="5" fill="#2dd4c6"/>
+<text x="421" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Expected output or rubric</text>
+<circle cx="406" cy="478" r="5" fill="#2dd4c6"/>
+<text x="421" y="483" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Expected tool trace</text>
+<circle cx="406" cy="532" r="5" fill="#2dd4c6"/>
+<text x="421" y="537" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Required claims</text>
+<circle cx="406" cy="586" r="5" fill="#2dd4c6"/>
+<text x="421" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Prohibited claims</text>
+<rect x="660" y="344" width="250" height="316" fill="#0b2034" rx="18" stroke="#ffbd22" stroke-width="2"/>
+<text x="680" y="379" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start">GOVERNANCE</text>
+<circle cx="684" cy="424" r="5" fill="#ffbd22"/>
+<text x="699" y="429" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Case-level thresholds</text>
+<circle cx="684" cy="478" r="5" fill="#ffbd22"/>
+<text x="699" y="483" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Provenance</text>
+<circle cx="684" cy="532" r="5" fill="#ffbd22"/>
+<text x="699" y="537" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Reviewer</text>
+<circle cx="684" cy="586" r="5" fill="#ffbd22"/>
+<text x="699" y="591" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">Dataset version</text>
+<text x="984" y="293" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CONTROLLED PARTITIONS</text>
+<rect x="984" y="326" width="544" height="104" fill="#10283f" rx="18" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="1008" cy="351" r="7" fill="#5ea8ff"/>
+<text x="1026" y="358" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">DEVELOPMENT</text>
+<text x="1256" y="395" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">prompt iteration</text>
+<text x="1256" y="421" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">visible examples</text>
+<rect x="984" y="456" width="544" height="104" fill="#10283f" rx="18" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="1008" cy="481" r="7" fill="#a78bfa"/>
+<text x="1026" y="488" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">REGRESSION</text>
+<text x="1256" y="525" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">known failures</text>
+<text x="1256" y="551" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">stable comparisons</text>
+<rect x="984" y="600" width="544" height="104" fill="#10283f" rx="18" stroke="#43df88" stroke-width="2"/>
+<circle cx="1008" cy="625" r="7" fill="#43df88"/>
+<text x="1026" y="632" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">BLIND HOLDOUT</text>
+<text x="1256" y="669" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">final decision / restricted access</text>
+<text x="1256" y="695" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="middle">never a prompt example</text>
+<line x1="984" y1="580" x2="1528" y2="580" stroke="#ff6b81" stroke-width="3" stroke-linecap="round" stroke-dasharray="8 6"/>
+<rect x="1144" y="562" width="224" height="36" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="1256" y="584" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">LEAKAGE BARRIER</text>
+<text x="72" y="750" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start">VERSION FREEZE GATES</text>
+<rect x="280" y="724" width="208" height="42" fill="#0b2034" rx="21" stroke="#5ea8ff" stroke-width="2"/>
+<text x="384" y="750" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">Deduplication</text>
+<rect x="506" y="724" width="208" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="610" y="750" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">Redaction</text>
+<rect x="732" y="724" width="208" height="42" fill="#0b2034" rx="21" stroke="#ffbd22" stroke-width="2"/>
+<text x="836" y="750" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">Stale-source review</text>
+<rect x="958" y="724" width="208" height="42" fill="#0b2034" rx="21" stroke="#43df88" stroke-width="2"/>
+<text x="1062" y="750" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="middle">Version freeze</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual evaluation diagram | no live-result claims</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

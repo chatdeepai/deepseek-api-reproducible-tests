@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="visual-title visual-description">
+<title id="visual-title">DeepSeek V4 Bounded Evaluation Study</title>
+<desc id="visual-description">Privacy-audited live evidence from a frozen application acceptance test, including models, contract passes, paired outcomes, token usage, cost, method controls, and publication boundaries.</desc>
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect x="0" y="0" width="1600" height="900" rx="0" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="790" height="44" rx="22" fill="#0b2b35" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start" letter-spacing="0">CHAT-DEEP.AI  |  LIVE EVIDENCE  |  PRIVACY-AUDITED</text>
+<text x="72" y="168" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="48" font-weight="800" text-anchor="start" letter-spacing="0">DeepSeek V4 Bounded Evaluation Study</text>
+<text x="72" y="211" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="500" text-anchor="start" letter-spacing="0">Sanitized live evidence completed 2026-07-27 21:49:03.794 UTC</text>
+<rect x="72" y="227" width="1456" height="4" rx="2" fill="#2dd4c6"/>
+<rect x="72" y="250" width="1456" height="58" rx="18" fill="#332b16" stroke="#ffbd22" stroke-width="2"/>
+<text x="800" y="286" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle" letter-spacing="0">BOUNDED OBSERVATION ONLY  |  NOT A GENERAL BENCHMARK  |  NOT A RELIABILITY MEASUREMENT  |  NOT AN SLA</text>
+<rect x="72" y="330" width="350" height="180" rx="22" fill="#10283f" stroke="#5ea8ff" stroke-width="2"/>
+<rect x="96" y="350" width="122" height="34" rx="17" fill="#0b2034" stroke="#5ea8ff" stroke-width="2"/>
+<text x="157" y="371.76" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">BASELINE</text>
+<text x="96" y="420" fill="#f7f9fc" font-family="Cascadia Mono, Consolas, monospace" font-size="24" font-weight="800" text-anchor="start" letter-spacing="0">deepseek-v4-flash</text>
+<line x1="96" y1="444" x2="398" y2="444" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="96" y="482" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start" letter-spacing="0">6 CASES</text>
+<text x="398" y="482" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" letter-spacing="0">6 / 6 PASSES</text>
+<rect x="442" y="330" width="350" height="180" rx="22" fill="#10283f" stroke="#a78bfa" stroke-width="2"/>
+<rect x="466" y="350" width="122" height="34" rx="17" fill="#0b2034" stroke="#a78bfa" stroke-width="2"/>
+<text x="527" y="371.76" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">CANDIDATE</text>
+<text x="466" y="420" fill="#f7f9fc" font-family="Cascadia Mono, Consolas, monospace" font-size="24" font-weight="800" text-anchor="start" letter-spacing="0">deepseek-v4-pro</text>
+<line x1="466" y1="444" x2="768" y2="444" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="466" y="482" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start" letter-spacing="0">6 CASES</text>
+<text x="768" y="482" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="end" letter-spacing="0">6 / 6 PASSES</text>
+<rect x="812" y="330" width="716" height="180" rx="22" fill="#0d2633" stroke="#2dd4c6" stroke-width="2"/>
+<text x="840" y="363" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start" letter-spacing="0">REQUEST CONTROL + PAIRED REGRESSION</text>
+<text x="840" y="418" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="36" font-weight="800" text-anchor="start" letter-spacing="0">12 / 12</text>
+<text x="840" y="450" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">OBSERVED / PLANNED REQUESTS</text>
+<line x1="1108" y1="382" x2="1108" y2="460" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="1140" y="418" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="36" font-weight="800" text-anchor="start" letter-spacing="0">0 / 0 / 6</text>
+<text x="1140" y="450" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">WINS / LOSSES / TIES</text>
+<rect x="840" y="466" width="660" height="30" rx="15" fill="#0b2034" stroke="#ffbd22" stroke-width="2"/>
+<text x="1170" y="485.42" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle" letter-spacing="0">SMALL-SAMPLE WILSON INTERVAL  0.609657 - 1.0</text>
+<rect x="72" y="532" width="710" height="170" rx="22" fill="#112e4b" stroke="#5ea8ff" stroke-width="2"/>
+<text x="100" y="565" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start" letter-spacing="0">PROVIDER-REPORTED USAGE + DATED COST</text>
+<text x="100" y="620" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="800" text-anchor="start" letter-spacing="0">1,476 + 367 = 1,843 tokens</text>
+<text x="100" y="662" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" font-weight="800" text-anchor="start" letter-spacing="0">$0.000648060000 USD estimated</text>
+<text x="100" y="690" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="500" text-anchor="start" letter-spacing="0">Price snapshot: deepseek-pricing-2026-07-27  |  estimate, not a bill</text>
+<rect x="802" y="532" width="726" height="170" rx="22" fill="#252545" stroke="#a78bfa" stroke-width="2"/>
+<text x="830" y="565" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="start" letter-spacing="0">6 FROZEN CONTRACTS PER MODEL</text>
+<circle cx="830" cy="598" r="6" fill="#43df88"/>
+<text x="845" y="603" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">EXACT TOKEN</text>
+<circle cx="1052" cy="598" r="6" fill="#43df88"/>
+<text x="1067" y="603" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">JSON CONTRACT</text>
+<circle cx="1274" cy="598" r="6" fill="#43df88"/>
+<text x="1289" y="603" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">GROUNDED ANSWER</text>
+<circle cx="830" cy="635" r="6" fill="#43df88"/>
+<text x="845" y="640" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">GROUNDED ABSTENTION</text>
+<circle cx="1052" cy="635" r="6" fill="#43df88"/>
+<text x="1067" y="640" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">TOOL SELECTION</text>
+<circle cx="1274" cy="635" r="6" fill="#43df88"/>
+<text x="1289" y="640" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">THINKING MATH</text>
+<line x1="830" y1="650" x2="1500" y2="650" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="830" y="682" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="start" letter-spacing="0">POST-RUN AUDITED GATE</text>
+<text x="1035" y="682" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" text-anchor="start" letter-spacing="0">HUMAN REVIEW REQUIRED</text>
+<rect x="72" y="724" width="1456" height="80" rx="20" fill="#0b2034" stroke="#284d68" stroke-width="2"/>
+<text x="96" y="771" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="start" letter-spacing="0">METHOD</text>
+<rect x="204" y="744" width="214" height="40" rx="20" fill="#0b2034" stroke="#2dd4c6" stroke-width="2"/>
+<text x="311" y="768.76" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">CONCURRENCY  1</text>
+<rect x="438" y="744" width="188" height="40" rx="20" fill="#0b2034" stroke="#ff6b81" stroke-width="2"/>
+<text x="532" y="768.76" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">RETRIES  0</text>
+<rect x="646" y="744" width="200" height="40" rx="20" fill="#0b2034" stroke="#5ea8ff" stroke-width="2"/>
+<text x="746" y="768.76" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">TIMEOUT  30 s</text>
+<rect x="866" y="744" width="280" height="40" rx="20" fill="#0b2034" stroke="#a78bfa" stroke-width="2"/>
+<text x="1006" y="768.76" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">REQUESTS  12 / 12</text>
+<rect x="1166" y="744" width="338" height="40" rx="20" fill="#0b2034" stroke="#43df88" stroke-width="2"/>
+<text x="1335" y="768.76" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0">PRIVACY PASSED  |  0 ISSUES</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="873" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="15" font-weight="500" text-anchor="start" letter-spacing="0">Sanitized live evidence from 2026-07-27 21:49:03.794 UTC. Values are bounded observations from the frozen application test plan, not a general DeepSeek benchmark, reliability measurement, or SLA.</text>
+<text x="1528" y="873" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end" letter-spacing="0">chat-deep.ai</text>
+</svg>

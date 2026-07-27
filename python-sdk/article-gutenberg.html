@@ -14,8 +14,8 @@
 <ul class="wp-block-list"><li>Use Python 3.10 or newer for the current official OpenAI Python package.</li><li>Install <code>openai</code>; do not assume a similarly named third-party package is an official DeepSeek SDK.</li><li>Keep one client alive long enough to reuse its connection pool, then close it deterministically.</li><li>Choose thinking mode explicitly and pass DeepSeek’s <code>thinking</code> object through <code>extra_body</code>.</li><li>Validate finish state, JSON, and tool arguments before application use.</li><li>Make retry policy explicit and keep live integration tests opt-in.</li></ul>
 <!-- /wp:list -->
 
-<!-- wp:image {"id":{{MEDIA_ID__01_PYTHON_SDK_PRODUCTION_ARCHITECTURE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__01_PYTHON_SDK_PRODUCTION_ARCHITECTURE_PNG}}" alt="Python DeepSeek production architecture from validated settings through sync or async clients to application controls" class="wp-image-{{MEDIA_ID__01_PYTHON_SDK_PRODUCTION_ARCHITECTURE_PNG}}"/><figcaption class="wp-element-caption">A production Python integration keeps configuration, client lifetime, API transport, response validation, and application policy in separate layers. Synchronous and asynchronous clients share the same security boundary but serve different execution models.</figcaption></figure>
+<!-- wp:image {"id":7643,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/01-python-sdk-production-architecture.png" alt="Python DeepSeek production architecture from validated settings through sync or async clients to application controls" class="wp-image-7643"/><figcaption class="wp-element-caption">A production Python integration keeps configuration, client lifetime, API transport, response validation, and application policy in separate layers. Synchronous and asynchronous clients share the same security boundary but serve different execution models.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -110,8 +110,8 @@ def create_deepseek_client(
 <p>Keeping configuration in one factory prevents a staging worker from using a different origin, timeout, or retry policy than the web process. It also gives tests one replacement point. The <code>max_retries</code> value above is an explicit production starting policy, not a universal recommendation; side effects and live experiments need stricter controls.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__03_PYTHON_CONFIGURATION_LIFECYCLE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__03_PYTHON_CONFIGURATION_LIFECYCLE_PNG}}" alt="Python DeepSeek configuration lifecycle from environment variable through validated settings, client factory, request scope, and client close" class="wp-image-{{MEDIA_ID__03_PYTHON_CONFIGURATION_LIFECYCLE_PNG}}"/><figcaption class="wp-element-caption">Read the credential at runtime, validate non-secret settings once, construct the appropriate client at a clear ownership boundary, and close it when that owner shuts down.</figcaption></figure>
+<!-- wp:image {"id":7645,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/03-python-configuration-lifecycle.png" alt="Python DeepSeek configuration lifecycle from environment variable through validated settings, client factory, request scope, and client close" class="wp-image-7645"/><figcaption class="wp-element-caption">Read the credential at runtime, validate non-secret settings once, construct the appropriate client at a clear ownership boundary, and close it when that owner shuts down.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -233,8 +233,8 @@ if __name__ == "__main__":
 <p>For multiple independent requests, put a bounded semaphore around calls and define cancellation behavior. Do not use an unbounded <code>asyncio.gather()</code> over user-controlled input. Decide whether a cancelled task may safely be retried, particularly when a tool or downstream action can create a side effect.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__02_PYTHON_SYNC_VS_ASYNC_CLIENT_CHOICE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__02_PYTHON_SYNC_VS_ASYNC_CLIENT_CHOICE_PNG}}" alt="Python sync versus async DeepSeek client decision guide for scripts, workers, web applications, and bounded concurrency" class="wp-image-{{MEDIA_ID__02_PYTHON_SYNC_VS_ASYNC_CLIENT_CHOICE_PNG}}"/><figcaption class="wp-element-caption">Use a synchronous client for straightforward sequential programs and an asynchronous client inside an existing event loop. Reuse a bounded client, await asynchronous calls, and close owned resources explicitly.</figcaption></figure>
+<!-- wp:image {"id":7644,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/02-python-sync-vs-async-client-choice.png" alt="Python sync versus async DeepSeek client decision guide for scripts, workers, web applications, and bounded concurrency" class="wp-image-7644"/><figcaption class="wp-element-caption">Use a synchronous client for straightforward sequential programs and an asynchronous client inside an existing event loop. Reuse a bounded client, await asynchronous calls, and close owned resources explicitly.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -277,8 +277,8 @@ if not final_text:
 <p>The <a href="https://chat-deep.ai/docs/deepseek-thinking-mode/">DeepSeek Thinking Mode guide</a> owns advanced effort selection, multi-turn state, streaming reasoning fields, and tool-call replay. This Python page owns only the Python serialization and response-handling boundary.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__05_PYTHON_THINKING_EXTRA_BODY_SERIALIZATION_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__05_PYTHON_THINKING_EXTRA_BODY_SERIALIZATION_PNG}}" alt="Python extra_body serialization path for DeepSeek thinking configuration and reasoning field-presence handling" class="wp-image-{{MEDIA_ID__05_PYTHON_THINKING_EXTRA_BODY_SERIALIZATION_PNG}}"/><figcaption class="wp-element-caption">Python passes the provider-specific thinking object through <code>extra_body</code>; the application verifies the outgoing field path and records only whether permitted response fields are present.</figcaption></figure>
+<!-- wp:image {"id":7647,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/05-python-thinking-extra-body-serialization.png" alt="Python extra_body serialization path for DeepSeek thinking configuration and reasoning field-presence handling" class="wp-image-7647"/><figcaption class="wp-element-caption">Python passes the provider-specific thinking object through <code>extra_body</code>; the application verifies the outgoing field path and records only whether permitted response fields are present.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -336,8 +336,8 @@ def stream_final_text(client: Any, prompt: str) -&gt; str:
 <p>Thinking streams can also contain <code>reasoning_content</code> deltas. Track their presence only when needed, keep them out of the final-text buffer, and follow the dedicated thinking-mode rules for any multi-turn or tool workflow. Tool-call arguments may arrive across multiple deltas; assemble the complete argument string before parsing it.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__04_PYTHON_STREAMING_STATE_MACHINE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__04_PYTHON_STREAMING_STATE_MACHINE_PNG}}" alt="Python DeepSeek streaming state machine from awaited request through delta assembly, terminal validation, cancellation, and cleanup" class="wp-image-{{MEDIA_ID__04_PYTHON_STREAMING_STATE_MACHINE_PNG}}"/><figcaption class="wp-element-caption">A safe Python stream consumer enters the stream, routes allowlisted deltas, assembles state by choice and tool index, waits for a terminal condition, validates the result, and closes or cancels cleanly.</figcaption></figure>
+<!-- wp:image {"id":7646,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/04-python-streaming-state-machine.png" alt="Python DeepSeek streaming state machine from awaited request through delta assembly, terminal validation, cancellation, and cleanup" class="wp-image-7646"/><figcaption class="wp-element-caption">A safe Python stream consumer enters the stream, routes allowlisted deltas, assembles state by choice and tool index, waits for a terminal condition, validates the result, and closes or cancels cleanly.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -445,8 +445,8 @@ def validate_city_tool_call(message: Any) -&gt; tuple[Any, str]:
 <p>Only after that gate should the application execute an approved adapter. Preserve the complete assistant message, append a <code>role: "tool"</code> message whose <code>tool_call_id</code> matches the validated call, and request the final completion. Check <code>finish_reason</code> and validate every call before any side effect. The <a href="https://chat-deep.ai/docs/deepseek-tool-calls/">DeepSeek Tool Calls guide</a> owns complete round trips, multiple calls, strict mode, thinking replay, and security controls.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__06_PYTHON_JSON_TOOL_VALIDATION_PIPELINE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__06_PYTHON_JSON_TOOL_VALIDATION_PIPELINE_PNG}}" alt="Python validation pipeline for DeepSeek JSON responses and tool calls using parsing, schema checks, authorization, and safe execution" class="wp-image-{{MEDIA_ID__06_PYTHON_JSON_TOOL_VALIDATION_PIPELINE_PNG}}"/><figcaption class="wp-element-caption">Treat model-produced JSON and tool arguments as untrusted input: parse them, validate the expected Python schema, authorize the requested operation, constrain side effects, and replay only a sanitized result when required.</figcaption></figure>
+<!-- wp:image {"id":7648,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/06-python-json-tool-validation-pipeline.png" alt="Python validation pipeline for DeepSeek JSON responses and tool calls using parsing, schema checks, authorization, and safe execution" class="wp-image-7648"/><figcaption class="wp-element-caption">Treat model-produced JSON and tool arguments as untrusted input: parse them, validate the expected Python schema, authorize the requested operation, constrain side effects, and replay only a sanitized result when required.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -524,8 +524,8 @@ except openai.APIStatusError as exc:
 <p>Do not log <code>exc.response</code>, Authorization headers, raw prompts, generated content, hidden reasoning, tool arguments, balances, or account data by default. Use internal operation aliases, status categories, exception classes, approved timings, and retry counts. The <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek Error Codes guide</a> owns the complete recovery matrix; DeepSeek’s first-party categories are on its <a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">official Error Codes page</a>.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__07_PYTHON_TYPED_ERROR_RETRY_TREE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__07_PYTHON_TYPED_ERROR_RETRY_TREE_PNG}}" alt="Python typed exception and retry decision tree for DeepSeek authentication, validation, rate-limit, connection, and availability failures" class="wp-image-{{MEDIA_ID__07_PYTHON_TYPED_ERROR_RETRY_TREE_PNG}}"/><figcaption class="wp-element-caption">Classify the Python SDK exception before acting: stop on credential or request defects, apply a bounded policy only to explicitly transient conditions, and preserve idempotency before retrying side effects.</figcaption></figure>
+<!-- wp:image {"id":7649,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/07-python-typed-error-retry-tree.png" alt="Python typed exception and retry decision tree for DeepSeek authentication, validation, rate-limit, connection, and availability failures" class="wp-image-7649"/><figcaption class="wp-element-caption">Classify the Python SDK exception before acting: stop on credential or request defects, apply a bounded policy only to explicitly transient conditions, and preserve idempotency before retrying side effects.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->
@@ -662,8 +662,8 @@ service = DeepSeekTextService(client)
 <p>This suite was designed for compatibility and validation, not benchmarking. Concurrency was deliberately one, the sample size was small, and network and service conditions were not controlled. The recorded durations are therefore excluded, and no latency, throughput, reliability, or general performance conclusion should be drawn. Review the <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/python-sdk" target="_blank" rel="noopener">sanitized methodology and result summaries</a> to reproduce the same request shapes.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__08_PYTHON_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__08_PYTHON_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}}" alt="DeepSeek Python SDK test methodology and results dashboard covering runtime, package version, live cases, requests, retries, concurrency, observed states, and privacy controls" class="wp-image-{{MEDIA_ID__08_PYTHON_SDK_METHODOLOGY_RESULTS_DASHBOARD_PNG}}"/><figcaption class="wp-element-caption">The dashboard summarizes a bounded dated Python study, including the pinned runtime and package, exercised sync and async behaviors, request budget, HTTP outcomes, stream metadata, the async tool loop, concurrency, retries, and privacy controls. It is not a service-level benchmark.</figcaption></figure>
+<!-- wp:image {"id":7650,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/04/08-python-sdk-methodology-results-dashboard.png" alt="DeepSeek Python SDK test methodology and results dashboard covering runtime, package version, live cases, requests, retries, concurrency, observed states, and privacy controls" class="wp-image-7650"/><figcaption class="wp-element-caption">The dashboard summarizes a bounded dated Python study, including the pinned runtime and package, exercised sync and async behaviors, request budget, HTTP outcomes, stream metadata, the async tool loop, concurrency, retries, and privacy controls. It is not a service-level benchmark.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading -->

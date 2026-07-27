@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="720" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  NODE.JS + TYPESCRIPT GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">Node.js / TypeScript Test Methodology Ladder</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Separate source facts, compile results, localhost contracts, provider observations, and publication approval</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="90" y="278" width="1080" height="118" fill="#0d2633" rx="22" stroke="#284d68" stroke-width="2"/>
+<text x="120" y="324" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">EVIDENCE GATES</text>
+<text x="120" y="367" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="500" text-anchor="start">documented  -&gt;  type accepted  -&gt;  serialized  -&gt;  parsed locally  -&gt;  observed live  -&gt;  privacy approved</text>
+<rect x="72" y="612" width="276" height="138" fill="#10283f" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="210" cy="655" r="22" fill="#5ea8ff"/>
+<text x="210" y="660" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">1</text>
+<text x="210" y="706" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">SOURCE REVIEW</text>
+<text x="210" y="743" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">official contracts</text>
+<rect x="318" y="548" width="276" height="202" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="456" cy="591" r="22" fill="#a78bfa"/>
+<text x="456" y="596" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">2</text>
+<text x="456" y="642" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">TYPECHECK</text>
+<text x="456" y="679" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">strict compile</text>
+<text x="456" y="705" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">field boundary</text>
+<rect x="564" y="484" width="276" height="266" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="702" cy="527" r="22" fill="#2dd4c6"/>
+<text x="702" y="532" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">3</text>
+<text x="702" y="578" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">LOCALHOST FIXTURE</text>
+<text x="702" y="615" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">real SDK transport</text>
+<text x="702" y="641" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">controlled parser</text>
+<rect x="810" y="420" width="276" height="330" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="948" cy="463" r="22" fill="#43df88"/>
+<text x="948" y="468" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">4</text>
+<text x="948" y="514" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">FROZEN LIVE PLAN</text>
+<text x="948" y="551" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">serial cases</text>
+<text x="948" y="577" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">fixed request budget</text>
+<rect x="1056" y="356" width="276" height="394" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="1194" cy="399" r="22" fill="#ffbd22"/>
+<text x="1194" y="404" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">5</text>
+<text x="1194" y="450" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">PRIVACY AUDIT</text>
+<text x="1194" y="487" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">allowlisted evidence</text>
+<text x="1194" y="513" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">secret + payload scan</text>
+<rect x="1302" y="292" width="226" height="458" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="1415" cy="335" r="22" fill="#43df88"/>
+<text x="1415" y="340" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" text-anchor="middle">6</text>
+<text x="1415" y="386" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="middle">DASHBOARD</text>
+<text x="1415" y="423" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">RENDER AFTER</text>
+<text x="1415" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="middle">audit passes</text>
+<rect x="230" y="772" width="1140" height="40" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="800" y="798" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">No compatibility result is publishable until the measured evidence passes the redaction audit.</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual Node.js and TypeScript method diagram  |  no live-result claims  |  evidence gate enforced</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

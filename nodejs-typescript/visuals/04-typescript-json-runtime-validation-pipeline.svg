@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="720" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  NODE.JS + TYPESCRIPT GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">TypeScript JSON Runtime Validation Pipeline</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Static types disappear at runtime, so every provider string must pass explicit application gates</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="180" cy="350" r="23" fill="#5ea8ff"/>
+<text x="180" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">1</text>
+<text x="180" y="406" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">UNKNOWN</text>
+<text x="180" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">provider content</text>
+<line x1="288" y1="445" x2="300" y2="445" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="308,445 295.9,452.0 295.9,438.0" fill="#2dd4c6"/>
+<rect x="320" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="428" cy="350" r="23" fill="#ffbd22"/>
+<text x="428" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">2</text>
+<text x="428" y="406" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">EMPTY / FINISH</text>
+<text x="428" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">presence</text>
+<text x="428" y="486" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">truncation</text>
+<line x1="536" y1="445" x2="548" y2="445" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="556,445 543.9,452.0 543.9,438.0" fill="#2dd4c6"/>
+<rect x="568" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="676" cy="350" r="23" fill="#a78bfa"/>
+<text x="676" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">3</text>
+<text x="676" y="406" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">JSON.PARSE</text>
+<text x="676" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">syntax only</text>
+<line x1="784" y1="445" x2="796" y2="445" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="804,445 791.9,452.0 791.9,438.0" fill="#2dd4c6"/>
+<rect x="816" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="924" cy="350" r="23" fill="#2dd4c6"/>
+<text x="924" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">4</text>
+<text x="924" y="405" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">RUNTIME SCHEMA</text>
+<text x="924" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">types</text>
+<text x="924" y="486" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">required fields</text>
+<line x1="1032" y1="445" x2="1044" y2="445" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1052,445 1039.9,452.0 1039.9,438.0" fill="#2dd4c6"/>
+<rect x="1064" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="1172" cy="350" r="23" fill="#ffbd22"/>
+<text x="1172" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">5</text>
+<text x="1172" y="406" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">BUSINESS RULES</text>
+<text x="1172" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">ranges</text>
+<text x="1172" y="486" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">permissions</text>
+<line x1="1280" y1="445" x2="1292" y2="445" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1300,445 1287.9,452.0 1287.9,438.0" fill="#2dd4c6"/>
+<rect x="1312" y="306" width="216" height="278" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="1420" cy="350" r="23" fill="#43df88"/>
+<text x="1420" y="356" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">6</text>
+<text x="1420" y="406" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">TYPED OBJECT</text>
+<text x="1420" y="459" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">trusted boundary</text>
+<rect x="156" y="636" width="1288" height="146" fill="#351a25" rx="24" stroke="#ff6b81" stroke-width="2"/>
+<text x="800" y="683" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">REJECTION PATHS</text>
+<rect x="194" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="277" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">EMPTY</text>
+<rect x="390" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="473" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">TRUNCATED</text>
+<rect x="586" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="669" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">MALFORMED</text>
+<rect x="782" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="865" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">SCHEMA MISMATCH</text>
+<rect x="1010" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="1093" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">BUSINESS INVALID</text>
+<rect x="1246" y="714" width="166" height="42" fill="#0b2034" rx="21" stroke="#ff6b81" stroke-width="2"/>
+<text x="1329" y="740" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="14" font-weight="800" text-anchor="middle">UNAUTHORIZED</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual Node.js and TypeScript method diagram  |  no live-result claims  |  parser success is not business validity</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

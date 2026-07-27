@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="720" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  NODE.JS + TYPESCRIPT GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">Node.js Streaming, Backpressure &amp; Abort Lifecycle</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Consume the async iterable deliberately, separate output lanes, validate the terminal state, and clean up</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="286" width="340" height="396" fill="#10283f" rx="24" stroke="#5ea8ff" stroke-width="2"/>
+<text x="96" y="337" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">REQUEST CONTROL</text>
+<rect x="96" y="356" width="292" height="48" fill="#0b2034" rx="24" stroke="#5ea8ff" stroke-width="2"/>
+<text x="242" y="386" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">START</text>
+<circle cx="114" cy="466" r="11" fill="#5ea8ff"/>
+<text x="114" y="470" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="140" y="472" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">stream selected</text>
+<circle cx="114" cy="528" r="11" fill="#5ea8ff"/>
+<text x="114" y="532" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="140" y="534" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">explicit budget</text>
+<circle cx="114" cy="590" r="11" fill="#5ea8ff"/>
+<text x="114" y="594" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="140" y="596" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">AbortSignal</text>
+<line x1="412" y1="484" x2="422" y2="484" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="430,484 417.9,491.0 417.9,477.0" fill="#2dd4c6"/>
+<rect x="444" y="286" width="340" height="396" fill="#10283f" rx="24" stroke="#a78bfa" stroke-width="2"/>
+<text x="468" y="337" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">ASYNC ITERABLE</text>
+<rect x="468" y="356" width="292" height="48" fill="#0b2034" rx="24" stroke="#a78bfa" stroke-width="2"/>
+<text x="614" y="386" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">CONSUME</text>
+<circle cx="486" cy="466" r="11" fill="#a78bfa"/>
+<text x="486" y="470" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="512" y="472" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">for await</text>
+<circle cx="486" cy="528" r="11" fill="#a78bfa"/>
+<text x="486" y="532" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="512" y="534" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">consumer pace</text>
+<circle cx="486" cy="590" r="11" fill="#a78bfa"/>
+<text x="486" y="594" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="512" y="596" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">bounded buffering</text>
+<line x1="784" y1="484" x2="794" y2="484" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="802,484 789.9,491.0 789.9,477.0" fill="#2dd4c6"/>
+<rect x="816" y="286" width="340" height="396" fill="#10283f" rx="24" stroke="#2dd4c6" stroke-width="2"/>
+<text x="840" y="337" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">DELTA ROUTER</text>
+<rect x="840" y="356" width="292" height="48" fill="#0b2034" rx="24" stroke="#2dd4c6" stroke-width="2"/>
+<text x="986" y="386" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">ROUTE</text>
+<circle cx="858" cy="466" r="11" fill="#2dd4c6"/>
+<text x="858" y="470" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="884" y="472" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">final content lane</text>
+<circle cx="858" cy="528" r="11" fill="#2dd4c6"/>
+<text x="858" y="532" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="884" y="534" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">reasoning metadata</text>
+<circle cx="858" cy="590" r="11" fill="#2dd4c6"/>
+<text x="858" y="594" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="884" y="596" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">no raw logging</text>
+<line x1="1156" y1="484" x2="1166" y2="484" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1174,484 1161.9,491.0 1161.9,477.0" fill="#2dd4c6"/>
+<rect x="1188" y="286" width="340" height="396" fill="#10283f" rx="24" stroke="#43df88" stroke-width="2"/>
+<text x="1212" y="337" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" text-anchor="start">TERMINAL GATE</text>
+<rect x="1212" y="356" width="292" height="48" fill="#0b2034" rx="24" stroke="#43df88" stroke-width="2"/>
+<text x="1358" y="386" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">FINISH</text>
+<circle cx="1230" cy="466" r="11" fill="#43df88"/>
+<text x="1230" y="470" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="1256" y="472" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">finish state</text>
+<circle cx="1230" cy="528" r="11" fill="#43df88"/>
+<text x="1230" y="532" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="1256" y="534" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">usage summary</text>
+<circle cx="1230" cy="590" r="11" fill="#43df88"/>
+<text x="1230" y="594" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">+</text>
+<text x="1256" y="596" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">validate or reject</text>
+<rect x="194" y="720" width="1212" height="82" fill="#0d2633" rx="22" stroke="#284d68" stroke-width="2"/>
+<text x="230" y="754" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">COMPLETE</text>
+<text x="230" y="784" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="start">validated terminal state</text>
+<text x="644" y="754" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">ABORTED</text>
+<text x="644" y="784" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="start">stop + discard partial state</text>
+<text x="1030" y="754" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" text-anchor="start">INCOMPLETE</text>
+<text x="1030" y="784" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="start">reject + close resources</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual Node.js and TypeScript method diagram  |  no live-result claims  |  lifecycle guidance only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

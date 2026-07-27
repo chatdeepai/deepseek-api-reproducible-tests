@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_status": "complete_privacy_audited",
+  "images": [
+    {
+      "file": "01-deepseek-nodejs-typescript-production-architecture.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "60416076f6b10ac95e64d444db515c61560f73f88dc9f368385785c0655e393b"
+    },
+    {
+      "file": "02-nodejs-typescript-client-configuration-boundary.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "349ba9ee94d2b9b87e750e6b1b15efe7410d535b0f858468fd0546d1a8432a9c"
+    },
+    {
+      "file": "03-nodejs-streaming-backpressure-abort-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "55e34e57a319851a6fd96b57248ec533106987ca957c95f8442b4ce198c6c8aa"
+    },
+    {
+      "file": "04-typescript-json-runtime-validation-pipeline.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "643a667b128ab805be396324aeb59b24137e8a937d4a2711b01049e6facbec12"
+    },
+    {
+      "file": "05-nodejs-thinking-tool-call-safety-loop.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "243c566b4b72747f73a5e58dfaa86ce3e4db438409c773378d97f9c7f94bd82c"
+    },
+    {
+      "file": "06-nodejs-error-retry-timeout-cancellation-tree.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "0eaf9205818b58685e29bf2819ecfd84b4774936600a94b7cc2f9920430dbf84"
+    },
+    {
+      "file": "07-nodejs-test-methodology-ladder.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "conceptual_only_no_live_results",
+      "sha256": "56276522cbe0fb55b7b2608479a2e7f57c3dec676b64668634cf8299aeaee03c"
+    },
+    {
+      "file": "08-nodejs-typescript-live-results-dashboard.png",
+      "width": 1600,
+      "height": 900,
+      "evidence": "sanitized_live_and_offline_evidence",
+      "sha256": "bd098ec2274b766b578451b7470c7dff5d0000c43f635747df737fea7a323456"
+    }
+  ]
+}

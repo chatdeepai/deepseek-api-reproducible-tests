@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="720" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  NODE.JS + TYPESCRIPT GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">Node.js Error, Retry, Timeout &amp; Cancellation Tree</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">Classify the failing layer, choose one retry owner, and propagate a user abort without another request</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="190" y="276" width="1220" height="126" fill="#10283f" rx="24" stroke="#5ea8ff" stroke-width="2"/>
+<text x="800" y="323" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="800" text-anchor="middle">FAILURE CONTEXT</text>
+<rect x="220" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#5ea8ff" stroke-width="2"/>
+<text x="305" y="371" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">WHICH LAYER?</text>
+<rect x="420" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#a78bfa" stroke-width="2"/>
+<text x="505" y="371" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">REQUEST SENT?</text>
+<rect x="620" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#2dd4c6" stroke-width="2"/>
+<text x="705" y="371" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">SIDE EFFECT?</text>
+<rect x="820" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#43df88" stroke-width="2"/>
+<text x="905" y="371" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">IDEMPOTENT?</text>
+<rect x="1020" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#ffbd22" stroke-width="2"/>
+<text x="1105" y="371" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">TIMEOUT?</text>
+<rect x="1220" y="348" width="170" height="38" fill="#0b2034" rx="19" stroke="#ff6b81" stroke-width="2"/>
+<text x="1305" y="371" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">USER ABORT?</text>
+<line x1="800" y1="404" x2="800" y2="450" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="800,458 793.0,445.9 807.0,445.9" fill="#2dd4c6"/>
+<rect x="72" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#ff6b81" stroke-width="2"/>
+<text x="180" y="514" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">COMPILE / CONFIG</text>
+<rect x="92" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#ff6b81" stroke-width="2"/>
+<text x="180" y="560" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">FIX + STOP</text>
+<text x="180" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">types</text>
+<text x="180" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">options</text>
+<rect x="320" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="428" y="514" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">TRANSPORT</text>
+<rect x="340" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#5ea8ff" stroke-width="2"/>
+<text x="428" y="560" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">RETRY IF SAFE</text>
+<text x="428" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">transient</text>
+<text x="428" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">idempotent</text>
+<rect x="568" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="676" y="514" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">PARSER / SCHEMA</text>
+<rect x="588" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#a78bfa" stroke-width="2"/>
+<text x="676" y="560" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">REJECT / REPAIR</text>
+<text x="676" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">validate</text>
+<text x="676" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">bounded policy</text>
+<rect x="816" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="924" y="514" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">TOOL / EFFECT</text>
+<rect x="836" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#ffbd22" stroke-width="2"/>
+<text x="924" y="560" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">STOP + RECONCILE</text>
+<text x="924" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">authorization</text>
+<text x="924" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">side effect</text>
+<rect x="1064" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="1172" y="514" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">TIMEOUT</text>
+<rect x="1084" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#2dd4c6" stroke-width="2"/>
+<text x="1172" y="560" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">CANCEL OWNED WORK</text>
+<text x="1172" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">classify</text>
+<text x="1172" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">clean up</text>
+<rect x="1312" y="468" width="216" height="252" fill="#10283f" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="1420" y="514" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">USER ABORT</text>
+<rect x="1332" y="536" width="176" height="40" fill="#0b2034" rx="20" stroke="#43df88" stroke-width="2"/>
+<text x="1420" y="560" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="13" font-weight="800" text-anchor="middle">PROPAGATE</text>
+<text x="1420" y="638" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">no retry</text>
+<text x="1420" y="665" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="500" text-anchor="middle">discard partial</text>
+<rect x="226" y="752" width="1148" height="58" fill="#351a25" rx="18" stroke="#ff6b81" stroke-width="2"/>
+<text x="800" y="787" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="800" text-anchor="middle">ONE RETRY OWNER  |  safe telemetry keeps categories and states, not prompts, outputs, payloads, headers, or identifiers</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual Node.js and TypeScript method diagram  |  no live-result claims  |  safe-action guidance only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

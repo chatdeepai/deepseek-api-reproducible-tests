@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img">
+<defs>
+<linearGradient id="bgGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#071524"/>
+<stop offset="100%" stop-color="#0a1b2c"/>
+</linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bgGradient)"/>
+<circle cx="1460" cy="-30" r="340" fill="#142d49" opacity="0.55"/>
+<circle cx="25" cy="930" r="340" fill="#0b303c" opacity="0.55"/>
+<rect x="72" y="52" width="720" height="44" fill="#0b2b35" rx="22" stroke="#20707b" stroke-width="2"/>
+<text x="96" y="81" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="start">CHAT-DEEP.AI  |  NODE.JS + TYPESCRIPT GUIDE</text>
+<text x="72" y="165" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="50" font-weight="800" text-anchor="start">DeepSeek + Node.js / TypeScript Architecture</text>
+<text x="72" y="209" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="500" text-anchor="start">A server-owned client keeps credentials, policy, resource limits, and validation under application control</text>
+<rect x="72" y="227" width="1456" height="4" fill="#2dd4c6" rx="2"/>
+<rect x="72" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#5ea8ff" stroke-width="2"/>
+<circle cx="180" cy="340" r="23" fill="#5ea8ff"/>
+<text x="180" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">1</text>
+<text x="180" y="396" fill="#5ea8ff" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">BROWSER / APP</text>
+<text x="180" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">untrusted input</text>
+<text x="180" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">request context</text>
+<line x1="288" y1="446" x2="300" y2="446" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="308,446 295.9,453.0 295.9,439.0" fill="#2dd4c6"/>
+<rect x="320" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#a78bfa" stroke-width="2"/>
+<circle cx="428" cy="340" r="23" fill="#a78bfa"/>
+<text x="428" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">2</text>
+<text x="428" y="396" fill="#a78bfa" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">SERVER ROUTE</text>
+<text x="428" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">authenticate</text>
+<text x="428" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">abuse limits</text>
+<line x1="536" y1="446" x2="548" y2="446" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="556,446 543.9,453.0 543.9,439.0" fill="#2dd4c6"/>
+<rect x="568" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#2dd4c6" stroke-width="2"/>
+<circle cx="676" cy="340" r="23" fill="#2dd4c6"/>
+<text x="676" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">3</text>
+<text x="676" y="396" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">INPUT POLICY</text>
+<text x="676" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">parse unknown</text>
+<text x="676" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">validate shape</text>
+<line x1="784" y1="446" x2="796" y2="446" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="804,446 791.9,453.0 791.9,439.0" fill="#2dd4c6"/>
+<rect x="816" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="924" cy="340" r="23" fill="#43df88"/>
+<text x="924" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">4</text>
+<text x="924" y="396" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">OPENAI JS</text>
+<text x="924" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">owned client</text>
+<text x="924" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">typed adapter</text>
+<line x1="1032" y1="446" x2="1044" y2="446" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1052,446 1039.9,453.0 1039.9,439.0" fill="#2dd4c6"/>
+<rect x="1064" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#ffbd22" stroke-width="2"/>
+<circle cx="1172" cy="340" r="23" fill="#ffbd22"/>
+<text x="1172" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">5</text>
+<text x="1172" y="396" fill="#ffbd22" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="23" font-weight="800" text-anchor="middle">DEEPSEEK API</text>
+<text x="1172" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">transport</text>
+<text x="1172" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">model boundary</text>
+<line x1="1280" y1="446" x2="1292" y2="446" stroke="#2dd4c6" stroke-width="4" stroke-linecap="round"/>
+<polygon points="1300,446 1287.9,453.0 1287.9,439.0" fill="#2dd4c6"/>
+<rect x="1312" y="296" width="216" height="300" fill="#10283f" rx="22" stroke="#43df88" stroke-width="2"/>
+<circle cx="1420" cy="340" r="23" fill="#43df88"/>
+<text x="1420" y="346" fill="#061422" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="17" font-weight="800" text-anchor="middle">6</text>
+<text x="1420" y="395" fill="#43df88" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">OUTPUT CONTROL</text>
+<text x="1420" y="449" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">finish state</text>
+<text x="1420" y="476" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="middle">safe response</text>
+<rect x="142" y="642" width="1316" height="136" fill="#0d2633" rx="24" stroke="#284d68" stroke-width="2"/>
+<text x="176" y="688" fill="#ff6b81" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="start">SERVER-ONLY SECRET</text>
+<text x="176" y="734" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="500" text-anchor="start">credential name only  |  never browser-visible  |  never logged</text>
+<text x="844" y="688" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" text-anchor="start">APPLICATION OWNERSHIP</text>
+<text x="844" y="733" fill="#f7f9fc" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="16" font-weight="500" text-anchor="start">authorization  |  validation  |  side effects  |  resource limits  |  safe telemetry</text>
+<line x1="72" y1="828" x2="1528" y2="828" stroke="#284d68" stroke-width="2" stroke-linecap="round"/>
+<text x="72" y="874" fill="#afc0d5" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="500" text-anchor="start">Conceptual Node.js and TypeScript method diagram  |  no live-result claims  |  production boundary only</text>
+<text x="1528" y="875" fill="#2dd4c6" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" text-anchor="end">chat-deep.ai</text>
+</svg>

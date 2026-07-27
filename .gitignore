@@ -57,6 +57,13 @@ llamaindex-integration/results/*
 !llamaindex-integration/results/privacy-audit.template.json
 !llamaindex-integration/results/run-ledger.json
 !llamaindex-integration/results/run-ledger.template.json
+!nodejs-typescript/results/
+nodejs-typescript/results/*
+!nodejs-typescript/results/.gitkeep
+!nodejs-typescript/results/live-summary.json
+!nodejs-typescript/results/offline-summary.json
+!nodejs-typescript/results/privacy-audit.json
+!nodejs-typescript/results/run-ledger.json
 screenshots/
 private/
 secrets/

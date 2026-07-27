@@ -10,8 +10,8 @@
 <p><strong>Evidence status:</strong> On July 27, 2026, a preregistered Node.js and TypeScript study issued all 9 planned DeepSeek requests serially, with concurrency set to 1 and automatic retries set to 0. The run started at 18:59:14 UTC and completed at 18:59:23 UTC; its 9.029-second total is study duration, not a latency benchmark. A separate localhost SDK matrix passed 14/14 tests, and the sanitized evidence passed its privacy audit with zero findings.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}}" alt="DeepSeek Node.js and TypeScript production architecture from browser or application input through a server boundary, validation, OpenAI JavaScript client, DeepSeek API, and safe response handling" class="wp-image-{{MEDIA_ID__01_DEEPSEEK_NODEJS_TYPESCRIPT_PRODUCTION_ARCHITECTURE_PNG}}"/><figcaption class="wp-element-caption">Keep the credential and provider client on the server. Browser requests should cross an authenticated application route where input, resource limits, provider output, and user-visible errors remain under application control.</figcaption></figure>
+<!-- wp:image {"id":7674,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/01-deepseek-nodejs-typescript-production-architecture.png" alt="DeepSeek Node.js and TypeScript production architecture from browser or application input through a server boundary, validation, OpenAI JavaScript client, DeepSeek API, and safe response handling" class="wp-image-7674"/><figcaption class="wp-element-caption">Keep the credential and provider client on the server. Browser requests should cross an authenticated application route where input, resource limits, provider output, and user-visible errors remain under application control.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"what-deepseek-node-sdk-means"} -->
@@ -116,8 +116,8 @@ export type DeepSeekUsage =
 <p><strong>Compile and serialization observation:</strong> Strict TypeScript typechecking passed, and the independently rerun offline suite passed 14/14 tests. Against localhost fixtures, the full OpenAI Node SDK serialized DeepSeek's <code>thinking</code> object at the request top level and correctly exposed the final usage-only streaming chunk with an empty <code>choices</code> array.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}}" alt="Node.js TypeScript DeepSeek client configuration boundary separating packages, compile-time types, runtime environment values, provider-specific request fields, and application ownership" class="wp-image-{{MEDIA_ID__02_NODEJS_TYPESCRIPT_CLIENT_CONFIGURATION_BOUNDARY_PNG}}"/><figcaption class="wp-element-caption">Pin the runtime and client, load the credential only on the server, set the provider origin and resource policy explicitly, and isolate DeepSeek-specific fields behind a small typed boundary that is compiled and tested.</figcaption></figure>
+<!-- wp:image {"id":7675,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-nodejs-typescript-client-configuration-boundary.png" alt="Node.js TypeScript DeepSeek client configuration boundary separating packages, compile-time types, runtime environment values, provider-specific request fields, and application ownership" class="wp-image-7675"/><figcaption class="wp-element-caption">Pin the runtime and client, load the credential only on the server, set the provider origin and resource policy explicitly, and isolate DeepSeek-specific fields behind a small typed boundary that is compiled and tested.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"models-and-aliases"} -->
@@ -329,8 +329,8 @@ console.log({
 <p><strong>Local cancellation control:</strong> In the offline localhost matrix, <code>AbortController</code> cancelled a controlled slow request after one attempt with no retry. This was an SDK behavior check and did not contact DeepSeek.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}}" alt="DeepSeek Node.js streaming lifecycle using an async iterable with content and reasoning routing, backpressure, terminal validation, AbortSignal cancellation, usage handling, and cleanup" class="wp-image-{{MEDIA_ID__03_NODEJS_STREAMING_BACKPRESSURE_ABORT_LIFECYCLE_PNG}}"/><figcaption class="wp-element-caption">Consume the async iterable at the application's pace, route final content separately from reasoning metadata, require a valid terminal state, propagate aborts, and discard partial state when a stream does not finish cleanly.</figcaption></figure>
+<!-- wp:image {"id":7676,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-nodejs-streaming-backpressure-abort-lifecycle.png" alt="DeepSeek Node.js streaming lifecycle using an async iterable with content and reasoning routing, backpressure, terminal validation, AbortSignal cancellation, usage handling, and cleanup" class="wp-image-7676"/><figcaption class="wp-element-caption">Consume the async iterable at the application's pace, route final content separately from reasoning metadata, require a valid terminal state, propagate aborts, and discard partial state when a stream does not finish cleanly.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"json-output"} -->
@@ -403,8 +403,8 @@ if (!isTicketRoute(parsed)) {
 <p><strong>JSON Output observation:</strong> The bounded <code>deepseek-v4-flash</code> request returned HTTP 200 with nonempty content. The content parsed as valid JSON, passed the preregistered runtime schema, and contained the two validated fields.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}}" alt="TypeScript JSON runtime validation pipeline from an unknown provider string through empty and finish checks, JSON parsing, schema validation, business rules, and a typed domain object" class="wp-image-{{MEDIA_ID__04_TYPESCRIPT_JSON_RUNTIME_VALIDATION_PIPELINE_PNG}}"/><figcaption class="wp-element-caption">TypeScript annotations disappear at runtime. Treat provider content as unknown, reject empty or truncated output, parse defensively, validate the schema and business rules, and accept only a trusted domain object.</figcaption></figure>
+<!-- wp:image {"id":7677,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-typescript-json-runtime-validation-pipeline.png" alt="TypeScript JSON runtime validation pipeline from an unknown provider string through empty and finish checks, JSON parsing, schema validation, business rules, and a typed domain object" class="wp-image-7677"/><figcaption class="wp-element-caption">TypeScript annotations disappear at runtime. Treat provider content as unknown, reject empty or truncated output, parse defensively, validate the schema and business rules, and accept only a trusted domain object.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"tool-calls"} -->
@@ -546,8 +546,8 @@ if (
 <p><strong>Tool round-trip observation:</strong> The initial <code>deepseek-v4-flash</code> request returned HTTP 200 with <code>finish_reason: "tool_calls"</code> and exactly one call. Its tool name was allowlisted and its arguments passed the local schema before execution. The conditional continuation then returned HTTP 200 with nonempty content, <code>finish_reason: "stop"</code>, and the sanitized replay alias <code>T1</code>.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}}" alt="Node.js DeepSeek thinking-mode tool-call safety loop from tool schema and assistant protocol fields through argument validation, authorization, bounded execution, tool-message replay, and continuation" class="wp-image-{{MEDIA_ID__05_NODEJS_THINKING_TOOL_CALL_SAFETY_LOOP_PNG}}"/><figcaption class="wp-element-caption">The model requests a tool; the application parses and validates arguments, authorizes the operation, executes an approved adapter, and replays the required assistant and tool protocol fields before a controlled continuation.</figcaption></figure>
+<!-- wp:image {"id":7678,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-nodejs-thinking-tool-call-safety-loop.png" alt="Node.js DeepSeek thinking-mode tool-call safety loop from tool schema and assistant protocol fields through argument validation, authorization, bounded execution, tool-message replay, and continuation" class="wp-image-7678"/><figcaption class="wp-element-caption">The model requests a tool; the application parses and validates arguments, authorizes the operation, executes an approved adapter, and replays the required assistant and tool protocol fields before a controlled continuation.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"timeouts-retries-errors"} -->
@@ -630,8 +630,8 @@ function classifyError(error: unknown): SafeErrorLog {
 <p><strong>Invalid-model provider control:</strong> The synthetic impossible model ID produced the expected HTTP 400 provider response. The SDK mapped it to <code>BadRequestError</code> with code <code>invalid_request_error</code>; no raw provider message or response body is published.</p>
 <!-- /wp:paragraph -->
 
-<!-- wp:image {"id":{{MEDIA_ID__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}}" alt="Node.js DeepSeek error retry timeout and cancellation decision tree separating compile and configuration defects, transport and provider failures, parser and tool failures, timeouts, user aborts, retries, and safe observability" class="wp-image-{{MEDIA_ID__06_NODEJS_ERROR_RETRY_TIMEOUT_CANCELLATION_TREE_PNG}}"/><figcaption class="wp-element-caption">Classify the failing layer before acting. Fix deterministic defects, retry only bounded transient and idempotent work through one owner, propagate user aborts, and record only allowlisted diagnostic metadata.</figcaption></figure>
+<!-- wp:image {"id":7679,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-nodejs-error-retry-timeout-cancellation-tree.png" alt="Node.js DeepSeek error retry timeout and cancellation decision tree separating compile and configuration defects, transport and provider failures, parser and tool failures, timeouts, user aborts, retries, and safe observability" class="wp-image-7679"/><figcaption class="wp-element-caption">Classify the failing layer before acting. Fix deterministic defects, retry only bounded transient and idempotent work through one owner, propagate user aborts, and record only allowlisted diagnostic metadata.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"usage-and-cache"} -->
@@ -733,8 +733,8 @@ const safeUsageSummary = usage
 <h2 class="wp-block-heading" id="original-tests">Original DeepSeek Node.js TypeScript Test Methodology</h2>
 <!-- /wp:heading -->
 
-<!-- wp:image {"id":{{MEDIA_ID__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}}" alt="Node.js TypeScript DeepSeek test methodology ladder from TypeScript compile checks through local HTTP fixtures, bounded live cases, and privacy audit" class="wp-image-{{MEDIA_ID__07_NODEJS_TEST_METHODOLOGY_LADDER_PNG}}"/><figcaption class="wp-element-caption">Build confidence in layers: compile the exact TypeScript surface, inspect serialized requests against local fixtures, run only the frozen serial provider plan, and audit the sanitized evidence before publishing a result.</figcaption></figure>
+<!-- wp:image {"id":7680,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-nodejs-test-methodology-ladder.png" alt="Node.js TypeScript DeepSeek test methodology ladder from TypeScript compile checks through local HTTP fixtures, bounded live cases, and privacy audit" class="wp-image-7680"/><figcaption class="wp-element-caption">Build confidence in layers: compile the exact TypeScript surface, inspect serialized requests against local fixtures, run only the frozen serial provider plan, and audit the sanitized evidence before publishing a result.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:paragraph -->
@@ -773,8 +773,8 @@ const safeUsageSummary = usage
 <ul class="wp-block-list"><li>A parsed HTTP success is not automatically a complete answer.</li><li>Valid JSON is not automatically schema-valid or business-valid.</li><li>A tool request is not automatically authorized or safe to execute.</li><li>A typed SDK error proves client mapping, not the permanent behavior of the provider.</li><li>An alias result is a dated observation, not a future compatibility promise.</li><li>This is one bounded environment, not a latency, throughput, quality, or service-level benchmark.</li><li>Untested OpenAI endpoints remain untested.</li></ul>
 <!-- /wp:list -->
 
-<!-- wp:image {"id":{{MEDIA_ID__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}},"sizeSlug":"full","linkDestination":"none"} -->
-<figure class="wp-block-image size-full"><img src="{{MEDIA_URL__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}}" alt="DeepSeek Node.js TypeScript live results dashboard covering pinned runtimes, compile checks, chat, thinking, streaming, JSON, tools, errors, controls, and privacy audit" class="wp-image-{{MEDIA_ID__08_NODEJS_TYPESCRIPT_LIVE_RESULTS_DASHBOARD_PNG}}"/><figcaption class="wp-element-caption">Sanitized results from the July 27, 2026 Node.js and TypeScript study. Provider observations, localhost SDK checks, and the privacy audit are reported separately; the 9.029-second serial run duration is not a latency or service-level benchmark.</figcaption></figure>
+<!-- wp:image {"id":7681,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full"><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-nodejs-typescript-live-results-dashboard.png" alt="DeepSeek Node.js TypeScript live results dashboard covering pinned runtimes, compile checks, chat, thinking, streaming, JSON, tools, errors, controls, and privacy audit" class="wp-image-7681"/><figcaption class="wp-element-caption">Sanitized results from the July 27, 2026 Node.js and TypeScript study. Provider observations, localhost SDK checks, and the privacy audit are reported separately; the 9.029-second serial run duration is not a latency or service-level benchmark.</figcaption></figure>
 <!-- /wp:image -->
 
 <!-- wp:heading {"anchor":"common-mistakes"} -->

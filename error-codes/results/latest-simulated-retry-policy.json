@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "artifact": "Simulated API Client Retry Policy",
+  "source": "simulated_client_policy",
+  "generated_at_utc": "2026-07-27T07:59:50.169Z",
+  "provider_requests_sent": 0,
+  "automatic_live_retries": 0,
+  "disclaimer": "These rows are deterministic client-policy simulations, not observed DeepSeek provider responses.",
+  "rows": [
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_400",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": false,
+      "maximum_simulated_retries": 0,
+      "simulated_backoff_schedule": [],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": false,
+      "policy": "Correct the request format before making another provider call."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_401",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": false,
+      "maximum_simulated_retries": 0,
+      "simulated_backoff_schedule": [],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": false,
+      "policy": "Repair or rotate credentials before making another provider call."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_402",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": false,
+      "maximum_simulated_retries": 0,
+      "simulated_backoff_schedule": [],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": false,
+      "policy": "Resolve account funding outside the request loop; do not poll by generating completions."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_422",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": false,
+      "maximum_simulated_retries": 0,
+      "simulated_backoff_schedule": [],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": false,
+      "policy": "Correct the invalid parameters before making another provider call."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_429",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": true,
+      "maximum_simulated_retries": 2,
+      "simulated_backoff_schedule": [
+        {
+          "retry_number": 1,
+          "wait_before_retry_ms": 500
+        },
+        {
+          "retry_number": 2,
+          "wait_before_retry_ms": 1000
+        }
+      ],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": true,
+      "policy": "Queue work and use capped exponential backoff with an application-level duplicate-work guard."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_500",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": true,
+      "maximum_simulated_retries": 2,
+      "simulated_backoff_schedule": [
+        {
+          "retry_number": 1,
+          "wait_before_retry_ms": 500
+        },
+        {
+          "retry_number": 2,
+          "wait_before_retry_ms": 1000
+        }
+      ],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": true,
+      "policy": "Retry a bounded number of times after a brief backoff and retain a duplicate-work guard."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "http_503",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": true,
+      "maximum_simulated_retries": 2,
+      "simulated_backoff_schedule": [
+        {
+          "retry_number": 1,
+          "wait_before_retry_ms": 500
+        },
+        {
+          "retry_number": 2,
+          "wait_before_retry_ms": 1000
+        }
+      ],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": true,
+      "policy": "Retry a bounded number of times after a brief backoff; open a circuit when failures persist."
+    },
+    {
+      "schema_version": "1.0",
+      "source": "simulated_client_policy",
+      "generated_at_utc": "2026-07-27T07:59:50.169Z",
+      "condition": "network_timeout",
+      "provider_request_sent": false,
+      "observed_provider_status": null,
+      "retryable_without_change": true,
+      "maximum_simulated_retries": 2,
+      "simulated_backoff_schedule": [
+        {
+          "retry_number": 1,
+          "wait_before_retry_ms": 500
+        },
+        {
+          "retry_number": 2,
+          "wait_before_retry_ms": 1000
+        }
+      ],
+      "automatic_live_retry_performed": false,
+      "duplicate_work_guard_required": true,
+      "policy": "Treat the original outcome as unknown and retry only with an application-level duplicate-work guard."
+    }
+  ]
+}

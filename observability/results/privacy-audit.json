@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "audited_at_utc": "2026-07-27T00:00:00.000Z",
+  "forbidden_field_findings": 0,
+  "secret_findings": 0,
+  "internal_identifier_findings": 0,
+  "contact_findings": 0,
+  "local_path_findings": 0,
+  "non_ascii_characters": 0,
+  "mojibake_matches": 0,
+  "checks": {
+    "forbidden_fields_absent": true,
+    "secrets_absent": true,
+    "internal_identifiers_absent": true,
+    "contacts_absent": true,
+    "local_paths_absent": true,
+    "ascii_only": true,
+    "mojibake_absent": true
+  },
+  "status": "pass"
+}

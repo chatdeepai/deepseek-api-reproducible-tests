@@ -1,0 +1,10 @@
+.env
+.env.*
+node_modules/
+*.log
+results/
+!results/.gitkeep
+private/
+secrets/
+*.pem
+*.key

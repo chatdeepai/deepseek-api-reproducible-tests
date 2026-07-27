@@ -1,0 +1,515 @@
+<!-- wp:paragraph -->
+<p><strong>Last independently tested: July 27, 2026.</strong> To create a DeepSeek API key, sign in to the <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">official DeepSeek Platform API Keys page</a>, create a separate key for the application or environment that will use it, move the credential directly into server-side secret storage, and verify it with an authenticated request to <code>https://api.deepseek.com/models</code>. Never paste the key into client-side JavaScript, a public repository, a screenshot, a support ticket, or an analytics event.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>This guide goes beyond setup instructions. We created two temporary keys, ran a bounded 12-case authentication and rotation study, and revoked both keys when testing ended. All 12 cases produced their expected result: six valid authenticated operations returned HTTP 200 and six negative or revoked-key controls returned HTTP 401. The test published no key value, key fragment, Authorization header, balance amount, account identifier, raw response body, or provider request ID.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Chat-Deep.ai is an independent technical publication and is not affiliated with or endorsed by DeepSeek. The official documentation defines the supported request contract; our live results are dated observations from one authorized account and one network environment. They are evidence, not a promise that every account, region, endpoint, or future request will behave identically.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7608,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="01-deepseek-api-key-lifecycle.png" data-media-alt="DeepSeek API key lifecycle from secure creation through testing, rotation, revocation, and evidence redaction" data-media-caption="A safe key lifecycle keeps the credential server-side, validates a replacement before revoking the old key, and publishes only sanitized evidence."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/01-deepseek-api-key-lifecycle.png" alt="DeepSeek API key lifecycle from secure creation through testing, rotation, revocation, and evidence redaction" class="wp-image-7608"/><figcaption class="wp-element-caption">A safe key lifecycle keeps the credential server-side, validates a replacement before revoking the old key, and publishes only sanitized evidence.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="quick-answer">Quick answer: create and test a DeepSeek API key safely</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Open the official DeepSeek Platform and sign in.</li><li>Open <strong>API Keys</strong> and create a key with a name that identifies one application and environment, such as <code>invoice-worker-prod</code>.</li><li>Transfer the displayed credential directly into a secrets manager or a protected environment variable. Do not save it in source code or a document.</li><li>Confirm that your application reads the variable without printing its value.</li><li>Send a low-cost authentication probe to the documented <code>GET /models</code> endpoint.</li><li>If the probe returns HTTP 200 and a valid model list, configure the same server-side secret for your application.</li><li>Before replacing a key, create and validate a second key, switch the application, then revoke the old one.</li><li>Remove temporary keys after testing and verify that each revoked key is denied.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The <a href="https://api-docs.deepseek.com/" target="_blank" rel="noopener">official DeepSeek first-call guide</a> currently documents <code>https://api.deepseek.com</code> as the OpenAI-format base URL and links to the Platform for API-key creation. The <a href="https://api-docs.deepseek.com/api/deepseek-api/" target="_blank" rel="noopener">official API reference introduction</a> defines HTTP Bearer authentication, and the model-list reference documents <code>GET /models</code>. That makes the model list a better initial credential check than repeatedly paying for generated text.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="what-a-deepseek-api-key-does">What a DeepSeek API key does—and what this guide does not assume</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A DeepSeek API key is a credential used by software to authenticate calls to the DeepSeek API. It is separate from a DeepSeek Chat browser session and should be treated like a password with billing consequences. The key belongs in a trusted backend, worker, command-line session, or secrets service—not in a webpage delivered to visitors.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Question</th><th>Official source</th><th>What we observed</th></tr></thead><tbody><tr><td>Where is the API host?</td><td>The first-call guide lists <code>https://api.deepseek.com</code> for OpenAI-format requests.</td><td>All 12 live cases used that origin only.</td></tr><tr><td>How is the key sent?</td><td>Official examples use an <code>Authorization: Bearer</code> header.</td><td>A valid Bearer key worked; missing, empty, wrong-scheme, invalid, and revoked controls were denied.</td></tr><tr><td>How can a key be checked?</td><td>The API reference documents <code>GET /models</code>.</td><td>Valid keys returned HTTP 200 and a non-empty model list during the test.</td></tr><tr><td>Can balance availability be queried?</td><td>The reference documents <code>GET /user/balance</code> and an <code>is_available</code> boolean.</td><td>The authorized probe returned HTTP 200 and a boolean; monetary values were intentionally omitted.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>The official sources reviewed for this update do not establish user-configurable per-key scopes, expiration dates, or IP allowlists. We therefore do not claim that those controls exist. Design your application so a leaked key can be rotated quickly, keep its access surface small, and consult the current Platform UI and official documentation before relying on any account-specific control.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="create-key">How to create a DeepSeek API key</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="open-platform">1. Open the official Platform</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Start at <a href="https://platform.deepseek.com/" target="_blank" rel="noopener">platform.deepseek.com</a>, sign in, and open the <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener">API Keys area</a>. Check the hostname before entering credentials. A Chat page, third-party gateway, code editor extension, or unofficial “key generator” is not the official DeepSeek key console.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="name-key">2. Give the key an operational name</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Use a name that answers two questions: which workload uses this key, and in which environment? Good patterns include <code>support-api-staging</code>, <code>document-worker-prod</code>, or <code>developer-alex-local</code>. Avoid one shared name such as <code>main</code>. Separate names make incident response and planned rotation less ambiguous even when the console does not expose the secret again.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="capture-key">3. Transfer the credential without publishing it</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>When the Platform presents the new credential, move it directly into the intended secret store. Do not take a screenshot of the reveal dialog. Do not paste it into a WordPress draft, GitHub issue, chat conversation, CI log, spreadsheet, browser bookmark, or shell command that contains the literal value. If the credential is lost or its handling is uncertain, create a replacement and revoke the uncertain key.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7609,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="02-safe-key-creation-boundary.png" data-media-alt="Safe DeepSeek API key creation boundary showing the secret moving from the official console to server-side storage without entering screenshots or code" data-media-caption="The secret crosses one controlled boundary: from the official console into protected storage. It should not pass through documents, images, repositories, or client code."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/02-safe-key-creation-boundary.png" alt="Safe DeepSeek API key creation boundary showing the secret moving from the official console to server-side storage without entering screenshots or code" class="wp-image-7609"/><figcaption class="wp-element-caption">The secret crosses one controlled boundary: from the official console into protected storage. It should not pass through documents, images, repositories, or client code.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="record-owner">4. Record ownership, not the secret</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>In your internal inventory, record the console name, application owner, environment, creation date, and rotation status. Do not copy the credential itself into that inventory. The application’s secret manager should hold the value; the inventory should hold the operational context needed to replace it safely.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="store-environment-variable">Store the key in an environment variable</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>For local development, a process environment variable is safer than hardcoding the credential, provided you also control shell history, logs, crash reports, and local access. For production, prefer the secrets facility supplied by your hosting platform or cloud provider and inject the value at runtime. Never bundle a production key into a Docker image, mobile app, desktop installer, static website, WordPress theme, or JavaScript sent to a browser.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="macos-linux">macOS and Linux: prompt without echoing the key</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>read -rsp 'DeepSeek API key: ' DEEPSEEK_API_KEY
+echo
+export DEEPSEEK_API_KEY
+
+test -n "${DEEPSEEK_API_KEY:-}" \
+  &amp;&amp; echo "DEEPSEEK_API_KEY is set" \
+  || echo "DEEPSEEK_API_KEY is missing"</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The secret is entered at the prompt instead of appearing in the command itself. The check confirms only presence; it never prints the value. When the session ends, run <code>unset DEEPSEEK_API_KEY</code>. Your production deployment should obtain the value from its secret store rather than an interactive prompt.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="windows-powershell">Windows PowerShell 7: use masked input for the session</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>$env:DEEPSEEK_API_KEY = Read-Host "DeepSeek API key" -MaskInput
+
+if ([string]::IsNullOrWhiteSpace($env:DEEPSEEK_API_KEY)) {
+  throw "DEEPSEEK_API_KEY is missing"
+}
+
+Write-Host "DEEPSEEK_API_KEY is set"</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>This avoids placing the literal value in PowerShell history and does not print it. Clear the process variable after the test with <code>Remove-Item Env:DEEPSEEK_API_KEY</code>. On shared systems, remember that environment variables are still secrets; local administrators, debuggers, dumps, or child processes may be able to read them.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="dotenv">If you use a local <code>.env</code> file</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A private <code>.env</code> file can be practical for local development, but it is a secret-bearing file, not a harmless configuration file. Put <code>.env</code>, <code>.env.*</code>, and local credential exports in <code>.gitignore</code> before creating them. Keep a tracked <code>.env.example</code> containing only variable names and synthetic values.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code># .gitignore
+.env
+.env.*
+!.env.example
+
+# .env.example — safe to commit
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Ignoring a file does not protect a secret that was already committed. If a real key enters Git history, a build artifact, or a log, revoke it first, create a replacement, and then clean the repository or log according to your incident procedure. Deleting the visible line without revoking the credential leaves the exposed key usable.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7610,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="03-environment-variable-patterns.png" data-media-alt="Secure DeepSeek API key environment variable patterns for macOS, Linux, Windows PowerShell, development, and production" data-media-caption="Environment variables reduce hardcoding risk, but production deployments should inject them from protected secret storage and prevent values from entering logs."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/03-environment-variable-patterns.png" alt="Secure DeepSeek API key environment variable patterns for macOS, Linux, Windows PowerShell, development, and production" class="wp-image-7610"/><figcaption class="wp-element-caption">Environment variables reduce hardcoding risk, but production deployments should inject them from protected secret storage and prevent values from entering logs.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="test-key">Test a DeepSeek API key without exposing it</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Start with <code>GET /models</code>. The <a href="https://api-docs.deepseek.com/api/list-models/" target="_blank" rel="noopener">official model-list reference</a> defines a successful response as an object whose <code>data</code> array contains model records. Our live valid-key probe returned HTTP 200 in 497 ms and listed <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. That is a dated observation, so applications should discover or configure model IDs from current official sources instead of assuming the list can never change.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="curl-models">cURL: a non-generation authentication probe</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>curl --silent --show-error --fail-with-body \
+  --url https://api.deepseek.com/models \
+  --header "Authorization: Bearer ${DEEPSEEK_API_KEY}" \
+  --header "Accept: application/json"</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>The command reads the credential from the current process instead of embedding the literal secret in a script. Use it only in a trusted terminal: depending on the operating system, command arguments and environment values may be visible to privileged process inspection. Do not add verbose tracing, because diagnostic output can expose headers.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="powershell-models">PowerShell: validate status and model count</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>$headers = @{
+  Authorization = "Bearer $env:DEEPSEEK_API_KEY"
+  Accept = "application/json"
+}
+
+$result = Invoke-RestMethod `
+  -Method Get `
+  -Uri "https://api.deepseek.com/models" `
+  -Headers $headers
+
+if ($result.object -ne "list" -or $result.data.Count -lt 1) {
+  throw "Unexpected model-list response"
+}
+
+Write-Host "Authentication succeeded; model records:" $result.data.Count</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not print <code>$headers</code>, enable request tracing, or serialize the process environment. After the check, clear the header object and remove the environment variable if it was created only for this session.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="python-example">Python: use the OpenAI SDK with DeepSeek’s base URL</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import os
+from openai import OpenAI
+
+api_key = os.environ.get("DEEPSEEK_API_KEY")
+if not api_key:
+    raise RuntimeError("DEEPSEEK_API_KEY is missing")
+
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.deepseek.com",
+)
+
+models = client.models.list()
+model_ids = [item.id for item in models.data]
+if not model_ids:
+    raise RuntimeError("No model records returned")
+
+print("Authentication succeeded; model records:", len(model_ids))</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>This follows the base-URL and environment-variable pattern in DeepSeek’s official first-call documentation while using the non-generation model list for validation. For installation, typed clients, timeouts, and production error handling, continue to our <a href="https://chat-deep.ai/docs/deepseek-python-sdk/">DeepSeek Python SDK guide</a> or the broader <a href="https://chat-deep.ai/docs/openai-sdk-to-deepseek/">OpenAI SDK with DeepSeek guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="node-example">Node.js: check the model list without logging the client</h3>
+<!-- /wp:heading -->
+
+<!-- wp:code -->
+<pre class="wp-block-code"><code>import OpenAI from "openai";
+
+const apiKey = process.env.DEEPSEEK_API_KEY;
+if (!apiKey) throw new Error("DEEPSEEK_API_KEY is missing");
+
+const client = new OpenAI({
+  apiKey,
+  baseURL: "https://api.deepseek.com",
+});
+
+const models = await client.models.list();
+if (!Array.isArray(models.data) || models.data.length === 0) {
+  throw new Error("No model records returned");
+}
+
+console.log("Authentication succeeded; model records:", models.data.length);</code></pre>
+<!-- /wp:code -->
+
+<!-- wp:paragraph -->
+<p>Do not log the client configuration, request headers, <code>process.env</code>, or an exception object from a wrapper that attaches raw request details. Our <a href="https://chat-deep.ai/docs/deepseek-nodejs-typescript/">DeepSeek Node.js and TypeScript guide</a> covers application structure beyond this credential probe.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="one-completion">Optional: prove the key can authorize one completion</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>A successful model-list request proves authentication to that endpoint, not that every generation request will succeed. If you need an end-to-end check, send one deliberately small request using the <a href="https://api-docs.deepseek.com/api/create-chat-completion/" target="_blank" rel="noopener">official Chat Completions contract</a>. Our study allowed exactly one paid-generation request, fixed it to <code>deepseek-v4-flash</code>, used a 16-token output cap, disabled automatic retries, and received HTTP 200 in 785 ms with <code>finish_reason: stop</code>. Usage was 17 prompt tokens, 6 completion tokens, and 23 total tokens.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Keep an explicit request budget around automated smoke tests. A failing deployment loop that repeatedly calls a generation endpoint can create cost and noise. For request structure, see the <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a>; for current models and costs, use our <a href="https://chat-deep.ai/models/">DeepSeek models page</a> and <a href="https://chat-deep.ai/pricing/">DeepSeek pricing page</a>, then verify the current figures against the official pricing source.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="live-study">Original live study: 12 authentication and lifecycle cases</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We ran the study from 10:42:01.137Z to 10:46:07.911Z on July 27, 2026. It made 12 HTTP requests with maximum application concurrency of one and zero automatic retries. The only repeat allowance was a declared revocation-poll schedule; both revoked keys were denied on the first poll, so no additional poll was needed. Two temporary keys were created for the study and both were revoked by the end.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Case</th><th>Request and credential state</th><th>Status</th><th>Observed latency</th><th>Result</th></tr></thead><tbody><tr><td>LIVE-01</td><td><code>GET /models</code>, valid key A</td><td>200</td><td>497 ms</td><td>List schema passed; 2 models</td></tr><tr><td>LIVE-02</td><td><code>POST /chat/completions</code>, valid key A</td><td>200</td><td>785 ms</td><td>Non-empty completion; 23 total tokens</td></tr><tr><td>LIVE-03</td><td><code>GET /user/balance</code>, valid key A</td><td>200</td><td>276 ms</td><td>Availability boolean observed; amounts omitted</td></tr><tr><td>AUTH-01</td><td><code>GET /models</code>, header missing</td><td>401</td><td>313 ms</td><td>Denied as expected</td></tr><tr><td>AUTH-02</td><td><code>GET /models</code>, empty Bearer value</td><td>401</td><td>300 ms</td><td>Denied as expected</td></tr><tr><td>AUTH-03</td><td><code>GET /models</code>, wrong scheme</td><td>401</td><td>304 ms</td><td>Denied as expected</td></tr><tr><td>AUTH-04</td><td><code>GET /models</code>, synthetic invalid key</td><td>401</td><td>268 ms</td><td><code>authentication_error</code>; message omitted</td></tr><tr><td>ROT-01</td><td><code>GET /models</code>, replacement key B</td><td>200</td><td>320 ms</td><td>Replacement valid before switch</td></tr><tr><td>ROT-02</td><td><code>GET /models</code>, old key A during overlap</td><td>200</td><td>300 ms</td><td>Old key still valid during overlap</td></tr><tr><td>ROT-03</td><td><code>GET /models</code>, revoked key A</td><td>401</td><td>First poll; 0 ms propagation observed</td><td>Revocation confirmed</td></tr><tr><td>ROT-04</td><td><code>GET /models</code>, key B after A revocation</td><td>200</td><td>306 ms</td><td>Replacement remained valid</td></tr><tr><td>ROT-05</td><td><code>GET /models</code>, revoked test key B</td><td>401</td><td>First poll; 0 ms propagation observed</td><td>Cleanup revocation confirmed</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:image {"id":7611,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="04-live-12-case-results.png" data-media-alt="Results of 12 live DeepSeek API key authentication, balance availability, rotation, and revocation cases" data-media-caption="All 12 bounded cases met their expected outcome: 6 valid authenticated operations returned 200 and 6 negative or revoked-key controls returned 401."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/04-live-12-case-results.png" alt="Results of 12 live DeepSeek API key authentication, balance availability, rotation, and revocation cases" class="wp-image-7611"/><figcaption class="wp-element-caption">All 12 bounded cases met their expected outcome: 6 valid authenticated operations returned 200 and 6 negative or revoked-key controls returned 401.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="what-passed">What passed</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li><strong>12/12 logical cases</strong> produced their expected status and validation outcome.</li><li><strong>6/6 valid authenticated operations</strong> returned HTTP 200.</li><li><strong>6/6 authentication-denial controls</strong> returned HTTP 401: four malformed or invalid credential variants plus two revoked-key checks.</li><li><strong>2/2 temporary keys</strong> were revoked, and both revocations were confirmed within the 30-second study bound.</li><li><strong>1/1 replacement-key continuity check</strong> passed after the old key was revoked.</li><li><strong>0 temporary key rows</strong> remained when cleanup finished.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>The valid model-list responses exposed two model IDs at test time: <code>deepseek-v4-flash</code> and <code>deepseek-v4-pro</code>. The balance endpoint returned a boolean <code>is_available</code> signal and an array shape consistent with the official reference. We published the boolean only; account-specific currency and monetary values were excluded. For a dedicated, privacy-aware implementation, see our <a href="https://chat-deep.ai/docs/deepseek-api-balance/">DeepSeek API balance guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="status-interpretation">How to interpret 200 and 401 correctly</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>HTTP 200 from <code>/models</code> means the presented credential authenticated to that endpoint for that request. It does not guarantee balance, quota, generation success, model availability forever, or access to every endpoint. HTTP 401 means the credential presentation was not accepted. The <a href="https://api-docs.deepseek.com/quick_start/error_codes/" target="_blank" rel="noopener">official DeepSeek error-code page</a> associates 401 with authentication failure and advises checking the key.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7612,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="05-authentication-control-matrix.png" data-media-alt="DeepSeek API key authentication control matrix comparing valid, missing, empty, wrong-scheme, invalid, and revoked credentials" data-media-caption="A valid key returned 200, while every missing, malformed, invalid, or revoked credential control returned 401 in the dated live run."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/05-authentication-control-matrix.png" alt="DeepSeek API key authentication control matrix comparing valid, missing, empty, wrong-scheme, invalid, and revoked credentials" class="wp-image-7612"/><figcaption class="wp-element-caption">A valid key returned 200, while every missing, malformed, invalid, or revoked credential control returned 401 in the dated live run.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Troubleshoot by classifying the response before retrying. A 401 normally calls for credential or header repair, not exponential retry. A 402 points to account balance, a 422 to request parameters, and a 429 to pacing or concurrency. Our <a href="https://chat-deep.ai/docs/deepseek-error-codes/">DeepSeek error codes guide</a> provides a fuller decision tree, while <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API rate limits</a> owns concurrency and backoff guidance.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="rotate-key">Rotate a DeepSeek API key without downtime</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Rotation is a controlled replacement, not simply deleting the current key. Use two separate keys for a short overlap window: key A is the current credential and key B is the replacement. Validate B before changing production, deploy B, verify the application, then revoke A. This sequence prevents an untested replacement from taking the service down.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><li>Create key B with a name that identifies it as the replacement.</li><li>Store B through the same protected path used by the application; do not copy it into a deployment file.</li><li>Call <code>GET /models</code> with B and validate both HTTP status and response shape.</li><li>Confirm A still works during the deliberate overlap window.</li><li>Deploy the configuration that points the application to B.</li><li>Run one bounded health check through the real application path.</li><li>Revoke A in the official Platform.</li><li>Confirm A receives 401, while B still receives 200.</li><li>Update the non-secret inventory with the rotation outcome.</li><li>Remove any temporary test key when the exercise is complete.</li></ol>
+<!-- /wp:list -->
+
+<!-- wp:image {"id":7613,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="06-two-key-rotation-timeline.png" data-media-alt="Two-key DeepSeek API rotation timeline showing overlap, replacement validation, deployment switch, old-key revocation, and cleanup" data-media-caption="Validate key B while key A is still active, switch the application to B, revoke A, and verify both denial and continuity before closing the rotation."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/06-two-key-rotation-timeline.png" alt="Two-key DeepSeek API rotation timeline showing overlap, replacement validation, deployment switch, old-key revocation, and cleanup" class="wp-image-7613"/><figcaption class="wp-element-caption">Validate key B while key A is still active, switch the application to B, revoke A, and verify both denial and continuity before closing the rotation.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:paragraph -->
+<p>Our live sequence observed B returning 200 in 320 ms, followed by A returning 200 in 300 ms during overlap. After A was revoked, its first declared poll returned 401, and B then returned 200 in 306 ms. Finally, we revoked temporary key B and its first poll returned 401. Both first-poll observations recorded zero milliseconds of additional propagation delay under the harness definition. That does not promise instantaneous revocation everywhere; production runbooks should use a bounded poll window and stop on unexpected transport failures.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="emergency-rotation">Emergency rotation after suspected exposure</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>If a key may have leaked, prioritize containment. Create and deploy a replacement through a trusted channel, revoke the exposed key, verify the revoked key is denied, and inspect application and billing telemetry for unusual use. Do not wait for a repository cleanup to finish before revoking. Preserve sanitized incident evidence, but never paste the secret into the ticket created to investigate it.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="leak-prevention">Leak prevention and offline security checks</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The reproducibility package separates live credential checks from deterministic offline tests. Live functions accept authorized credentials only as in-memory arguments. The public harness contains no helper that reads a key from command-line arguments, a file, an interactive transcript, or an environment variable. It fixes the network origin, serializes requests, disables generic retries, caps the paid completion, removes sensitive response fields, and scans prospective evidence before publication.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Offline result: 10/10 deterministic security cases passed</strong> with zero network requests. The run covered credential provenance, ignore rules, recursive redaction, secret detection, rotation-state guards, serial fixed-origin transport, authentication controls, amount-free balance handling, the one-completion budget, and replacement-key continuity.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The offline suite covers syntax, credential-provenance rejection, ignore rules, recursive redaction, static secret scanning, the rotation state machine, fixed-origin mock requests, the authentication matrix, amount-free balance output, one-paid-completion enforcement, and replacement continuity. These checks use in-memory mocks and do not contact DeepSeek. They reduce publication risk, but they do not replace repository secret scanning, deployment controls, least-access architecture, or a real incident-response drill.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7614,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="07-leak-prevention-pipeline.png" data-media-alt="DeepSeek API key leak prevention pipeline covering in-memory use, redaction, static scanning, manual review, and sanitized publication" data-media-caption="Publish the minimum evidence needed to support the result: status, timing, booleans, counts, and public model names—not credentials, headers, balances, or raw bodies."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/07-leak-prevention-pipeline.png" alt="DeepSeek API key leak prevention pipeline covering in-memory use, redaction, static scanning, manual review, and sanitized publication" class="wp-image-7614"/><figcaption class="wp-element-caption">Publish the minimum evidence needed to support the result: status, timing, booleans, counts, and public model names—not credentials, headers, balances, or raw bodies.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="logging-rules">Logging rules for production clients</h3>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>Allowlist log fields instead of trying to redact an entire raw request after capture.</li><li>Never log <code>Authorization</code>, client objects, complete environment dictionaries, or shell commands containing expanded secrets.</li><li>Keep raw provider response bodies out of credential tests unless a specific, sanitized field is required.</li><li>Report a key by a non-secret internal alias such as <code>production-primary</code>, never by a prefix or suffix.</li><li>Keep screenshots away from key-reveal dialogs, balances, profile menus, email addresses, and browser autofill overlays.</li><li>Use separate credentials for separate applications and environments so one incident has a narrower replacement path.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:paragraph -->
+<p>For production evidence pipelines, the <a href="https://chat-deep.ai/docs/deepseek-observability/">DeepSeek observability guide</a> explains what to measure without turning telemetry into a secret store. If your application accepts model-generated structured data, validate that output separately using the <a href="https://chat-deep.ai/docs/json-output/">DeepSeek JSON Output guide</a>; successful authentication says nothing about output correctness.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="troubleshooting">Why a DeepSeek API key is not working</h2>
+<!-- /wp:heading -->
+
+<!-- wp:table {"className":"is-style-stripes"} -->
+<figure class="wp-block-table is-style-stripes"><table><thead><tr><th>Symptom</th><th>Likely class</th><th>Safe next check</th></tr></thead><tbody><tr><td>401 from <code>/models</code></td><td>Missing, malformed, invalid, or revoked credential</td><td>Confirm the process loaded the intended variable, the header uses <code>Bearer</code>, the host is correct, and the key has not been revoked. Do not print it.</td></tr><tr><td>402 from a paid request</td><td>Insufficient usable balance</td><td>Check the official Platform billing area or query only the fields you need from <code>/user/balance</code>.</td></tr><tr><td>422</td><td>Invalid request parameter</td><td>Compare the model and payload with the current endpoint reference.</td></tr><tr><td>429</td><td>Request pacing or account concurrency</td><td>Reduce in-flight work and apply bounded backoff according to the current rate-limit guidance.</td></tr><tr><td>Model list works, chat fails</td><td>Authentication passed but another precondition failed</td><td>Inspect status, model ID, balance availability, payload validation, and feature-specific requirements separately.</td></tr><tr><td>Local code says variable missing</td><td>Shell or deployment configuration</td><td>Check only whether the variable is present in the process; do not echo its value.</td></tr></tbody></table></figure>
+<!-- /wp:table -->
+
+<!-- wp:paragraph -->
+<p>Do not blindly retry a 401. Retrying the same invalid credential adds noise without changing the cause. Correct the configuration or rotate the key. Retry logic belongs around transient conditions such as selected 5xx failures or rate pressure, and it should have attempt, delay, and total-time limits.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Creating extra keys is not a capacity strategy. DeepSeek’s <a href="https://api-docs.deepseek.com/quick_start/rate_limit/" target="_blank" rel="noopener">official Rate Limit &amp; Isolation page</a> says concurrency is calculated at the account level regardless of which API key is used. Use separate keys for ownership and rotation, but manage workload capacity with queues, bounded concurrency, and the practices in our <a href="https://chat-deep.ai/docs/api-rate-limits/">DeepSeek API rate-limits guide</a>.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="pricing-billing">A concise pricing and billing handoff</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Creating a key is not the same as receiving unlimited free API usage. The <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener">official pricing page</a> states that model usage is billed by tokens and that prices may change. This credential guide does not duplicate a volatile price table. Check our <a href="https://chat-deep.ai/pricing/">DeepSeek pricing page</a> for the comparison and verify final figures on the official page before a production launch. Use the balance guide for availability checks, alerts, and privacy-safe handling of monetary data.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="methodology-limitations">Methodology, evidence, and limitations</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The live suite used one authorized DeepSeek Platform account, one network environment, the fixed origin <code>https://api.deepseek.com</code>, maximum concurrency one, and zero automatic retries. It made 12 logical requests, including one completion capable of incurring token charges. Key creation and revocation occurred in the official console; the harness received credentials only through an authorized in-memory controller.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>The study is intentionally small. It does not measure global latency, service availability, regional behavior, long-term revocation propagation, per-account limits, key scopes, key expiry, IP restrictions, or every API endpoint. The recorded milliseconds are useful for auditing this run, not ranking performance. No secret-reveal screenshot was captured, and no account balance value was published.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>Reproduce the safe parts with the public <a href="https://github.com/chatdeepai/deepseek-api-reproducible-tests/tree/main/api-key" target="_blank" rel="noopener">DeepSeek API key test suite on GitHub</a>. Review <code>TEST_PLAN.md</code>, <code>SECURITY.md</code>, the official source register, sanitized JSON/CSV results, and the deterministic offline tests before running anything. The live functions are opt-in and constrained; never place a real key in a fork, issue, pull request, command-line argument, test fixture, or published result.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:image {"id":7615,"sizeSlug":"full","linkDestination":"none"} -->
+<figure class="wp-block-image size-full" data-media-filename="08-methodology-and-guardrails.png" data-media-alt="Methodology and guardrails for the DeepSeek API key live study including one origin, serial requests, no retries, redacted evidence, and two revoked test keys" data-media-caption="The study prioritizes an auditable credential lifecycle over volume: 12 serial requests, one paid completion, no generic retries, sanitized evidence, and no remaining temporary keys."><img src="https://chat-deep.ai/wp-content/uploads/2026/07/08-methodology-and-guardrails.png" alt="Methodology and guardrails for the DeepSeek API key live study including one origin, serial requests, no retries, redacted evidence, and two revoked test keys" class="wp-image-7615"/><figcaption class="wp-element-caption">The study prioritizes an auditable credential lifecycle over volume: 12 serial requests, one paid completion, no generic retries, sanitized evidence, and no remaining temporary keys.</figcaption></figure>
+<!-- /wp:image -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="production-checklist">Production checklist</h2>
+<!-- /wp:heading -->
+
+<!-- wp:list -->
+<ul class="wp-block-list"><li>The key was created only in the official DeepSeek Platform.</li><li>Its name identifies one application and environment.</li><li>The value lives in protected server-side storage and is injected at runtime.</li><li>Source code, Git history, images, tickets, logs, analytics, and client bundles contain no key value or fragment.</li><li>A non-generation <code>/models</code> probe validates authentication during deployment.</li><li>Generation smoke tests have an explicit request and token budget.</li><li>Logs use an allowlist and never capture Authorization headers or raw environments.</li><li>Rotation uses a validated replacement and a short overlap window.</li><li>Revoked credentials are tested for denial without unlimited polling.</li><li>Billing, 429 handling, output validation, and observability have separate controls and owners.</li></ul>
+<!-- /wp:list -->
+
+<!-- wp:heading -->
+<h2 class="wp-block-heading" id="faq">FAQ</h2>
+<!-- /wp:heading -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-get-key">How do I get a DeepSeek API key?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Sign in to the official DeepSeek Platform, open its API Keys page, create a clearly named key, and move the credential directly into protected server-side storage. Test it with <code>GET https://api.deepseek.com/models</code> before connecting a production workload.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-base-url">What is the DeepSeek API base URL?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The current official first-call guide lists <code>https://api.deepseek.com</code> for OpenAI-format requests. It separately lists <code>https://api.deepseek.com/anthropic</code> for Anthropic-format integrations. Match the SDK configuration and endpoint path to the format you actually use.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-test-free">Can I test a DeepSeek API key without generating text?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Yes. The documented <code>GET /models</code> endpoint is a useful initial authentication probe because it does not request model-generated text. In our dated test, a valid key returned HTTP 200 and a non-empty model list. A generation call has separate model, balance, payload, and availability requirements.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-401">Why does my DeepSeek API key return 401?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Check whether the process loaded the intended key, the header is exactly a Bearer credential, the request uses the official API host, and the key has not been revoked. Our missing-header, empty-Bearer, wrong-scheme, synthetic-invalid, and revoked-key controls all returned 401. Repair or rotate the credential instead of retrying the same request indefinitely.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-browser">Can I put a DeepSeek API key in browser JavaScript or WordPress?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>No. Code and configuration delivered to a visitor can be inspected. Keep the key on a trusted backend and expose only your own authenticated, rate-limited application endpoint. Do not place a real key in a WordPress page, theme, plugin setting that renders publicly, analytics tag, or browser-side request.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-env">Is an environment variable enough to secure the key?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>It prevents ordinary source-code hardcoding, but it is only one layer. Privileged users, child processes, diagnostics, crash dumps, and careless logging can still expose environment values. Use a secrets manager in production, restrict runtime access, redact logs, and rehearse rotation.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-git">What should I do if I committed a DeepSeek API key to GitHub?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Revoke the exposed key immediately, create and deploy a replacement, and inspect usage. Then remove the secret from current files and repository history according to your incident process. Adding the file to <code>.gitignore</code> after the leak does not revoke or erase the already published credential.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-rotate">How do I rotate a DeepSeek API key without downtime?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Create key B while key A remains active, validate B, switch the application, verify the real application path, revoke A, and confirm that A is denied while B remains authorized. Our one-account live test observed exactly that continuity, but your runbook should still allow a bounded verification window.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-free">Is a DeepSeek API key free?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Key creation and model usage are different questions. The official pricing page describes token-based charges for model requests and says prices may change. Check current pricing and usable balance before enabling production traffic, and cap automated smoke tests so a deployment loop cannot create unbounded calls.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading" id="faq-scopes">Does a DeepSeek API key support scopes, expiry, or IP restrictions?</h3>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>The official sources used for this update did not establish user-configurable per-key scopes, expiration, or IP allowlisting, so we do not assume those controls. Check the current Platform and official documentation for your account, and build fast rotation, server-side isolation, and minimal exposure into the application regardless.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p><strong>Next step:</strong> create a separately named development key, place it in protected local storage, run one <code>/models</code> probe, and revoke it when the exercise ends. Then use the <a href="https://chat-deep.ai/docs/api/">DeepSeek API guide</a> to build the request path and the <a href="https://chat-deep.ai/docs/deepseek-observability/">observability guide</a> to monitor it without leaking credentials.</p>
+<!-- /wp:paragraph -->

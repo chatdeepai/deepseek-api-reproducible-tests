@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "generated_from": [
+    "../results/final-results-summary.json",
+    "../results/offline-results-summary.json"
+  ],
+  "test_date_utc": "2026-07-27",
+  "privacy_policy": {
+    "one_time_secret_dialog_captured": false,
+    "credential_values_or_fragments_shown": false,
+    "authorization_headers_shown": false,
+    "account_identifiers_shown": false,
+    "monetary_values_shown": false,
+    "manual_full_resolution_review_completed": true
+  },
+  "images": [
+    {
+      "file": "01-deepseek-api-key-lifecycle.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "b8141a8e783d98c801d8e93197a47db9868290e5be3641c80f45ad60410684b6"
+    },
+    {
+      "file": "02-safe-key-creation-boundary.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "2e61286e33e9b3235a108ccea3ad8c635fe45e7d4408bd2401095fbb81b748f2"
+    },
+    {
+      "file": "03-environment-variable-patterns.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "4cbcb4d57f751e9b5312a9f2fe71935fff631f3c8712510aba1c1a2e969b3d66"
+    },
+    {
+      "file": "04-live-12-case-results.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "7688c1b17f4728c3644cef4fef6612d9362b81d15745da06651706e082f35fa1"
+    },
+    {
+      "file": "05-authentication-control-matrix.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "f99e394969aa3e522f915f7d4d0b26d4ff1c5d0981c7fb41551a9c696b3e01dd"
+    },
+    {
+      "file": "06-two-key-rotation-timeline.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "584727ee8096bbfbb7ab658da6171a495fd4bdb0c73324aab2b549033ab3f701"
+    },
+    {
+      "file": "07-leak-prevention-pipeline.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "9340f7a37ba4d0a20e1ac1d1ff10d74f3c69674e919f5b1ef7f90a8da74dd3b1"
+    },
+    {
+      "file": "08-methodology-and-guardrails.png",
+      "width": 1600,
+      "height": 900,
+      "sha256": "5c8e0f1a60d60685bcab476a8af7424fdc0f608d40fc3ae0d6432fc8930188f9"
+    }
+  ]
+}

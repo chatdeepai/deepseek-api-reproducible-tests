@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek API rate limits evidence guide</title>
+  <desc id="desc">Featured editorial visual for a live-tested guide to DeepSeek V4 account concurrency limits, application caps, retries, and streaming keep-alives.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071426"/>
+      <stop offset=".58" stop-color="#102b55"/>
+      <stop offset="1" stop-color="#075985"/>
+    </linearGradient>
+    <linearGradient id="line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#020617" flood-opacity=".42"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <circle cx="1480" cy="70" r="285" fill="#38bdf8" opacity=".08"/>
+  <circle cx="90" cy="890" r="300" fill="#2563eb" opacity=".10"/>
+  <text x="100" y="108" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="25" font-weight="800" letter-spacing="4" fill="#7dd3fc">CHAT-DEEP.AI EVIDENCE GUIDE</text>
+  <text x="100" y="196" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="72" font-weight="850" fill="#ffffff">DeepSeek API Rate Limits</text>
+  <text x="100" y="253" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="30" font-weight="500" fill="#cbd5e1">Official concurrency, live timing, queue simulation, and safe retries</text>
+
+  <g filter="url(#shadow)">
+    <rect x="100" y="322" width="1400" height="410" rx="34" fill="#ffffff"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="144" y="366" width="404" height="280" rx="26" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+    <rect x="174" y="392" width="112" height="34" rx="17" fill="#1d4ed8"/>
+    <text x="230" y="415" text-anchor="middle" font-size="16" font-weight="850" letter-spacing="1.5" fill="#ffffff">OFFICIAL</text>
+    <text x="174" y="480" font-size="22" font-weight="750" fill="#41536b">PRO</text>
+    <text x="174" y="537" font-size="54" font-weight="900" fill="#0b1f3a">500</text>
+    <text x="310" y="525" font-size="20" font-weight="750" fill="#41536b">slots / account</text>
+    <path d="M174 558h328" stroke="#dbeafe" stroke-width="2"/>
+    <text x="174" y="604" font-size="22" font-weight="750" fill="#41536b">FLASH</text>
+    <text x="280" y="605" font-size="34" font-weight="900" fill="#1d4ed8">2,500</text>
+    <text x="412" y="604" font-size="18" font-weight="700" fill="#41536b">slots</text>
+
+    <rect x="598" y="366" width="404" height="280" rx="26" fill="#ecfeff" stroke="#a5f3fc" stroke-width="2"/>
+    <rect x="628" y="392" width="86" height="34" rx="17" fill="#0e7490"/>
+    <text x="671" y="415" text-anchor="middle" font-size="16" font-weight="850" letter-spacing="1.5" fill="#ffffff">LIVE</text>
+    <text x="628" y="493" font-size="55" font-weight="900" fill="#0b1f3a">12 / 12</text>
+    <text x="628" y="531" font-size="21" font-weight="750" fill="#41536b">requests returned HTTP 200</text>
+    <rect x="628" y="557" width="165" height="48" rx="16" fill="#cffafe"/>
+    <text x="711" y="589" text-anchor="middle" font-size="20" font-weight="850" fill="#155e75">APP CAP 4</text>
+    <text x="628" y="631" font-size="18" fill="#41536b">429 was not forced or observed</text>
+
+    <rect x="1052" y="366" width="404" height="280" rx="26" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <rect x="1082" y="392" width="172" height="34" rx="17" fill="#475569"/>
+    <text x="1168" y="415" text-anchor="middle" font-size="16" font-weight="850" letter-spacing="1.5" fill="#ffffff">CLIENT POLICY</text>
+    <text x="1082" y="481" font-size="27" font-weight="850" fill="#0b1f3a">Queue before bursting</text>
+    <text x="1082" y="526" font-size="21" fill="#41536b">Use a local concurrency cap</text>
+    <text x="1082" y="563" font-size="21" fill="#41536b">Retry only transient failures</text>
+    <text x="1082" y="600" font-size="21" fill="#41536b">Parse keep-alive comments safely</text>
+    <path d="M1082 622h328" stroke="#e2e8f0" stroke-width="2"/>
+    <text x="1082" y="645" font-size="16" font-weight="750" fill="#64748b">LIVE + OFFLINE TESTED</text>
+  </g>
+  <rect x="144" y="684" width="1268" height="8" rx="4" fill="url(#line)"/>
+  <text x="100" y="813" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="650" fill="#cbd5e1">Evidence dated July 27, 2026 UTC · Synthetic English inputs · No rate-limit burst forced</text>
+  <text x="1500" y="813" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#7dd3fc">OFFICIAL · LIVE · OFFLINE</text>
+</svg>

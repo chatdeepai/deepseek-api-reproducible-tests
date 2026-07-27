@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Official DeepSeek V4 account concurrency limits</title>
+  <desc id="desc">Official DeepSeek V4 concurrency slots per account: 500 for Pro and 2,500 for Flash, shared across API keys.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#eaf4ff"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="11" stdDeviation="17" flood-color="#0b1f3a" flood-opacity=".11"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1600" height="14" fill="url(#bar)"/>
+  <rect x="88" y="60" width="132" height="42" rx="21" fill="#1d4ed8"/>
+  <text x="154" y="88" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="900" letter-spacing="2" fill="#ffffff">OFFICIAL</text>
+  <text x="88" y="162" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="56" font-weight="850" fill="#0b1f3a">V4 concurrency is account-level</text>
+  <text x="88" y="207" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" fill="#41536b">Concurrent request slots are shared by every API key under the same account.</text>
+
+  <g filter="url(#shadow)">
+    <rect x="88" y="262" width="664" height="318" rx="30" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+    <rect x="800" y="262" width="712" height="318" rx="30" fill="#ffffff" stroke="#a5f3fc" stroke-width="2"/>
+  </g>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <text x="132" y="321" font-size="24" font-weight="800" letter-spacing="2" fill="#1d4ed8">DEEPSEEK V4 PRO</text>
+    <text x="132" y="422" font-size="90" font-weight="900" fill="#0b1f3a">500</text>
+    <text x="374" y="405" font-size="25" font-weight="750" fill="#41536b">concurrent</text>
+    <text x="374" y="442" font-size="25" font-weight="750" fill="#41536b">slots per account</text>
+    <rect x="132" y="493" width="532" height="28" rx="14" fill="#dbeafe"/>
+    <rect x="132" y="493" width="106" height="28" rx="14" fill="#2563eb"/>
+    <text x="132" y="553" font-size="18" fill="#64748b">Reference scale: 500 of 2,500</text>
+
+    <text x="844" y="321" font-size="24" font-weight="800" letter-spacing="2" fill="#0e7490">DEEPSEEK V4 FLASH</text>
+    <text x="844" y="422" font-size="90" font-weight="900" fill="#0b1f3a">2,500</text>
+    <text x="1162" y="405" font-size="25" font-weight="750" fill="#41536b">concurrent</text>
+    <text x="1162" y="442" font-size="25" font-weight="750" fill="#41536b">slots per account</text>
+    <rect x="844" y="493" width="580" height="28" rx="14" fill="#cffafe"/>
+    <rect x="844" y="493" width="580" height="28" rx="14" fill="url(#bar)"/>
+    <text x="844" y="553" font-size="18" fill="#64748b">Five times the documented Pro slot count</text>
+  </g>
+
+  <rect x="88" y="628" width="1424" height="154" rx="28" fill="#0b1f3a"/>
+  <text x="126" y="670" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="19" font-weight="800" letter-spacing="2" fill="#7dd3fc">SHARED ACROSS API KEYS</text>
+  <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <g transform="translate(126 699)">
+      <rect width="190" height="50" rx="16" fill="#16345d"/>
+      <circle cx="28" cy="25" r="10" fill="#38bdf8"/>
+      <text x="50" y="33" font-size="20" font-weight="750" fill="#ffffff">API key A</text>
+    </g>
+    <g transform="translate(338 699)">
+      <rect width="190" height="50" rx="16" fill="#16345d"/>
+      <circle cx="28" cy="25" r="10" fill="#38bdf8"/>
+      <text x="50" y="33" font-size="20" font-weight="750" fill="#ffffff">API key B</text>
+    </g>
+    <g transform="translate(550 699)">
+      <rect width="190" height="50" rx="16" fill="#16345d"/>
+      <circle cx="28" cy="25" r="10" fill="#38bdf8"/>
+      <text x="50" y="33" font-size="20" font-weight="750" fill="#ffffff">API key C</text>
+    </g>
+    <path d="M764 724h220" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M970 712l16 12-16 12" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1014" y="681" width="420" height="86" rx="22" fill="#ffffff"/>
+    <text x="1224" y="716" text-anchor="middle" font-size="20" font-weight="800" fill="#1d4ed8">ONE ACCOUNT POOL</text>
+    <text x="1224" y="745" text-anchor="middle" font-size="18" fill="#41536b">Keys do not multiply the slot limit</text>
+  </g>
+  <text x="88" y="850" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#41536b">Official information reviewed July 27, 2026 UTC</text>
+  <text x="1512" y="850" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="750" fill="#1d4ed8">ACCOUNT CONCURRENCY</text>
+</svg>

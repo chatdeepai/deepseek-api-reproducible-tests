@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">DeepSeek API client retry decision tree</title>
+  <desc id="desc">Offline client-policy decision tree: do not retry HTTP 400 unchanged; use bounded retries for 429, 500, 503, network failures, and timeouts.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071426"/>
+      <stop offset="1" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#020617" flood-opacity=".36"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect x="88" y="52" width="246" height="42" rx="21" fill="#ffffff" opacity=".16"/>
+  <text x="211" y="80" text-anchor="middle" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="18" font-weight="900" letter-spacing="2" fill="#ffffff">OFFLINE POLICY LAB</text>
+  <text x="88" y="157" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="55" font-weight="850" fill="#ffffff">Should the client retry?</text>
+  <text x="88" y="201" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="24" fill="#cbd5e1">Branch on the actual outcome; never turn every failure into another request.</text>
+
+  <g filter="url(#shadow)" font-family="Inter, Segoe UI, Arial, sans-serif">
+    <rect x="624" y="252" width="352" height="100" rx="26" fill="#ffffff"/>
+    <circle cx="676" cy="302" r="25" fill="#2563eb"/>
+    <path d="M666 302h20M676 292v20" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+    <text x="722" y="295" font-size="20" font-weight="800" letter-spacing="1" fill="#64748b">OUTCOME</text>
+    <text x="722" y="326" font-size="20" font-weight="850" fill="#0b1f3a">Request did not succeed</text>
+
+    <path d="M800 352v68M800 420H316v68M800 420h484v68" fill="none" stroke="#7dd3fc" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="108" y="488" width="416" height="118" rx="26" fill="#fff1f2"/>
+    <rect x="592" y="488" width="416" height="118" rx="26" fill="#eff6ff"/>
+    <rect x="1076" y="488" width="416" height="118" rx="26" fill="#ecfeff"/>
+    <text x="316" y="528" text-anchor="middle" font-size="19" font-weight="800" letter-spacing="1.5" fill="#9f1239">HTTP 400</text>
+    <text x="316" y="568" text-anchor="middle" font-size="27" font-weight="900" fill="#0b1f3a">STOP</text>
+    <text x="316" y="594" text-anchor="middle" font-size="17" fill="#41536b">Fix the request before resending</text>
+
+    <text x="800" y="528" text-anchor="middle" font-size="19" font-weight="800" letter-spacing="1.5" fill="#1d4ed8">HTTP 429 · 500 · 503</text>
+    <text x="800" y="568" text-anchor="middle" font-size="27" font-weight="900" fill="#0b1f3a">BOUNDED RETRY</text>
+    <text x="800" y="594" text-anchor="middle" font-size="17" fill="#41536b">Back off, cap attempts, queue work</text>
+
+    <text x="1284" y="528" text-anchor="middle" font-size="19" font-weight="800" letter-spacing="1.5" fill="#0e7490">NETWORK · TIMEOUT</text>
+    <text x="1284" y="568" text-anchor="middle" font-size="27" font-weight="900" fill="#0b1f3a">OUTCOME UNKNOWN</text>
+    <text x="1284" y="594" text-anchor="middle" font-size="17" fill="#41536b">Retry only with duplicate-work guard</text>
+
+    <path d="M316 606v60M800 606v60M1284 606v60" stroke="#7dd3fc" stroke-width="4" stroke-linecap="round"/>
+    <rect x="108" y="666" width="416" height="82" rx="22" fill="#ffffff" opacity=".94"/>
+    <rect x="592" y="666" width="416" height="82" rx="22" fill="#ffffff" opacity=".94"/>
+    <rect x="1076" y="666" width="416" height="82" rx="22" fill="#ffffff" opacity=".94"/>
+    <text x="316" y="716" text-anchor="middle" font-size="20" font-weight="800" fill="#881337">0 retries unchanged</text>
+    <text x="800" y="698" text-anchor="middle" font-size="18" font-weight="800" fill="#1e3a8a">Attempt 1 · cap 500 ms</text>
+    <text x="800" y="722" text-anchor="middle" font-size="18" font-weight="800" fill="#1e3a8a">Attempt 2 · cap 1,000 ms</text>
+    <text x="800" y="742" text-anchor="middle" font-size="14" font-weight="700" fill="#475569">Jitter + Retry-After policy</text>
+    <text x="1284" y="702" text-anchor="middle" font-size="19" font-weight="800" fill="#155e75">Same bounded schedule</text>
+    <text x="1284" y="730" text-anchor="middle" font-size="17" fill="#41536b">Preserve idempotency context</text>
+  </g>
+
+  <text x="88" y="824" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="650" fill="#cbd5e1">Local simulation generated July 27, 2026 UTC · Client policy, not a provider measurement</text>
+  <text x="1512" y="824" text-anchor="end" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" fill="#7dd3fc">0 PROVIDER REQUESTS</text>
+</svg>

@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+private/
+secrets/
+results/*
+!results/.gitkeep
+!results/final-results-summary.json
+!results/final-results-summary.csv
+!results/offline-results-summary.json
+!results/independent-audit.json
+screenshots/*
+!screenshots/.gitkeep

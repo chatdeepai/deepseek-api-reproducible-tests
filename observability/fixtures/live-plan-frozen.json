@@ -1,0 +1,85 @@
+{
+  "study": "DeepSeek Observability live telemetry study",
+  "plan_frozen_at_utc": "2026-07-27T19:51:36Z",
+  "preflight": {
+    "models_endpoint_completed_before_freeze": true,
+    "models_endpoint_status": 200,
+    "models_observed": [
+      "deepseek-v4-flash",
+      "deepseek-v4-pro"
+    ],
+    "paid_generation_requests_completed_before_freeze": 0
+  },
+  "constraints": {
+    "concurrency": 1,
+    "provider_retries": 0,
+    "request_timeout_ms": 30000,
+    "raw_prompt_storage": false,
+    "raw_output_storage": false,
+    "provider_request_id_storage": false,
+    "api_key_storage": false,
+    "public_results_are_sanitized": true
+  },
+  "cases": [
+    {
+      "id": "OBS-LIVE-01",
+      "purpose": "Non-streaming lifecycle and usage fields",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 24
+    },
+    {
+      "id": "OBS-LIVE-02",
+      "purpose": "Streaming chunk lifecycle, first-chunk timing, terminal state, and final usage",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 48,
+      "stream_options_include_usage": true
+    },
+    {
+      "id": "OBS-LIVE-03",
+      "purpose": "JSON contract monitoring",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 64,
+      "response_format": "json_object"
+    },
+    {
+      "id": "OBS-LIVE-04",
+      "purpose": "Tool-call trace monitoring",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 96,
+      "tool_choice": "required"
+    },
+    {
+      "id": "OBS-LIVE-05",
+      "purpose": "Thinking-mode terminal-state and reasoning-usage visibility",
+      "model": "deepseek-v4-pro",
+      "thinking": "enabled",
+      "max_tokens": 128
+    },
+    {
+      "id": "OBS-LIVE-06",
+      "purpose": "Repeated-prefix cache telemetry, first request",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 12
+    },
+    {
+      "id": "OBS-LIVE-07",
+      "purpose": "Repeated-prefix cache telemetry, immediate repeat",
+      "model": "deepseek-v4-flash",
+      "thinking": "disabled",
+      "max_tokens": 12
+    },
+    {
+      "id": "OBS-LIVE-08",
+      "purpose": "Expected invalid-model error classification",
+      "model": "deepseek-observability-invalid",
+      "thinking": "disabled",
+      "max_tokens": 8,
+      "expected_http_status": 400
+    }
+  ]
+}
